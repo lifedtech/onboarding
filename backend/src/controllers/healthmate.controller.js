@@ -175,7 +175,10 @@ const updateHealthmatePhase = async (req, res) => {
  */
 const updateHealthmate = async (req, res) => {
   const { id } = req.params;
-  const { name, category, contactName, contactEmail, contactPhone, opsUserId } = req.body;
+  const {
+    name, category, contactName, contactEmail, contactPhone, opsUserId,
+    screeningRemarks, screeningQueries, recallReminder
+  } = req.body;
   const isAdmin = req.user.role?.toLowerCase() === 'admin';
 
   try {
@@ -202,6 +205,9 @@ const updateHealthmate = async (req, res) => {
         ...(contactEmail !== undefined && { contactEmail }),
         ...(contactPhone !== undefined && { contactPhone }),
         ...(opsUserId !== undefined && { opsUserId }),
+        ...(screeningRemarks !== undefined && { screeningRemarks }),
+        ...(screeningQueries !== undefined && { screeningQueries }),
+        ...(recallReminder !== undefined && { recallReminder: recallReminder ? new Date(recallReminder) : null }),
       },
       include: {
         tasks: true,

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
-  Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User
+  Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User,
+  Calendar
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
@@ -61,6 +62,7 @@ export default function HealthmateModal() {
   const selectedHealthmate    = useOpsStore((s) => s.selectedHealthmate);
   const setSelectedHealthmate = useOpsStore((s) => s.setSelectedHealthmate);
   const updateNotes           = useOpsStore((s) => s.updateNotes);
+  const updateHealthmate      = useOpsStore((s) => s.updateHealthmate);
   const toggleTask            = useOpsStore((s) => s.toggleTask);
   const updateHealthmatePhase = useOpsStore((s) => s.updateHealthmatePhase);
   const triggerMessage        = useOpsStore((s) => s.triggerMessage);
@@ -74,9 +76,21 @@ export default function HealthmateModal() {
   const requestTakeover       = useOpsStore((s) => s.requestTakeover);
   const fetchPendingTakeovers = useOpsStore((s) => s.fetchPendingTakeovers);
 
-  const [notes, setNotes]           = useState('');
+  const [activeTab, setActiveTab]     = useState('details'); // 'details' | 'screening'
+  const [notes, setNotes]             = useState('');
   const [notesSaving, setNotesSaving] = useState(false);
   const [notesSaved, setNotesSaved]   = useState(false);
+
+  const [screeningRemarks, setScreeningRemarks] = useState('');
+  const [screeningRemarksSaving, setScreeningRemarksSaving] = useState(false);
+  const [screeningRemarksSaved, setScreeningRemarksSaved] = useState(false);
+
+  const [screeningQueries, setScreeningQueries] = useState('');
+  const [screeningQueriesSaving, setScreeningQueriesSaving] = useState(false);
+  const [screeningQueriesSaved, setScreeningQueriesSaved] = useState(false);
+
+  const [recallReminder, setRecallReminder] = useState('');
+  const [reminderSaving, setReminderSaving] = useState(false);
 
   // Per-button sending state to prevent double-clicks
   const [sending, setSending] = useState({ EMAIL: false, WHATSAPP: false });
@@ -116,6 +130,22 @@ export default function HealthmateModal() {
       setEditContactName(selectedHealthmate.contactName ?? '');
       setEditContactEmail(selectedHealthmate.contactEmail ?? '');
       setEditContactPhone(selectedHealthmate.contactPhone ?? '');
+
+      setScreeningRemarks(selectedHealthmate.screeningRemarks ?? '');
+      setScreeningRemarksSaved(false);
+      setScreeningQueries(selectedHealthmate.screeningQueries ?? '');
+      setScreeningQueriesSaved(false);
+
+      if (selectedHealthmate.recallReminder) {
+        const d = new Date(selectedHealthmate.recallReminder);
+        const tzoffset = d.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(d.getTime() - tzoffset)).toISOString().slice(0, 16);
+        setRecallReminder(localISOTime);
+      } else {
+        setRecallReminder('');
+      }
+
+      setActiveTab(selectedHealthmate.phase === 'PRE_QUALIFY' ? 'screening' : 'details');
     }
   }, [selectedHealthmate?.id]);
 
@@ -168,6 +198,49 @@ export default function HealthmateModal() {
     setNotesSaving(false);
     setNotesSaved(true);
     setTimeout(() => setNotesSaved(false), 2000);
+  };
+
+  const handleSaveScreeningRemarks = async () => {
+    setScreeningRemarksSaving(true);
+    const result = await updateHealthmate(hm.id, { screeningRemarks: screeningRemarks.trim() || null });
+    setScreeningRemarksSaving(false);
+    if (result && result.success) {
+      setScreeningRemarksSaved(true);
+      setTimeout(() => setScreeningRemarksSaved(false), 2000);
+    }
+  };
+
+  const handleSaveScreeningQueries = async () => {
+    setScreeningQueriesSaving(true);
+    const result = await updateHealthmate(hm.id, { screeningQueries: screeningQueries.trim() || null });
+    setScreeningQueriesSaving(false);
+    if (result && result.success) {
+      setScreeningQueriesSaved(true);
+      setTimeout(() => setScreeningQueriesSaved(false), 2000);
+    }
+  };
+
+  const handleSaveReminder = async () => {
+    if (!recallReminder) {
+      toast.error('Please select a date and time.');
+      return;
+    }
+    setReminderSaving(true);
+    const result = await updateHealthmate(hm.id, { recallReminder: new Date(recallReminder).toISOString() });
+    setReminderSaving(false);
+    if (result && result.success) {
+      toast.success('Recall reminder set successfully.');
+    }
+  };
+
+  const handleClearReminder = async () => {
+    setReminderSaving(true);
+    const result = await updateHealthmate(hm.id, { recallReminder: null });
+    setReminderSaving(false);
+    if (result && result.success) {
+      setRecallReminder('');
+      toast.success('Recall reminder cleared.');
+    }
   };
 
   const handleToggleTask = (taskId, current) => {
@@ -390,165 +463,329 @@ export default function HealthmateModal() {
                   </div>
                 )}
 
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider">
-                      Contact Info
-                    </h3>
-                    {!isEditing && canModify && (
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="text-brand-teal hover:text-brand-teal-hover text-xs font-bold flex items-center gap-1 hover:underline"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                        Edit Details
-                      </button>
+                {/* Tabs Header */}
+                <div className="flex border-b border-border-leaf/35 mb-4 gap-4">
+                  <button
+                    onClick={() => setActiveTab('details')}
+                    className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                      activeTab === 'details'
+                        ? 'border-brand-teal text-brand-teal'
+                        : 'border-transparent text-text-muted/60 hover:text-text-main'
+                    }`}
+                  >
+                    Details & Notes
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('screening')}
+                    className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all flex items-center gap-1.5 ${
+                      activeTab === 'screening'
+                        ? 'border-brand-teal text-brand-teal'
+                        : 'border-transparent text-text-muted/60 hover:text-text-main'
+                    }`}
+                  >
+                    Screening & Recall
+                    {hm.recallReminder && (
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${new Date(hm.recallReminder) < new Date() ? 'bg-red-500 animate-pulse' : 'bg-brand-teal'}`} />
                     )}
-                  </div>
+                  </button>
+                </div>
 
-                  {isEditing ? (
-                    <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-border-leaf/45">
-                      <div>
-                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Company / Partner Name</label>
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                        />
+                {activeTab === 'details' ? (
+                  <div className="space-y-5">
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider">
+                          Contact Info
+                        </h3>
+                        {!isEditing && canModify && (
+                          <button
+                            onClick={() => setIsEditing(true)}
+                            className="text-brand-teal hover:text-brand-teal-hover text-xs font-bold flex items-center gap-1 hover:underline"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            Edit Details
+                          </button>
+                        )}
                       </div>
-                      <div>
-                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Partner Type</label>
-                        <select
-                          value={editType}
-                          onChange={(e) => setEditType(e.target.value)}
-                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                        >
-                          <option value="PRACTITIONER">Practitioner</option>
-                          <option value="CENTRE">Centre</option>
-                          <option value="ORGANIZER">Organizer</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Person Name</label>
-                        <input
-                          type="text"
-                          value={editContactName}
-                          onChange={(e) => setEditContactName(e.target.value)}
-                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Email</label>
-                        <input
-                          type="email"
-                          value={editContactEmail}
-                          onChange={(e) => setEditContactEmail(e.target.value)}
-                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Phone</label>
-                        <input
-                          type="tel"
-                          value={editContactPhone}
-                          onChange={(e) => setEditContactPhone(e.target.value)}
-                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
-                        <input
-                          type="text"
-                          value={editCategory}
-                          onChange={(e) => setEditCategory(e.target.value)}
-                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 pt-2">
-                        <button
-                          onClick={handleSaveChanges}
-                          className="bg-brand-teal hover:bg-brand-teal-hover text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-sm"
-                        >
-                          Save Changes
-                        </button>
-                        <button
-                          onClick={() => setIsEditing(false)}
-                          className="bg-white hover:bg-slate-50 text-text-main border border-border-leaf text-xs font-bold px-3 py-2 rounded-xl transition-all"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {hm.contactName && (
-                        <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Name" value={hm.contactName} />
+
+                      {isEditing ? (
+                        <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-border-leaf/45">
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Company / Partner Name</label>
+                            <input
+                              type="text"
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Partner Type</label>
+                            <select
+                              value={editType}
+                              onChange={(e) => setEditType(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            >
+                              <option value="PRACTITIONER">Practitioner</option>
+                              <option value="CENTRE">Centre</option>
+                              <option value="ORGANIZER">Organizer</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Person Name</label>
+                            <input
+                              type="text"
+                              value={editContactName}
+                              onChange={(e) => setEditContactName(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Email</label>
+                            <input
+                              type="email"
+                              value={editContactEmail}
+                              onChange={(e) => setEditContactEmail(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Phone</label>
+                            <input
+                              type="tel"
+                              value={editContactPhone}
+                              onChange={(e) => setEditContactPhone(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
+                            <input
+                              type="text"
+                              value={editCategory}
+                              onChange={(e) => setEditCategory(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 pt-2">
+                            <button
+                              onClick={handleSaveChanges}
+                              className="bg-brand-teal hover:bg-brand-teal-hover text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-sm"
+                            >
+                              Save Changes
+                            </button>
+                            <button
+                              onClick={() => setIsEditing(false)}
+                              className="bg-white hover:bg-slate-50 text-text-main border border-border-leaf text-xs font-bold px-3 py-2 rounded-xl transition-all"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {hm.contactName && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Name" value={hm.contactName} />
+                          )}
+                          <InfoRow
+                            icon={<Mail className="w-4 h-4 text-brand-teal" />}
+                            label="Email"
+                            value={hm.contactEmail || '—'}
+                            muted={!hm.contactEmail}
+                          />
+                          <InfoRow
+                            icon={<Phone className="w-4 h-4 text-brand-teal" />}
+                            label="Phone"
+                            value={hm.contactPhone || '—'}
+                            muted={!hm.contactPhone}
+                          />
+                          <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
+                          <InfoRow
+                            icon={<User className="w-4 h-4 text-brand-teal" />}
+                            label="Assignee"
+                            value={
+                              <span className="flex items-center gap-1.5 font-extrabold text-text-main">
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${hm.opsUser?.isOnline ? 'bg-brand-green' : 'bg-red-400'}`} />
+                                {hm.opsUser?.name || 'Unassigned'}
+                              </span>
+                            }
+                          />
+                        </div>
                       )}
-                      <InfoRow
-                        icon={<Mail className="w-4 h-4 text-brand-teal" />}
-                        label="Email"
-                        value={hm.contactEmail || '—'}
-                        muted={!hm.contactEmail}
-                      />
-                      <InfoRow
-                        icon={<Phone className="w-4 h-4 text-brand-teal" />}
-                        label="Phone"
-                        value={hm.contactPhone || '—'}
-                        muted={!hm.contactPhone}
-                      />
-                      <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
-                      <InfoRow
-                        icon={<User className="w-4 h-4 text-brand-teal" />}
-                        label="Assignee"
-                        value={
-                          <span className="flex items-center gap-1.5 font-extrabold text-text-main">
-                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${hm.opsUser?.isOnline ? 'bg-brand-green' : 'bg-red-400'}`} />
-                            {hm.opsUser?.name || 'Unassigned'}
-                          </span>
-                        }
-                      />
                     </div>
-                  )}
-                </div>
 
-                {/* Notes */}
-                <div>
-                  <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider mb-3">
-                    Internal Notes
-                  </h3>
-                  <textarea
-                    ref={textareaRef}
-                    value={notes}
-                    onChange={(e) => { setNotes(e.target.value); setNotesSaved(false); }}
-                    placeholder={canModify ? "Add internal notes about this partner…" : "Only the assignee can edit notes…"}
-                    disabled={!canModify}
-                    rows={5}
-                    className="w-full bg-slate-50 border border-border-leaf/70 text-text-main placeholder-text-muted/40
-                               rounded-2xl px-4 py-3 text-sm font-medium resize-none
-                               focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal
-                               transition-all duration-200"
-                  />
-                  {canModify && (
-                    <div className="flex items-center justify-between mt-2">
-                      <span className={`text-xs font-bold transition-all ${notesSaved ? 'text-brand-green' : 'text-transparent'}`}>
-                        ✓ Saved
-                      </span>
-                      <button
-                        onClick={handleSaveNotes}
-                        disabled={notesSaving}
-                        className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50
-                                   text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
-                      >
-                        {notesSaving
-                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          : <Save className="w-3.5 h-3.5" />
-                        }
-                        {notesSaving ? 'Saving…' : 'Save Notes'}
-                      </button>
+                    {/* Notes */}
+                    <div>
+                      <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider mb-3">
+                        Internal Notes
+                      </h3>
+                      <textarea
+                        ref={textareaRef}
+                        value={notes}
+                        onChange={(e) => { setNotes(e.target.value); setNotesSaved(false); }}
+                        placeholder={canModify ? "Add internal notes about this partner…" : "Only the assignee can edit notes…"}
+                        disabled={!canModify}
+                        rows={5}
+                        className="w-full bg-slate-50 border border-border-leaf/70 text-text-main placeholder-text-muted/40
+                                   rounded-2xl px-4 py-3 text-sm font-medium resize-none
+                                   focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal
+                                   transition-all duration-200"
+                      />
+                      {canModify && (
+                        <div className="flex items-center justify-between mt-2">
+                          <span className={`text-xs font-bold transition-all ${notesSaved ? 'text-brand-green' : 'text-transparent'}`}>
+                            ✓ Saved
+                          </span>
+                          <button
+                            onClick={handleSaveNotes}
+                            disabled={notesSaving}
+                            className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50
+                                       text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+                          >
+                            {notesSaving
+                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              : <Save className="w-3.5 h-3.5" />
+                            }
+                            {notesSaving ? 'Saving…' : 'Save Notes'}
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Screening Call Remarks */}
+                    <div>
+                      <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider mb-2">
+                        Screening Call Remarks
+                      </h3>
+                      <p className="text-[10px] text-text-muted/80 font-semibold mb-2">
+                        Remarks and notes recorded during the initial screening call.
+                      </p>
+                      <textarea
+                        value={screeningRemarks}
+                        onChange={(e) => { setScreeningRemarks(e.target.value); setScreeningRemarksSaved(false); }}
+                        placeholder={canModify ? "Add screening call remarks..." : "Only the assignee can edit remarks..."}
+                        disabled={!canModify}
+                        rows={4}
+                        className="w-full bg-slate-50 border border-border-leaf/70 text-text-main placeholder-text-muted/40
+                                   rounded-2xl px-4 py-3 text-sm font-medium resize-none
+                                   focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal
+                                   transition-all duration-200"
+                      />
+                      {canModify && (
+                        <div className="flex items-center justify-between mt-2">
+                          <span className={`text-xs font-bold transition-all ${screeningRemarksSaved ? 'text-brand-green' : 'text-transparent'}`}>
+                            ✓ Saved
+                          </span>
+                          <button
+                            onClick={handleSaveScreeningRemarks}
+                            disabled={screeningRemarksSaving}
+                            className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50
+                                       text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+                          >
+                            {screeningRemarksSaving
+                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              : <Save className="w-3.5 h-3.5" />
+                            }
+                            {screeningRemarksSaving ? 'Saving…' : 'Save Remarks'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Recall Reminder */}
+                    <div className="bg-slate-50/50 p-4 rounded-2xl border border-border-leaf/35 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-brand-teal" />
+                        <h3 className="text-text-main font-extrabold text-xs uppercase tracking-wider">
+                          Recall Reminder
+                        </h3>
+                      </div>
+                      <p className="text-[10px] text-text-muted/80 font-semibold">
+                        Set a date and time to be reminded to recall or follow up with this partner.
+                      </p>
+                      
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <input
+                          type="datetime-local"
+                          value={recallReminder}
+                          onChange={(e) => setRecallReminder(e.target.value)}
+                          disabled={!canModify || reminderSaving}
+                          className="flex-1 bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleSaveReminder}
+                            disabled={!canModify || reminderSaving}
+                            className="flex-1 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm"
+                          >
+                            {reminderSaving ? 'Saving...' : 'Set Reminder'}
+                          </button>
+                          {hm.recallReminder && (
+                            <button
+                              onClick={handleClearReminder}
+                              disabled={!canModify || reminderSaving}
+                              className="bg-white hover:bg-red-50 text-red-500 border border-red-200 text-xs font-bold px-3 py-2 rounded-xl transition-all"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {hm.recallReminder && (
+                        <div className="flex items-center gap-2 text-[10px] font-extrabold text-brand-teal bg-brand-teal/5 p-2 rounded-lg border border-brand-teal/10">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>Active Recall Date: {new Date(hm.recallReminder).toLocaleString()}</span>
+                          {new Date(hm.recallReminder) < new Date() && (
+                            <span className="ml-auto text-red-500 font-black animate-pulse">OVERDUE</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Queries & Remarks Pad */}
+                    <div>
+                      <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider mb-2">
+                        Remarks Pad (Queries & Notes)
+                      </h3>
+                      <p className="text-[10px] text-text-muted/80 font-semibold mb-2">
+                        Note down any additional queries or details to be added.
+                      </p>
+                      <textarea
+                        value={screeningQueries}
+                        onChange={(e) => { setScreeningQueries(e.target.value); setScreeningQueriesSaved(false); }}
+                        placeholder={canModify ? "Write additional queries or notes here..." : "Only the assignee can edit queries..."}
+                        disabled={!canModify}
+                        rows={4}
+                        className="w-full bg-slate-50 border border-border-leaf/70 text-text-main placeholder-text-muted/40
+                                   rounded-2xl px-4 py-3 text-sm font-medium resize-none
+                                   focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal
+                                   transition-all duration-200"
+                      />
+                      {canModify && (
+                        <div className="flex items-center justify-between mt-2">
+                          <span className={`text-xs font-bold transition-all ${screeningQueriesSaved ? 'text-brand-green' : 'text-transparent'}`}>
+                            ✓ Saved
+                          </span>
+                          <button
+                            onClick={handleSaveScreeningQueries}
+                            disabled={screeningQueriesSaving}
+                            className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50
+                                       text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+                          >
+                            {screeningQueriesSaving
+                              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              : <Save className="w-3.5 h-3.5" />
+                            }
+                            {screeningQueriesSaving ? 'Saving…' : 'Save Queries'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Right: Task Checklist */}

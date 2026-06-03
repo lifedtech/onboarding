@@ -60,6 +60,11 @@ model Healthmate {
   regDocUrl    String?
   regDocName   String?
 
+  // Screening info & recall reminders
+  screeningRemarks String?
+  screeningQueries String?
+  recallReminder   DateTime?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

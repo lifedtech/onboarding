@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Users,
   AlertTriangle,
@@ -40,10 +40,16 @@ export default function DashboardOverview() {
   const isLoading          = useOpsStore((s) => s.isLoading);
   const error              = useOpsStore((s) => s.error);
   const setSelectedHealthmate = useOpsStore((s) => s.setSelectedHealthmate);
+  const healthmates        = useOpsStore((s) => s.healthmates);
+  const fetchHealthmates   = useOpsStore((s) => s.fetchHealthmates);
+  const user               = useOpsStore((s) => s.user);
+
+  const [dashboardTab, setDashboardTab] = useState('activity'); // 'activity' | 'recalls'
 
   useEffect(() => {
     fetchSummaryMetrics();
-  }, [fetchSummaryMetrics]);
+    fetchHealthmates();
+  }, [fetchSummaryMetrics, fetchHealthmates]);
 
   if (isLoading && !summaryMetrics) {
     return (
@@ -61,6 +67,21 @@ export default function DashboardOverview() {
     taskCompletionRate: 0,
     actionRequiredCount: 0,
   };
+
+  // Filter active recall reminders for this user (or all if admin)
+  const isUserAdmin = user?.role?.toUpperCase() === 'ADMIN';
+  const myRecalls = healthmates.filter(
+    (hm) =>
+      hm.recallReminder &&
+      (isUserAdmin || hm.opsUserId === user?.id)
+  );
+
+  // Sort recalls chronologically
+  const sortedRecalls = [...myRecalls].sort(
+    (a, b) => new Date(a.recallReminder) - new Date(b.recallReminder)
+  );
+
+  const activeRecallsCount = sortedRecalls.length;
 
   return (
     <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto">
@@ -168,84 +189,186 @@ export default function DashboardOverview() {
         {/* Left: Recent Activity Feed (2 Cols) */}
         <div className="lg:col-span-2 bg-white border border-border-leaf/30 rounded-3xl shadow-sm overflow-hidden flex flex-col">
           <div className="px-6 py-5 border-b border-border-leaf/25 flex items-center justify-between shrink-0 bg-white">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
-                <Briefcase className="w-4 h-4" />
-              </div>
-              <h3 className="text-text-main font-extrabold text-sm tracking-wide">Recent Activity Log</h3>
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => setDashboardTab('activity')}
+                className={`pb-1 text-sm font-extrabold uppercase tracking-wider border-b-2 transition-all flex items-center gap-1.5 ${
+                  dashboardTab === 'activity'
+                    ? 'border-brand-teal text-brand-teal'
+                    : 'border-transparent text-text-muted/60 hover:text-text-main'
+                }`}
+              >
+                <Briefcase className="w-4 h-4 text-brand-teal" />
+                Recent Activity Log
+              </button>
+              <button
+                onClick={() => setDashboardTab('recalls')}
+                className={`pb-1 text-sm font-extrabold uppercase tracking-wider border-b-2 transition-all flex items-center gap-1.5 ${
+                  dashboardTab === 'recalls'
+                    ? 'border-brand-teal text-brand-teal'
+                    : 'border-transparent text-text-muted/60 hover:text-text-main'
+                }`}
+              >
+                <Clock className="w-4 h-4 text-brand-teal" />
+                Recall Reminders
+                {activeRecallsCount > 0 && (
+                  <span className="bg-brand-teal text-white text-[10px] px-2 py-0.5 rounded-full font-extrabold leading-none">
+                    {activeRecallsCount}
+                  </span>
+                )}
+              </button>
             </div>
-            <span className="text-[10px] font-bold text-text-muted bg-slate-50 border border-border-leaf/50 px-2 py-0.5 rounded-full">
-              Latest 5 active
+            <span className="text-[10px] font-bold text-text-muted bg-slate-50 border border-border-leaf/50 px-2 py-0.5 rounded-full hidden sm:inline">
+              {dashboardTab === 'activity' ? 'Latest 5 active' : `${activeRecallsCount} active reminder(s)`}
             </span>
           </div>
 
           <div className="flex-1 overflow-x-auto">
-            {recentActivity.length === 0 ? (
-              <div className="flex items-center justify-center h-56">
-                <p className="text-text-muted/50 text-sm font-semibold">No recent partner activity recorded.</p>
-              </div>
-            ) : (
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-border-leaf/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
-                    <th className="px-6 py-3.5">Partner Name</th>
-                    <th className="px-6 py-3.5">Phase</th>
-                    <th className="px-6 py-3.5">Type</th>
-                    <th className="px-6 py-3.5">Category</th>
-                    <th className="px-6 py-3.5">Last Updated</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-leaf/25">
-                  {recentActivity.map((hm) => {
-                    const localDate = new Date(hm.updatedAt).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    });
+            {dashboardTab === 'activity' ? (
+              recentActivity.length === 0 ? (
+                <div className="flex items-center justify-center h-56">
+                  <p className="text-text-muted/50 text-sm font-semibold">No recent partner activity recorded.</p>
+                </div>
+              ) : (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-border-leaf/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
+                      <th className="px-6 py-3.5">Partner Name</th>
+                      <th className="px-6 py-3.5">Phase</th>
+                      <th className="px-6 py-3.5">Type</th>
+                      <th className="px-6 py-3.5">Category</th>
+                      <th className="px-6 py-3.5">Last Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-leaf/25">
+                    {recentActivity.map((hm) => {
+                      const localDate = new Date(hm.updatedAt).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      });
 
-                    return (
-                      <tr
-                        key={hm.id}
-                        onClick={() => setSelectedHealthmate(hm)}
-                        className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
-                      >
-                        {/* Name */}
-                        <td className="px-6 py-4">
-                          <span className="text-text-main font-extrabold text-xs group-hover:text-brand-teal transition-colors">
-                            {hm.name}
-                          </span>
-                        </td>
-                        {/* Phase */}
-                        <td className="px-6 py-4">
-                          <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border ${PHASE_COLORS[hm.phase]}`}>
-                            {PHASE_LABELS[hm.phase]}
-                          </span>
-                        </td>
-                        {/* Type */}
-                        <td className="px-6 py-4">
-                          <span className="text-text-muted text-xs font-semibold">
-                            {TYPE_LABELS[hm.type] ?? hm.type}
-                          </span>
-                        </td>
-                        {/* Category */}
-                        <td className="px-6 py-4">
-                          <span className="text-text-muted text-xs font-semibold">
-                            {hm.category}
-                          </span>
-                        </td>
-                        {/* Last Updated */}
-                        <td className="px-6 py-4">
-                          <span className="text-[10px] font-bold text-text-muted/80 flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            {localDate}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      return (
+                        <tr
+                          key={hm.id}
+                          onClick={() => setSelectedHealthmate(hm)}
+                          className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
+                        >
+                          {/* Name */}
+                          <td className="px-6 py-4">
+                            <span className="text-text-main font-extrabold text-xs group-hover:text-brand-teal transition-colors">
+                              {hm.name}
+                            </span>
+                          </td>
+                          {/* Phase */}
+                          <td className="px-6 py-4">
+                            <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border ${PHASE_COLORS[hm.phase]}`}>
+                              {PHASE_LABELS[hm.phase]}
+                            </span>
+                          </td>
+                          {/* Type */}
+                          <td className="px-6 py-4">
+                            <span className="text-text-muted text-xs font-semibold">
+                              {TYPE_LABELS[hm.type] ?? hm.type}
+                            </span>
+                          </td>
+                          {/* Category */}
+                          <td className="px-6 py-4">
+                            <span className="text-text-muted text-xs font-semibold">
+                              {hm.category}
+                            </span>
+                          </td>
+                          {/* Last Updated */}
+                          <td className="px-6 py-4">
+                            <span className="text-[10px] font-bold text-text-muted/80 flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                              {localDate}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )
+            ) : (
+              sortedRecalls.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-56 gap-2">
+                  <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center text-brand-teal">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <p className="text-text-muted/50 text-sm font-semibold">No active recall reminders set.</p>
+                </div>
+              ) : (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-border-leaf/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
+                      <th className="px-6 py-3.5">Partner Name</th>
+                      <th className="px-6 py-3.5">Recall Date & Time</th>
+                      <th className="px-6 py-3.5">Remarks / Notes Preview</th>
+                      <th className="px-6 py-3.5">Onboarding Phase</th>
+                      {isUserAdmin && <th className="px-6 py-3.5">Assignee</th>}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-leaf/25">
+                    {sortedRecalls.map((hm) => {
+                      const isOverdue = new Date(hm.recallReminder) < new Date();
+                      const localDate = new Date(hm.recallReminder).toLocaleString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      });
+
+                      const remarksPreview = hm.screeningRemarks || hm.notes || '—';
+
+                      return (
+                        <tr
+                          key={hm.id}
+                          onClick={() => setSelectedHealthmate(hm)}
+                          className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
+                        >
+                          {/* Name */}
+                          <td className="px-6 py-4">
+                            <span className="text-text-main font-extrabold text-xs group-hover:text-brand-teal transition-colors">
+                              {hm.name}
+                            </span>
+                          </td>
+                          {/* Recall Reminder Date */}
+                          <td className="px-6 py-4">
+                            <span className={`text-xs font-bold flex items-center gap-1.5 ${isOverdue ? 'text-red-500 font-extrabold' : 'text-text-muted'}`}>
+                              <Clock className={`w-3.5 h-3.5 shrink-0 ${isOverdue ? 'text-red-500 animate-pulse' : 'text-brand-teal'}`} />
+                              {localDate}
+                              {isOverdue && <span className="text-[8px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-md font-black">OVERDUE</span>}
+                            </span>
+                          </td>
+                          {/* Remarks Preview */}
+                          <td className="px-6 py-4 max-w-[200px] truncate">
+                            <span className="text-text-muted text-xs font-semibold">
+                              {remarksPreview}
+                            </span>
+                          </td>
+                          {/* Phase */}
+                          <td className="px-6 py-4">
+                            <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border ${PHASE_COLORS[hm.phase]}`}>
+                              {PHASE_LABELS[hm.phase]}
+                            </span>
+                          </td>
+                          {/* Assignee if Admin */}
+                          {isUserAdmin && (
+                            <td className="px-6 py-4">
+                              <span className="text-text-muted text-xs font-semibold">
+                                {hm.opsUser?.name || 'Unassigned'}
+                              </span>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )
             )}
           </div>
         </div>

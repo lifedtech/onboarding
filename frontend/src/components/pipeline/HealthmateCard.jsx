@@ -112,6 +112,16 @@ export default function HealthmateCard({ healthmate }) {
         </span>
       </div>
 
+      {/* Recall Reminder Indicator */}
+      {healthmate.recallReminder && (
+        <div className="flex items-center gap-2 mb-2 p-1.5 bg-brand-teal/5 border border-brand-teal/10 rounded-xl">
+          <Clock className={`w-3.5 h-3.5 shrink-0 ${new Date(healthmate.recallReminder) < new Date() ? 'text-red-500 animate-pulse' : 'text-brand-teal'}`} />
+          <span className={`text-[10px] font-bold truncate ${new Date(healthmate.recallReminder) < new Date() ? 'text-red-500 font-extrabold' : 'text-text-muted'}`}>
+            Recall: {new Date(healthmate.recallReminder).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          </span>
+        </div>
+      )}
+
       {/* Footer: days in phase + task progress */}
       <div className="flex items-center justify-between mt-3.5 pt-3 border-t border-border-leaf/30">
         <div className="flex items-center gap-1.5">

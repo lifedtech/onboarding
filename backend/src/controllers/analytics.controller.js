@@ -44,15 +44,22 @@ const getDashboardSummary = async (req, res) => {
     });
     const taskCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-    // 5. Action Required: Count of partners with overdue tasks (uncompleted task with dueDate < now)
+    // 5. Action Required: Count of partners with overdue tasks OR overdue recall reminders
     const actionRequiredCount = await prisma.healthmate.count({
       where: {
-        tasks: {
-          some: {
-            completed: false,
-            dueDate: { lt: new Date() }
+        OR: [
+          {
+            tasks: {
+              some: {
+                completed: false,
+                dueDate: { lt: new Date() }
+              }
+            }
+          },
+          {
+            recallReminder: { lt: new Date() }
           }
-        }
+        ]
       }
     });
 
