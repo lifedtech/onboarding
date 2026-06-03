@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Database Service (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: lifed-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ayush@123
+      POSTGRES_DB: lifed_healthmate
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # In-Memory Cache Service (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: lifed-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Express API Backend
+  backend:
+    build:
+      context: ./backend
+    container_name: lifed-backend
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://postgres:Ayush@123@db:5432/lifed_healthmate"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "lifed-healthmate-super-secret-jwt-key-2026"
+      PORT: 3001
+      CLIENT_ORIGIN: "http://localhost"
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Ensure tables are pushed, seeded, and Express is started
+    command: sh -c "npx prisma db push && npx prisma db seed && npm start"
+
+  # React SPA Frontend
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://localhost:3001/api
+    container_name: lifed-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

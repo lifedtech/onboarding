@@ -1,0 +1,848 @@
+import { useEffect, useRef, useState } from 'react';
+import {
+  X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
+  Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User
+} from 'lucide-react';
+import useOpsStore from '../../store/useOpsStore';
+import toast from 'react-hot-toast';
+
+// ─── Phase config ─────────────────────────────────────────────────────────────
+
+const PHASES = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
+
+const PHASE_LABELS = {
+  PRE_QUALIFY: 'Pre-Qualify',
+  PREPARE:     'Prepare',
+  REGISTER:    'Register',
+  REVIEW:      'Review',
+  LIVE:        'Live',
+};
+
+const PHASE_COLORS = {
+  PRE_QUALIFY: 'text-slate-600 bg-slate-100 border-slate-200',
+  PREPARE:     'text-brand-teal bg-brand-teal/10 border-brand-teal/20',
+  REGISTER:    'text-amber-700 bg-amber-50 border-amber-200',
+  REVIEW:      'text-purple-700 bg-purple-50 border-purple-200',
+  LIVE:        'text-brand-green bg-brand-green/10 border-brand-green/20',
+};
+
+const TYPE_LABELS = {
+  PRACTITIONER: 'Practitioner',
+  CENTRE:       'Centre',
+  ORGANIZER:    'Organizer',
+};
+
+const DEFAULT_TASKS = {
+  PRE_QUALIFY: [
+    "Verify primary contact email and phone number",
+    "Complete screening call and business analysis"
+  ],
+  PREPARE: [
+    "Upload certified professional qualifications",
+    "Sign partnership framework agreement"
+  ],
+  REGISTER: [
+    "Submit valid business registration registry copy",
+    "Configure bank payout and tax collection variables"
+  ],
+  REVIEW: [
+    "Perform background verification and credit review",
+    "Conduct live platform video walkthrough"
+  ],
+  LIVE: [
+    "Configure booking schedule and live slots",
+    "Send welcome package and micro-habits toolkit"
+  ]
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export default function HealthmateModal() {
+  const selectedHealthmate    = useOpsStore((s) => s.selectedHealthmate);
+  const setSelectedHealthmate = useOpsStore((s) => s.setSelectedHealthmate);
+  const updateNotes           = useOpsStore((s) => s.updateNotes);
+  const toggleTask            = useOpsStore((s) => s.toggleTask);
+  const updateHealthmatePhase = useOpsStore((s) => s.updateHealthmatePhase);
+  const triggerMessage        = useOpsStore((s) => s.triggerMessage);
+  const editHealthmateDetails = useOpsStore((s) => s.editHealthmateDetails);
+  const createTask            = useOpsStore((s) => s.createTask);
+  const uploadRegistrationDocument = useOpsStore((s) => s.uploadRegistrationDocument);
+  const deleteRegistrationDocument = useOpsStore((s) => s.deleteRegistrationDocument);
+  const deleteHealthmate      = useOpsStore((s) => s.deleteHealthmate);
+  const user                  = useOpsStore((s) => s.user);
+  const pendingOutboundTakeovers = useOpsStore((s) => s.pendingOutboundTakeovers);
+  const requestTakeover       = useOpsStore((s) => s.requestTakeover);
+  const fetchPendingTakeovers = useOpsStore((s) => s.fetchPendingTakeovers);
+
+  const [notes, setNotes]           = useState('');
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesSaved, setNotesSaved]   = useState(false);
+
+  // Per-button sending state to prevent double-clicks
+  const [sending, setSending] = useState({ EMAIL: false, WHATSAPP: false });
+
+  // Inline edit states
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editType, setEditType] = useState('PRACTITIONER');
+  const [editCategory, setEditCategory] = useState('');
+  const [editContactName, setEditContactName] = useState('');
+  const [editContactEmail, setEditContactEmail] = useState('');
+  const [editContactPhone, setEditContactPhone] = useState('');
+
+  // Add-task form states
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [taskAdding, setTaskAdding] = useState(false);
+
+  // Document upload state
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [deletingDoc, setDeletingDoc] = useState(false);
+
+  const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  // Sync notes and edit states when modal opens or healthmate changes
+  useEffect(() => {
+    if (selectedHealthmate) {
+      setNotes(selectedHealthmate.notes ?? '');
+      setNotesSaved(false);
+      setSending({ EMAIL: false, WHATSAPP: false });
+      setIsEditing(false);
+      setNewTaskTitle('');
+
+      setEditName(selectedHealthmate.name);
+      setEditType(selectedHealthmate.type);
+      setEditCategory(selectedHealthmate.category);
+      setEditContactName(selectedHealthmate.contactName ?? '');
+      setEditContactEmail(selectedHealthmate.contactEmail ?? '');
+      setEditContactPhone(selectedHealthmate.contactPhone ?? '');
+    }
+  }, [selectedHealthmate?.id]);
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') setSelectedHealthmate(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [setSelectedHealthmate]);
+
+  useEffect(() => {
+    if (selectedHealthmate) {
+      fetchPendingTakeovers();
+    }
+  }, [selectedHealthmate?.id, fetchPendingTakeovers]);
+
+  if (!selectedHealthmate) return null;
+
+  const hm           = selectedHealthmate;
+  const isAdmin      = user?.role?.toUpperCase() === 'ADMIN';
+  const canModify    = isAdmin || (hm.opsUserId === user?.id);
+  const isPending    = pendingOutboundTakeovers.some((req) => req.healthmateId === hm.id && req.status === 'PENDING');
+  const currentIndex = PHASES.indexOf(hm.phase);
+  const nextPhase    = PHASES[currentIndex + 1] ?? null;
+  const tasks        = hm.tasks ?? [];
+  const doneTasks    = tasks.filter((t) => t.completed).length;
+
+  // Group tasks by phase
+  const groupedTasks = PHASES.reduce((acc, phase) => {
+    acc[phase] = tasks.filter((t) => t.phase === phase);
+    return acc;
+  }, {});
+
+  const currentPhaseTasks = DEFAULT_TASKS[hm.phase] || [];
+  const missingPredefined = currentPhaseTasks.filter(
+    (title) => !tasks.some((t) => t.title.toLowerCase() === title.toLowerCase())
+  );
+
+  const getPhaseHeaderClass = (phase, isCurrent, isPast) => {
+    if (isCurrent) return 'bg-brand-teal/10 border-brand-teal/20 text-brand-teal';
+    if (isPast) return 'bg-slate-100 border-slate-200 text-slate-500 opacity-70';
+    return 'bg-[#f2fff3] border-brand-green/20 text-brand-green';
+  };
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
+
+  const handleSaveNotes = async () => {
+    setNotesSaving(true);
+    await updateNotes(hm.id, notes);
+    setNotesSaving(false);
+    setNotesSaved(true);
+    setTimeout(() => setNotesSaved(false), 2000);
+  };
+
+  const handleToggleTask = (taskId, current) => {
+    toggleTask(hm.id, taskId, !current);
+  };
+
+  const handleAdvancePhase = async () => {
+    if (!nextPhase) return;
+    await updateHealthmatePhase(hm.id, nextPhase);
+  };
+
+  const handleSaveChanges = async () => {
+    if (!editName.trim() || !editCategory.trim()) {
+      return;
+    }
+    const result = await editHealthmateDetails(hm.id, {
+      name: editName.trim(),
+      type: editType,
+      category: editCategory.trim(),
+      contactName: editContactName.trim() || null,
+      contactEmail: editContactEmail.trim() || null,
+      contactPhone: editContactPhone.trim() || null,
+      notes: notes.trim() || null,
+    });
+    if (result && result.success) {
+      toast.success('Partner details updated successfully.');
+      setIsEditing(false);
+    } else {
+      toast.error(result.message || 'Failed to update partner details.');
+    }
+  };
+
+  const handleAddTask = async (e) => {
+    e.preventDefault();
+    if (!newTaskTitle.trim()) return;
+
+    setTaskAdding(true);
+    const result = await createTask(hm.id, newTaskTitle.trim(), hm.phase);
+    setTaskAdding(false);
+
+    if (result && result.success) {
+      setNewTaskTitle('');
+      toast.success('Task added successfully.');
+    } else {
+      toast.error(result.message || 'Failed to add task.');
+    }
+  };
+
+  const handleAddPredefinedTask = async (title) => {
+    await createTask(hm.id, title, hm.phase);
+    toast.success(`Task "${title}" added.`);
+  };
+
+  const handleLoadAllPredefined = async () => {
+    toast.loading('Adding predefined tasks...', { id: 'predefined-toast' });
+    for (const title of missingPredefined) {
+      await createTask(hm.id, title, hm.phase);
+    }
+    toast.success('All predefined tasks added.', { id: 'predefined-toast' });
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size exceeds the 10MB limit.');
+      return;
+    }
+
+    setUploadingDoc(true);
+    toast.loading('Uploading document...', { id: 'upload-toast' });
+    const result = await uploadRegistrationDocument(hm.id, file);
+    setUploadingDoc(false);
+
+    if (result && result.success) {
+      toast.success('Document uploaded and task verified!', { id: 'upload-toast' });
+    } else {
+      toast.error(result.message || 'Failed to upload document.', { id: 'upload-toast' });
+    }
+  };
+
+  const handleDeleteDoc = async () => {
+    if (!window.confirm('Are you sure you want to delete this document? This will remove the file permanently.')) return;
+
+    setDeletingDoc(true);
+    toast.loading('Deleting document...', { id: 'delete-toast' });
+    const result = await deleteRegistrationDocument(hm.id);
+    setDeletingDoc(false);
+
+    if (result && result.success) {
+      toast.success('Document deleted successfully.', { id: 'delete-toast' });
+    } else {
+      toast.error(result.message || 'Failed to delete document.', { id: 'delete-toast' });
+    }
+  };
+
+  /**
+   * Handles both WhatsApp and Email sends.
+   */
+  const handleSendMessage = async (type) => {
+    if (sending[type]) return;                          // guard double-click
+    setSending((prev) => ({ ...prev, [type]: true }));
+    try {
+      await triggerMessage(hm.id, type);
+    } finally {
+      // Always re-enable — toast already shows success/error
+      setSending((prev) => ({ ...prev, [type]: false }));
+    }
+  };
+
+  const handleDeleteHealthmate = async () => {
+    if (!window.confirm(`Are you sure you want to permanently delete onboarding partner "${hm.name}"? This action cannot be undone.`)) {
+      return;
+    }
+    const result = await deleteHealthmate(hm.id);
+    if (result && result.success) {
+      setSelectedHealthmate(null);
+    }
+  };
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-40 bg-[#142b27]/60 backdrop-blur-md"
+        onClick={() => setSelectedHealthmate(null)}
+      />
+
+      {/* Modal panel */}
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-200"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${hm.name} details`}
+      >
+        <div
+          className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#142b27]/10 flex flex-col overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* ── Header ── */}
+          <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-border-leaf/40 shrink-0 bg-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap mb-1">
+                <h2 className="text-text-main font-extrabold text-lg leading-tight truncate">
+                  {hm.name}
+                </h2>
+                <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${PHASE_COLORS[hm.phase]}`}>
+                  {PHASE_LABELS[hm.phase]}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-text-muted/80 text-xs font-semibold">
+                <span>{TYPE_LABELS[hm.type] ?? hm.type}</span>
+                <span>·</span>
+                <span>{hm.category}</span>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-brand-teal animate-pulse" />
+                  {hm.daysInPhase}d in phase
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              {canModify && (
+                <button
+                  onClick={handleDeleteHealthmate}
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl p-1.5 transition-colors"
+                  title="Delete Partner"
+                  aria-label="Delete Partner"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              )}
+              <button
+                onClick={() => setSelectedHealthmate(null)}
+                className="shrink-0 text-text-muted hover:text-text-main hover:bg-slate-100 rounded-xl p-1.5 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* ── Body ── */}
+          <div className="flex-1 overflow-y-auto bg-white">
+            <div className="grid md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-border-leaf/40">
+
+              {/* Left: Contact Info + Notes */}
+              <div className="p-6 space-y-5">
+                {/* Take Over Lock notice */}
+                {!canModify && (
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl p-4 flex flex-col gap-2 shadow-sm animate-in fade-in duration-200">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-amber-700 shrink-0" />
+                      <h4 className="text-amber-800 text-xs font-extrabold uppercase tracking-wider">
+                        Access Locked
+                      </h4>
+                    </div>
+                    <p className="text-amber-900/80 text-xs font-semibold leading-relaxed">
+                      Only the assigned coordinator (<span className="font-extrabold text-amber-800">{hm.opsUser?.name || 'Unassigned'}</span>) or an Administrator can modify this partner.
+                    </p>
+                    <div className="mt-1">
+                      {isPending ? (
+                        <div className="inline-flex items-center gap-1.5 text-amber-700 text-xs font-extrabold bg-amber-100/50 px-3 py-1.5 rounded-xl border border-amber-200/50">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping shrink-0" />
+                          Take over request pending approval...
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => requestTakeover(hm.id)}
+                          className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow-md"
+                        >
+                          Take Over
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider">
+                      Contact Info
+                    </h3>
+                    {!isEditing && canModify && (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-brand-teal hover:text-brand-teal-hover text-xs font-bold flex items-center gap-1 hover:underline"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                        Edit Details
+                      </button>
+                    )}
+                  </div>
+
+                  {isEditing ? (
+                    <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-border-leaf/45">
+                      <div>
+                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Company / Partner Name</label>
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Partner Type</label>
+                        <select
+                          value={editType}
+                          onChange={(e) => setEditType(e.target.value)}
+                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        >
+                          <option value="PRACTITIONER">Practitioner</option>
+                          <option value="CENTRE">Centre</option>
+                          <option value="ORGANIZER">Organizer</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Person Name</label>
+                        <input
+                          type="text"
+                          value={editContactName}
+                          onChange={(e) => setEditContactName(e.target.value)}
+                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Email</label>
+                        <input
+                          type="email"
+                          value={editContactEmail}
+                          onChange={(e) => setEditContactEmail(e.target.value)}
+                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Phone</label>
+                        <input
+                          type="tel"
+                          value={editContactPhone}
+                          onChange={(e) => setEditContactPhone(e.target.value)}
+                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
+                        <input
+                          type="text"
+                          value={editCategory}
+                          onChange={(e) => setEditCategory(e.target.value)}
+                          className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 pt-2">
+                        <button
+                          onClick={handleSaveChanges}
+                          className="bg-brand-teal hover:bg-brand-teal-hover text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-sm"
+                        >
+                          Save Changes
+                        </button>
+                        <button
+                          onClick={() => setIsEditing(false)}
+                          className="bg-white hover:bg-slate-50 text-text-main border border-border-leaf text-xs font-bold px-3 py-2 rounded-xl transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {hm.contactName && (
+                        <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Name" value={hm.contactName} />
+                      )}
+                      <InfoRow
+                        icon={<Mail className="w-4 h-4 text-brand-teal" />}
+                        label="Email"
+                        value={hm.contactEmail || '—'}
+                        muted={!hm.contactEmail}
+                      />
+                      <InfoRow
+                        icon={<Phone className="w-4 h-4 text-brand-teal" />}
+                        label="Phone"
+                        value={hm.contactPhone || '—'}
+                        muted={!hm.contactPhone}
+                      />
+                      <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
+                      <InfoRow
+                        icon={<User className="w-4 h-4 text-brand-teal" />}
+                        label="Assignee"
+                        value={
+                          <span className="flex items-center gap-1.5 font-extrabold text-text-main">
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${hm.opsUser?.isOnline ? 'bg-brand-green' : 'bg-red-400'}`} />
+                            {hm.opsUser?.name || 'Unassigned'}
+                          </span>
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider mb-3">
+                    Internal Notes
+                  </h3>
+                  <textarea
+                    ref={textareaRef}
+                    value={notes}
+                    onChange={(e) => { setNotes(e.target.value); setNotesSaved(false); }}
+                    placeholder={canModify ? "Add internal notes about this partner…" : "Only the assignee can edit notes…"}
+                    disabled={!canModify}
+                    rows={5}
+                    className="w-full bg-slate-50 border border-border-leaf/70 text-text-main placeholder-text-muted/40
+                               rounded-2xl px-4 py-3 text-sm font-medium resize-none
+                               focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal
+                               transition-all duration-200"
+                  />
+                  {canModify && (
+                    <div className="flex items-center justify-between mt-2">
+                      <span className={`text-xs font-bold transition-all ${notesSaved ? 'text-brand-green' : 'text-transparent'}`}>
+                        ✓ Saved
+                      </span>
+                      <button
+                        onClick={handleSaveNotes}
+                        disabled={notesSaving}
+                        className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50
+                                   text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+                      >
+                        {notesSaving
+                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          : <Save className="w-3.5 h-3.5" />
+                        }
+                        {notesSaving ? 'Saving…' : 'Save Notes'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: Task Checklist */}
+              <div className="p-6 bg-slate-50/30 flex flex-col min-h-0">
+                <div className="flex items-center justify-between mb-3 shrink-0">
+                  <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider">
+                    Tasks
+                  </h3>
+                  {tasks.length > 0 && (
+                    <span className="text-text-muted text-xs font-bold">{doneTasks}/{tasks.length} complete</span>
+                  )}
+                </div>
+
+                {/* Inline custom task form */}
+                {canModify && (
+                  <form onSubmit={handleAddTask} className="flex gap-2 mb-4 shrink-0">
+                    <input
+                      type="text"
+                      value={newTaskTitle}
+                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                      disabled={taskAdding}
+                      placeholder="Add custom operational task..."
+                      className="flex-1 bg-white border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                    />
+                    <button
+                      type="submit"
+                      disabled={taskAdding || !newTaskTitle.trim()}
+                      className="bg-brand-teal hover:bg-brand-teal-hover disabled:bg-slate-100 disabled:text-text-muted/40 disabled:border-transparent text-white font-extrabold text-xs px-4 py-2 rounded-xl transition-all border border-transparent shadow-sm shrink-0"
+                    >
+                      Add
+                    </button>
+                  </form>
+                )}
+
+                <div className="flex-1 overflow-y-auto min-h-0 pr-1 -mr-2 space-y-4">
+                  {tasks.length === 0 ? (
+                    <div className="space-y-4">
+                      <div className="flex flex-col items-center justify-center h-28 border border-dashed border-border-leaf rounded-2xl bg-white/50">
+                        <p className="text-text-muted/50 text-xs font-bold">No active tasks</p>
+                      </div>
+
+                      {canModify && missingPredefined.length > 0 && (
+                        <div className="space-y-2 border border-brand-teal/20 bg-brand-teal/5 p-3 rounded-2xl">
+                          <div className="flex items-center justify-between px-1">
+                            <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider">
+                              💡 Predefined {PHASE_LABELS[hm.phase]} Tasks
+                            </span>
+                            <button
+                              onClick={handleLoadAllPredefined}
+                              className="text-[9px] bg-brand-teal hover:bg-brand-teal-hover text-white font-extrabold px-2 py-0.5 rounded-md transition-all shadow-sm"
+                            >
+                              + Add All
+                            </button>
+                          </div>
+                          <ul className="space-y-1.5">
+                            {missingPredefined.map((title) => (
+                              <li key={title}>
+                                <button
+                                  onClick={() => handleAddPredefinedTask(title)}
+                                  className="w-full flex items-center justify-between p-2 rounded-xl bg-white hover:bg-slate-50 border border-border-leaf/30 text-left transition-all group shadow-sm hover:shadow"
+                                >
+                                  <span className="text-xs font-bold text-text-main truncate pr-2">{title}</span>
+                                  <span className="text-brand-teal font-extrabold text-xs px-1.5 py-0.5 rounded-md bg-brand-teal/10 group-hover:bg-brand-teal group-hover:text-white transition-colors shrink-0">+ Add</span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {/* Overall progress bar */}
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden border border-slate-200/50 shrink-0">
+                        <div
+                          className="h-full bg-brand-green rounded-full transition-all duration-500"
+                          style={{ width: `${(doneTasks / tasks.length) * 100}%` }}
+                        />
+                      </div>
+
+                      {/* Map through PHASES in sequential order to render task sections */}
+                      {PHASES.map((phase, idx) => {
+                        const phaseTasks = groupedTasks[phase] || [];
+                        if (phaseTasks.length === 0) return null;
+
+                        const isCurrent = phase === hm.phase;
+                        const isPast    = idx < currentIndex;
+                        const isUpcoming = !isCurrent && !isPast;
+
+                        return (
+                          <div key={phase} className="space-y-1.5 border border-border-leaf/25 bg-slate-50/20 p-3 rounded-2xl">
+                            {/* Phase Section Header */}
+                            <div className={`flex items-center justify-between px-3 py-1 rounded-lg border text-[10px] font-extrabold tracking-wide uppercase shrink-0 ${getPhaseHeaderClass(phase, isCurrent, isPast)}`}>
+                              <span>{PHASE_LABELS[phase]} Tasks</span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.25 rounded-md bg-white/60 border border-current/25">
+                                {isCurrent ? 'Current' : isPast ? 'Past' : 'Upcoming'}
+                              </span>
+                            </div>
+
+                            {/* Checklist list */}
+                            <ul className="space-y-1.5">
+                              {phaseTasks.map((task) => (
+                                <li key={task.id} className="space-y-1">
+                                  <button
+                                    onClick={() => handleToggleTask(task.id, task.completed)}
+                                    disabled={isUpcoming || !canModify}
+                                    className={`w-full flex items-start gap-2.5 p-2 rounded-xl border border-transparent transition-all text-left group
+                                      ${isUpcoming || !canModify
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'hover:bg-white hover:shadow-sm hover:border-border-leaf/40'
+                                      }`}
+                                  >
+                                    {task.completed
+                                      ? <CheckSquare className="w-4.5 h-4.5 text-brand-teal shrink-0 mt-0.5" />
+                                      : <Square className={`w-4.5 h-4.5 text-text-muted/40 shrink-0 mt-0.5 transition-colors ${!isUpcoming && 'group-hover:text-brand-teal/60'}`} />
+                                    }
+                                    <span className={`text-xs leading-snug font-bold transition-all ${
+                                      task.completed ? 'line-through text-text-muted/50' : 'text-text-main'
+                                    }`}>
+                                      {task.title}
+                                    </span>
+                                  </button>
+
+                                  {/* Document Upload / View for Register Phase Task */}
+                                  {task.title.toLowerCase().includes("business registration registry copy") && (
+                                    <div className="pl-7 pb-2 pt-0.5 flex flex-wrap items-center gap-2">
+                                      {hm.regDocUrl ? (
+                                        <>
+                                          <a
+                                            href={`http://localhost:3001${hm.regDocUrl}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-[10px] font-extrabold text-brand-teal hover:text-brand-teal-hover bg-brand-teal/5 hover:bg-brand-teal/10 px-2.5 py-1.5 rounded-lg border border-brand-teal/20 transition-all"
+                                          >
+                                            View Document
+                                          </a>
+                                          {canModify && (
+                                            <>
+                                              <button
+                                                onClick={() => fileInputRef.current?.click()}
+                                                disabled={uploadingDoc || deletingDoc || isUpcoming}
+                                                className="text-[10px] font-extrabold text-text-muted hover:text-text-main transition-colors px-2 py-1 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                                              >
+                                                Re-upload
+                                              </button>
+                                              <button
+                                                onClick={handleDeleteDoc}
+                                                disabled={uploadingDoc || deletingDoc || isUpcoming}
+                                                className="text-[10px] font-extrabold text-red-500 hover:text-red-600 transition-colors px-2 py-1 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                                              >
+                                                Delete
+                                              </button>
+                                            </>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <button
+                                          onClick={() => fileInputRef.current?.click()}
+                                          disabled={uploadingDoc || isUpcoming}
+                                          className="inline-flex items-center gap-1 text-[10px] font-extrabold text-white bg-brand-teal hover:bg-brand-teal-hover px-2.5 py-1.5 rounded-lg transition-all shadow-sm shadow-brand-teal/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-300"
+                                        >
+                                          Upload Document
+                                        </button>
+                                      )}
+
+                                      <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        className="hidden"
+                                      />
+
+                                      {hm.regDocName && (
+                                        <span className="text-[10px] font-bold text-text-muted/70 truncate max-w-[150px]">
+                                          ({hm.regDocName})
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })}
+
+                      {/* Suggestions list at the bottom if some standard tasks are missing */}
+                      {canModify && missingPredefined.length > 0 && (
+                        <div className="space-y-2 border border-brand-teal/20 bg-brand-teal/5 p-3 rounded-2xl shrink-0 mt-2">
+                          <div className="flex items-center justify-between px-1">
+                            <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider">
+                              💡 Predefined {PHASE_LABELS[hm.phase]} Tasks
+                            </span>
+                            <button
+                              onClick={handleLoadAllPredefined}
+                              className="text-[9px] bg-brand-teal hover:bg-brand-teal-hover text-white font-extrabold px-2 py-0.5 rounded-md transition-all shadow-sm"
+                            >
+                              + Add All
+                            </button>
+                          </div>
+                          <ul className="space-y-1.5">
+                            {missingPredefined.map((title) => (
+                              <li key={title}>
+                                <button
+                                  onClick={() => handleAddPredefinedTask(title)}
+                                  className="w-full flex items-center justify-between p-2 rounded-xl bg-white hover:bg-slate-50 border border-border-leaf/30 text-left transition-all group shadow-sm hover:shadow"
+                                >
+                                  <span className="text-xs font-bold text-text-main truncate pr-2">{title}</span>
+                                  <span className="text-brand-teal font-extrabold text-xs px-1.5 py-0.5 rounded-md bg-brand-teal/10 group-hover:bg-brand-teal group-hover:text-white transition-colors shrink-0">+ Add</span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Footer: Actions ── */}
+          <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border-leaf/40 bg-slate-50 shrink-0 flex-wrap">
+
+            {/* Communication buttons */}
+            <div className="flex items-center gap-2.5">
+              {/* WhatsApp */}
+              <button
+                onClick={() => handleSendMessage('WHATSAPP')}
+                disabled={sending.WHATSAPP || !canModify}
+                className="flex items-center gap-2 bg-white hover:bg-brand-green/5 border border-border-leaf/80
+                           disabled:opacity-50 disabled:cursor-not-allowed
+                           text-text-main text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow"
+                title={!canModify ? 'Only the assignee can send messages' : hm.contactPhone ? `Send to ${hm.contactPhone}` : 'No phone number on file'}
+              >
+                {sending.WHATSAPP
+                  ? <Loader2 className="w-4 h-4 animate-spin text-brand-green" />
+                  : <MessageCircle className="w-4 h-4 text-brand-green" />
+                }
+                {sending.WHATSAPP ? 'Queuing…' : 'WhatsApp'}
+              </button>
+
+              {/* Email */}
+              <button
+                onClick={() => handleSendMessage('EMAIL')}
+                disabled={sending.EMAIL || !canModify}
+                className="flex items-center gap-2 bg-white hover:bg-brand-teal/5 border border-border-leaf/80
+                           disabled:opacity-50 disabled:cursor-not-allowed
+                           text-text-main text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow"
+                title={!canModify ? 'Only the assignee can send messages' : hm.contactEmail ? `Send to ${hm.contactEmail}` : 'No email address on file'}
+              >
+                {sending.EMAIL
+                  ? <Loader2 className="w-4 h-4 animate-spin text-brand-teal" />
+                  : <Send className="w-4 h-4 text-brand-teal" />
+                }
+                {sending.EMAIL ? 'Queuing…' : 'Email'}
+              </button>
+            </div>
+
+            {/* Advance phase */}
+            {nextPhase ? (
+              <button
+                onClick={handleAdvancePhase}
+                disabled={!canModify}
+                className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 disabled:cursor-not-allowed
+                           text-white text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all"
+              >
+                Advance to {PHASE_LABELS[nextPhase]}
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <span className="text-brand-green text-sm font-extrabold flex items-center gap-1.5 px-3 py-1 bg-brand-green/10 border border-brand-green/20 rounded-full">
+                ✓ Partner is Live
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── InfoRow helper ───────────────────────────────────────────────────────────
+
+function InfoRow({ icon, label, value, muted }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-text-muted/40 shrink-0">{icon}</span>
+      <span className="text-text-muted/70 text-xs font-bold w-12 shrink-0">{label}</span>
+      <span className={`text-sm font-extrabold truncate ${muted ? 'text-text-muted/40 italic' : 'text-text-main'}`}>
+        {value}
+      </span>
+    </div>
+  );
+}

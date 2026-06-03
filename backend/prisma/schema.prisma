@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Phase {
+  PRE_QUALIFY
+  PREPARE
+  REGISTER
+  REVIEW
+  LIVE
+}
+
+enum HealthmateType {
+  PRACTITIONER
+  CENTRE
+  ORGANIZER
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model OpsUser {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  name         String
+  role         String      @default("ops") // e.g. "ops", "admin"
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // An OpsUser can own many Healthmates
+  healthmates  Healthmate[]
+}
+
+model Healthmate {
+  id          String         @id @default(uuid())
+  name        String
+  type        HealthmateType
+  category    String         // e.g. "Yoga", "Physiotherapy", "Wellness"
+  phase       Phase          @default(PRE_QUALIFY)
+  daysInPhase Int            @default(0)
+
+  // Contact info
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+
+  // Internal notes for ops team
+  notes        String?
+
+  // Document upload
+  regDocUrl    String?
+  regDocName   String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  opsUserId   String
+  opsUser     OpsUser  @relation(fields: [opsUserId], references: [id])
+  tasks       Task[]
+}
+
+model Task {
+  id           String     @id @default(uuid())
+  title        String
+  completed    Boolean    @default(false)
+  dueDate      DateTime?
+  phase        Phase      // The phase this task belongs to
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relationships
+  healthmateId String
+  healthmate   Healthmate @relation(fields: [healthmateId], references: [id], onDelete: Cascade)
+}

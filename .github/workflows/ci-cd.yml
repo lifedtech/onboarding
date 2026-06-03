@@ -1,0 +1,112 @@
+name: Continuous Integration & Deployment Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # ─── Job 1: Build & Static Analysis Verification ───────────────────────────
+  build-and-test:
+    name: Build & Test Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      # --- Validate Backend Services ---
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Generate Prisma Client Models
+        working-directory: ./backend
+        run: npx prisma generate
+
+      # --- Validate Frontend Services ---
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Frontend Application (Vite Build Check)
+        working-directory: ./frontend
+        run: npm run build
+
+  # ─── Job 2: Docker Composition Build Verification ───────────────────────────
+  docker-build:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Verify Docker Compose Build
+        run: docker compose build
+
+      # ========================================================================
+      # PRODUCTION REGISTRY RELEASE HOOKS
+      #
+      # The following sections represent placeholders and examples for publishing 
+      # built containers to a live image registry (such as Docker Hub or AWS ECR) 
+      # and triggering blue-green/rolling deployments.
+      # ========================================================================
+      
+      # Example 1: Log in to Docker Hub and Push Images
+      #
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      #
+      # - name: Build and Push Backend Container Image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: ./backend
+      #     push: true
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/lifed-backend:latest
+      #
+      # - name: Build and Push Frontend Container Image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: ./frontend
+      #     push: true
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/lifed-frontend:latest
+      #     build-args: |
+      #       VITE_API_URL=https://api.lifedhealth.com/api
+
+      # Example 2: AWS ECR Deployment
+      #
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+      #
+      # - name: Log in to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2
+      #
+      # - name: Build, tag, and push image to Amazon ECR
+      #   env:
+      #     REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #   run: |
+      #     docker build -t $REGISTRY/lifed-backend:latest ./backend
+      #     docker push $REGISTRY/lifed-backend:latest

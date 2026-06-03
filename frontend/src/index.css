@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Roboto", sans-serif;
+  --color-brand-teal: #00ad9c;
+  --color-brand-teal-hover: #009b8b;
+  --color-brand-green: #5fba46;
+  --color-brand-green-hover: #52a33c;
+  --color-bg-mint: #f2fff3;
+  --color-bg-base: #f8fcf9;
+  --color-text-main: #142b27;
+  --color-text-muted: #4e6561;
+  --color-border-leaf: #d3ebd7;
+}
+
+@layer base {
+  body {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    background-color: #f8fcf9;
+    color: #142b27;
+  }
+}
+
+/* Disable all pulsing, blinking, pinging, and bouncing animations to make everything static */
+.animate-pulse {
+  animation: none !important;
+}
+
+.animate-ping {
+  animation: none !important;
+  display: none !important;
+}
+
+.animate-bounce {
+  animation: none !important;
+  transform: none !important;
+}
