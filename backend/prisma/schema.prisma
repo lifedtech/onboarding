@@ -25,6 +25,12 @@ enum HealthmateType {
   ORGANIZER
 }
 
+enum RegistrationStatus {
+  PENDING
+  VERIFIED
+  ESCALATED
+}
+
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model OpsUser {
@@ -64,6 +70,17 @@ model Healthmate {
   screeningRemarks String?
   screeningQueries String?
   recallReminder   DateTime?
+
+  // Program Details & R&D Review
+  programTitle       String?
+  programStartDate   DateTime?
+  programEndDate     DateTime?
+  programStatus      String?   @default("PENDING") // e.g. "PENDING", "APPROVED"
+  programApprovedMsg String?
+
+  // R&D Credentials Verification & Phase Lock
+  registrationStatus RegistrationStatus @default(PENDING)
+  registrationRemark String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

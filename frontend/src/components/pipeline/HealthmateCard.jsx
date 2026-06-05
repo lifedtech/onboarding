@@ -70,7 +70,7 @@ export default function HealthmateCard({ healthmate }) {
       onClick={handleClick}
       className={`
         group bg-white border rounded-2xl p-4 cursor-grab active:cursor-grabbing
-        select-none touch-none
+        select-none touch-none relative overflow-hidden
         transition-all duration-200
         ${isDragging
           ? 'border-brand-teal shadow-xl shadow-brand-teal/10 opacity-60 scale-105 z-20'
@@ -78,6 +78,18 @@ export default function HealthmateCard({ healthmate }) {
         }
       `}
     >
+      {/* R&D Credential Status Bar */}
+      <div 
+        className={`absolute top-0 left-0 right-0 h-1.5 ${
+          healthmate.registrationStatus === 'VERIFIED'
+            ? 'bg-brand-green'
+            : healthmate.registrationStatus === 'ESCALATED'
+              ? 'bg-red-500 animate-pulse'
+              : 'bg-slate-300'
+        }`} 
+        title={`R&D Credentials: ${healthmate.registrationStatus || 'PENDING'}`} 
+      />
+
       {/* Name + type badge */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <h3 className="text-text-main font-extrabold text-sm leading-snug line-clamp-2 transition-colors group-hover:text-brand-teal">

@@ -178,13 +178,16 @@ backend/
 │   │   ├── auth.controller.js
 │   │   ├── healthmate.controller.js
 │   │   ├── task.controller.js
-│   │   └── user.controller.js
+│   │   ├── user.controller.js
+│   │   └── webhook.controller.js # Webhook endpoint transitions & statuses
 │   ├── middleware/            # JWT verification & upload rules
 │   │   ├── auth.middleware.js
-│   │   └── upload.js
+│   │   ├── upload.js
+│   │   └── verifyRdSignature.js  # Webhook signature verification
 │   ├── routes/                # Endpoint controllers router
 │   │   └── api.routes.js
 │   ├── services/              # Third-party integrations
+│   │   ├── credential.service.js # Auto credential provisioning service
 │   │   ├── email.service.js
 │   │   ├── queue.service.js
 │   │   └── whatsapp.service.js
@@ -202,8 +205,14 @@ backend/
 * Automatically initialises the **BullMQ Message Worker** in a resilient `try/catch` wrapper. If Redis is unavailable, the main REST API remains active, degrading background queues gracefully.
 
 ### Routing Layer (`api.routes.js`)
-Endpoints are classified as Public or Protected (requiring JWT verification):
-* **Public**: `/auth/register`, `/auth/login`
+Endpoints are classified as Public, Protected (requiring JWT verification), or Signature Protected:
+* **Public**: `/auth/register`, `/auth/login`, `/rnd/verify-credentials`
+* **Signature Protected** (via `verifyRdSignature` HMAC-SHA256 middleware):
+  * **Webhooks**: 
+    * `POST /webhooks/registration-submitted` - Transitions partner stage to `REGISTER`.
+    * `POST /webhooks/verification-completed` - Marks credentials `VERIFIED` and provisions dashboard logins.
+    * `POST /webhooks/program-submitted` - Stores program details and transitions stage to `REVIEW`.
+    * `POST /webhooks/program-status` - Updates R&D program approval status & remarks.
 * **Protected** (via `authenticate` middleware):
   * **Analytics**: `GET /analytics/summary`
   * **Healthmates**: `GET /healthmates`, `POST /healthmates`, `PATCH /healthmates/:id/phase`, `DELETE /healthmates/:id`
@@ -250,6 +259,7 @@ The application utilizes state-of-the-art authentication guardrails:
     data: { opsUserId: executingAdminId },
   });
   ```
+* **Webhook HMAC Signature Verification**: Public webhook endpoints exposed to the R&D team are protected using a shared secret HMAC-SHA256 signature scheme rather than JWT tokens. The incoming `X-RD-Signature` header is verified against the computed HMAC signature of the parsed request body, ensuring payload integrity and origin authenticity. Secure timing-attack comparisons are enforced using `crypto.timingSafeEqual`.
 
 ---
 
@@ -409,6 +419,7 @@ To prevent long-running tasks (like email or SMS generation) from blocking clien
   });
   ```
   This keeps the server responsive even when Redis is offline.
+* **Webhook & Notification Offline Fallbacks**: In our credential provisioning service, we check the Redis status (`redisConnection.status === 'ready'`) before attempting to enqueue jobs. If Redis is down, we immediately degrade gracefully by sending the email and WhatsApp notifications directly via SendGrid/Twilio API drivers (or fallback to simulated console logs), preventing incoming webhooks from hanging or timing out.
 
 ---
 
@@ -433,11 +444,14 @@ Here is the step-by-step lifecycle of a partner moving through the onboarding pl
 
 1. **Invitation**: An admin adds a new team member. A hashed password is created, and the user is saved to PostgreSQL.
 2. **Creation**: An ops agent logs in, opens the modal, and creates a `Healthmate` profile (which defaults to the `PRE_QUALIFY` phase).
-3. **Task Checklist**: When the card is opened, stage-specific tasks are rendered. Agents toggle checkboxes to update task status in real time.
-4. **Document Upload**: During the `REGISTER` phase, a verified PDF/Image document is uploaded to the Express backend via `multer`.
-5. **Stage Progression**: The agent drags the card from `REGISTER` to `REVIEW`. This updates the database, resets `daysInPhase` to `0`, and triggers a confirmation toast.
-6. **Communication**: Clicking the email button queues a task in BullMQ. The background worker hydrates the stage-specific template and sends the email without blocking the UI.
-7. **Deletion Safety**: If an admin deletes a team member, the database cascades and automatically transfers all active partners to the active admin.
+3. **Registration Submission (Webhook Automated)**: Alternatively, when the client submits a registration form, an incoming webhook `POST /api/webhooks/registration-submitted` transitions them automatically to the `REGISTER` phase and seeds tasks.
+4. **Task Checklist**: When the card is opened, stage-specific tasks are rendered. Agents toggle checkboxes to update task status in real time.
+5. **Document Upload**: During the `REGISTER` phase, a verified PDF/Image document is uploaded to the Express backend via `multer`.
+6. **Credential Verification (Webhook / API Automated)**: When R&D verifies qualifications, a webhook `POST /api/webhooks/verification-completed` (or the `/api/rnd/verify-credentials` endpoint) is hit, changing `registrationStatus` to `VERIFIED`. This immediately invokes the credential provisioning service to generate randomized credentials and dispatch them to the client's email and WhatsApp.
+7. **Program Submission (Webhook Automated)**: When the client submits program details from their dashboard, a webhook `POST /api/webhooks/program-submitted` fires, automatically setting the partner's phase to `REVIEW`.
+8. **Program Review (Webhook / API Automated)**: The R&D team reviews program details. They push status updates (`APPROVED` or `CORRECTION_REQUIRED`) and review remarks directly to the Ops software via `POST /api/webhooks/program-status`.
+9. **Stage Progression**: The coordinator completes any remaining tasks and moves the healthmate to `LIVE` phase.
+10. **Deletion Safety**: If an admin deletes a team member, the database cascades and automatically transfers all active partners to the active admin.
 
 ---
 

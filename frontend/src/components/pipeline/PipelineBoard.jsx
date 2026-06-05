@@ -89,6 +89,11 @@ export default function PipelineBoard() {
 
     if (!targetPhase || activePhase === targetPhase) return;
 
+    // Gatekeeper check: block optimistic drag over to REVIEW if not verified
+    if (targetPhase === 'REVIEW' && healthmate?.registrationStatus !== 'VERIFIED') {
+      return;
+    }
+
     // Optimistically move the card to the new column
     setLocalHealthmates((prev) =>
       prev.map((hm) =>
@@ -121,6 +126,13 @@ export default function PipelineBoard() {
       : getPhaseForHealthmate(overId);
 
     if (!targetPhase) return;
+
+    // Gatekeeper check: block drop into REVIEW if not verified
+    if (targetPhase === 'REVIEW' && healthmate?.registrationStatus !== 'VERIFIED') {
+      toast.error("Movement Blocked: Credentials Pending R&D Verification.");
+      handleDragCancel();
+      return;
+    }
 
     if (activePhase !== targetPhase) {
       // Phase changed — persist to backend (store handles optimistic update too)

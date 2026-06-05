@@ -124,4 +124,63 @@ const getPendingTasks = async (req, res) => {
   }
 };
 
-module.exports = { toggleTask, createTask, getPendingTasks };
+/**
+ * PATCH /api/tasks/:taskId
+ * Updates details of a task (title, dueDate, completed, phase).
+ */
+const updateTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { title, dueDate, completed, phase } = req.body;
+
+  try {
+    const task = await prisma.task.findUnique({
+      where: { id: taskId },
+      include: { healthmate: true },
+    });
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found.' });
+    }
+
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
+    if (!isAdmin && task.healthmate.opsUserId !== req.user.id) {
+      return res.status(403).json({
+        message: 'Access Denied: Only the assigned Operations coordinator or an Administrator can modify tasks for this partner.'
+      });
+    }
+
+    const updated = await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        ...(title !== undefined && { title }),
+        ...(dueDate !== undefined && { dueDate: dueDate ? new Date(dueDate) : null }),
+        ...(completed !== undefined && { completed }),
+        ...(phase !== undefined && { phase }),
+      },
+      include: {
+        healthmate: {
+          select: {
+            name: true,
+            type: true,
+            phase: true,
+            opsUser: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(updated);
+  } catch (error) {
+    console.error('[updateTask]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+module.exports = { toggleTask, createTask, getPendingTasks, updateTask };
+

@@ -66,4 +66,23 @@ async function enqueueMessage(type, healthmateId, payload = {}) {
   return job;
 }
 
-module.exports = { enqueueMessage, getRedisConnection, getMessageQueue };
+/**
+ * Adds a registration SLA job to the queue with a 24-hour delay.
+ *
+ * @param {string} healthmateId
+ * @returns {Promise<Job>}
+ */
+async function enqueueRegistrationSLA(healthmateId) {
+  const queue = getMessageQueue();
+
+  const job = await queue.add(
+    `registrationSLA-${healthmateId}`,
+    { type: 'REGISTRATION_SLA', healthmateId },
+    { delay: 24 * 60 * 60 * 1000 } // 24 hours in milliseconds
+  );
+
+  console.log(`[Queue] Job ${job.id} enqueued — type: REGISTRATION_SLA, healthmate: ${healthmateId}`);
+  return job;
+}
+
+module.exports = { enqueueMessage, enqueueRegistrationSLA, getRedisConnection, getMessageQueue };

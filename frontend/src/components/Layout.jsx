@@ -9,7 +9,8 @@ import {
   X,
   Users,
   LifeBuoy,
-  Wrench
+  Wrench,
+  Calendar
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
@@ -18,7 +19,9 @@ const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, href: 'dashboard' },
   { label: 'Pipeline',  icon: GitBranch,       href: 'pipeline'  },
   { label: 'My Tasks',  icon: CheckSquare,      href: 'tasks'     },
+  { label: 'Calendar',  icon: Calendar,        href: 'calendar'  },
 ];
+
 
 export default function Layout({ children, activePage, onNavigate }) {
   const user   = useOpsStore((s) => s.user);

@@ -11,6 +11,7 @@ import MyTasks from './components/dashboard/MyTasks';
 import Support from './components/Support';
 import SupportDashboard from './components/dashboard/SupportDashboard';
 import useOpsStore from './store/useOpsStore';
+import CalendarView from './components/dashboard/CalendarView';
 
 // ─── Page registry ────────────────────────────────────────────────────────────
 
@@ -18,10 +19,12 @@ const PAGES = {
   dashboard: <DashboardOverview />,
   pipeline:  <PipelineBoard />,
   tasks:     <MyTasks />,
+  calendar:  <CalendarView />,
   team:      <TeamManagement />,
   support:   <Support />,
   support_dashboard: <SupportDashboard />,
 };
+
 
 // ─── Authenticated workspace ──────────────────────────────────────────────────
 

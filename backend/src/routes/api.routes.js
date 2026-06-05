@@ -7,18 +7,34 @@ const {
   getAllHealthmates, createHealthmate,
   updateHealthmate, updateHealthmatePhase,
   updateNotes, deleteHealthmate, updateHealthmateDetails,
-  uploadRegistrationDocument, deleteRegistrationDocument
+  uploadRegistrationDocument, deleteRegistrationDocument,
+  rndVerifyCredentials
 } = require('../controllers/healthmate.controller');
-const { toggleTask, createTask, getPendingTasks }                   = require('../controllers/task.controller');
+const { toggleTask, createTask, getPendingTasks, updateTask }                   = require('../controllers/task.controller');
 const { triggerMessage }                           = require('../controllers/message.controller');
 const { getDashboardSummary }                      = require('../controllers/analytics.controller');
 const { getTeamMembers, createTeamMember, deleteTeamMember, heartbeat }         = require('../controllers/user.controller');
+
+const verifyRdSignature = require('../middleware/verifyRdSignature');
+const {
+  handleRegistrationSubmission,
+  handleVerificationCompletion,
+  handleProgramSubmission,
+  handleProgramStatus
+} = require('../controllers/webhook.controller');
 
 const router = Router();
 
 // ─── Public ───────────────────────────────────────────────────────────────────
 router.post('/auth/register', register);
 router.post('/auth/login',    login);
+router.post('/rnd/verify-credentials', rndVerifyCredentials);
+
+// Webhooks (Signature Protected)
+router.post('/webhooks/registration-submitted', verifyRdSignature, handleRegistrationSubmission);
+router.post('/webhooks/verification-completed', verifyRdSignature, handleVerificationCompletion);
+router.post('/webhooks/program-submitted',      verifyRdSignature, handleProgramSubmission);
+router.post('/webhooks/program-status',         verifyRdSignature, handleProgramStatus);
 
 // ─── Protected ────────────────────────────────────────────────────────────────
 router.use(authenticate);
@@ -40,6 +56,7 @@ router.delete('/healthmates/:id',           deleteHealthmate);
 // Tasks
 router.post('/healthmates/:id/tasks',       createTask);
 router.patch('/tasks/:taskId/toggle',       toggleTask);
+router.patch('/tasks/:taskId',              updateTask);
 router.get('/tasks/pending',                getPendingTasks);
 
 const { requestTakeover, getPendingTakeovers, decideTakeover } = require('../controllers/takeover.controller');

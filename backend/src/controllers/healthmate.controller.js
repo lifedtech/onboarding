@@ -124,6 +124,15 @@ const updateHealthmatePhase = async (req, res) => {
       });
     }
 
+    // Backend Gatekeeper Lock: REGISTER -> REVIEW phase transition requires VERIFIED registration status
+    if (existing.phase === 'REGISTER' && phase === 'REVIEW') {
+      if (existing.registrationStatus !== 'VERIFIED') {
+        return res.status(400).json({
+          message: 'Cannot move to Review phase until R&D has verified registration credentials.'
+        });
+      }
+    }
+
     await prisma.healthmate.update({
       where: { id },
       data: {
@@ -177,7 +186,8 @@ const updateHealthmate = async (req, res) => {
   const { id } = req.params;
   const {
     name, category, contactName, contactEmail, contactPhone, opsUserId,
-    screeningRemarks, screeningQueries, recallReminder
+    screeningRemarks, screeningQueries, recallReminder,
+    programTitle, programStartDate, programEndDate, programStatus, programApprovedMsg
   } = req.body;
   const isAdmin = req.user.role?.toLowerCase() === 'admin';
 
@@ -208,6 +218,11 @@ const updateHealthmate = async (req, res) => {
         ...(screeningRemarks !== undefined && { screeningRemarks }),
         ...(screeningQueries !== undefined && { screeningQueries }),
         ...(recallReminder !== undefined && { recallReminder: recallReminder ? new Date(recallReminder) : null }),
+        ...(programTitle !== undefined && { programTitle }),
+        ...(programStartDate !== undefined && { programStartDate: programStartDate ? new Date(programStartDate) : null }),
+        ...(programEndDate !== undefined && { programEndDate: programEndDate ? new Date(programEndDate) : null }),
+        ...(programStatus !== undefined && { programStatus }),
+        ...(programApprovedMsg !== undefined && { programApprovedMsg }),
       },
       include: {
         tasks: true,
@@ -447,11 +462,25 @@ const uploadRegistrationDocument = async (req, res) => {
     const regDocUrl = `/uploads/${req.file.filename}`;
     const regDocName = req.file.originalname;
 
-    // Update partner document URL
+    // Update partner document URL and set status back to PENDING
     await prisma.healthmate.update({
       where: { id },
-      data: { regDocUrl, regDocName }
+      data: { 
+        regDocUrl, 
+        regDocName,
+        registrationStatus: 'PENDING'
+      }
     });
+
+    // When documents are submitted in the REGISTER phase, trigger BullMQ job with 24-hour delay
+    if (existing.phase === 'REGISTER') {
+      try {
+        const { enqueueRegistrationSLA } = require('../services/queue.service');
+        await enqueueRegistrationSLA(id);
+      } catch (qErr) {
+        console.error('[uploadRegistrationDocument] Failed to enqueue SLA job:', qErr);
+      }
+    }
 
     // Auto-complete the registration task
     const regTask = await prisma.task.findFirst({
@@ -567,6 +596,72 @@ const deleteRegistrationDocument = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/rnd/verify-credentials
+ * Updates the Healthmate's registration credentials status to VERIFIED and saves their remark.
+ */
+const rndVerifyCredentials = async (req, res) => {
+  const { healthmateId, id, remark, registrationRemark } = req.body;
+  const targetId = healthmateId || id;
+  const targetRemark = remark || registrationRemark || '';
+
+  if (!targetId) {
+    return res.status(400).json({ message: 'healthmateId is required.' });
+  }
+
+  try {
+    const existing = await prisma.healthmate.findUnique({
+      where: { id: targetId },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ message: 'Healthmate not found.' });
+    }
+
+    const updated = await prisma.healthmate.update({
+      where: { id: targetId },
+      data: {
+        registrationStatus: 'VERIFIED',
+        registrationRemark: targetRemark
+      },
+      include: {
+        tasks: {
+          orderBy: { createdAt: 'asc' },
+        },
+        opsUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      }
+    });
+
+    // Auto-generate and provision client dashboard credentials
+    try {
+      const { provisionClientCredentials } = require('../services/credential.service');
+      await provisionClientCredentials(updated);
+    } catch (credError) {
+      console.error('[rndVerifyCredentials] Webhook / Credential provisioning failed:', credError);
+    }
+
+    const { isUserOnline } = require('../services/presence.service');
+    const responseData = {
+      ...updated,
+      opsUser: updated.opsUser ? {
+        ...updated.opsUser,
+        isOnline: isUserOnline(updated.opsUser.id)
+      } : null
+    };
+
+    return res.status(200).json(responseData);
+  } catch (error) {
+    console.error('[rndVerifyCredentials]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
 module.exports = {
   getAllHealthmates,
   createHealthmate,
@@ -577,4 +672,5 @@ module.exports = {
   updateHealthmateDetails,
   uploadRegistrationDocument,
   deleteRegistrationDocument,
+  rndVerifyCredentials,
 };

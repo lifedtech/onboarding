@@ -99,8 +99,10 @@ const useOpsStore = create((set, get) => ({
         selectedHealthmate:
           state.selectedHealthmate?.id === id ? data : state.selectedHealthmate,
       }));
-    } catch {
-      set({ healthmates: previous, error: 'Failed to update phase. Please try again.' });
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update phase. Please try again.';
+      set({ healthmates: previous, error: message });
+      toast.error(message);
     }
   },
 
@@ -149,6 +151,22 @@ const useOpsStore = create((set, get) => ({
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to add partner enquiry.';
       set({ isLoading: false });
+      return { success: false, message };
+    }
+  },
+
+  verifyCredentials: async (healthmateId, remark) => {
+    try {
+      const { data } = await api.post('/rnd/verify-credentials', { healthmateId, remark });
+      set((state) => ({
+        healthmates: replaceHealthmate(state.healthmates, data),
+        selectedHealthmate:
+          state.selectedHealthmate?.id === healthmateId ? data : state.selectedHealthmate,
+      }));
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to verify credentials.';
+      toast.error(message);
       return { success: false, message };
     }
   },
@@ -265,6 +283,44 @@ const useOpsStore = create((set, get) => ({
       return { success: true, data };
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to add task.';
+      return { success: false, message };
+    }
+  },
+
+  updateTaskDetails: async (healthmateId, taskId, payload) => {
+    try {
+      const { data } = await api.patch(`/tasks/${taskId}`, payload);
+      set((state) => {
+        const patchTask = (hm) => {
+          if (hm.id !== healthmateId) return hm;
+          return {
+            ...hm,
+            tasks: (hm.tasks || []).map((t) => (t.id === taskId ? data : t)),
+          };
+        };
+
+        const updatedList = state.healthmates.map(patchTask);
+        const selected = state.selectedHealthmate?.id === healthmateId
+          ? patchTask(state.selectedHealthmate)
+          : state.selectedHealthmate;
+
+        let updatedPending = state.pendingTasks;
+        if (payload.completed === true) {
+          updatedPending = state.pendingTasks.filter((t) => t.id !== taskId);
+        }
+
+        return {
+          healthmates: updatedList,
+          selectedHealthmate: selected,
+          pendingTasks: updatedPending,
+        };
+      });
+
+      // Refresh pending tasks lists in background
+      get().fetchPendingTasks();
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update task details.';
       return { success: false, message };
     }
   },

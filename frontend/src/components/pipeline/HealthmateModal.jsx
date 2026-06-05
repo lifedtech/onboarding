@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
   Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User,
-  Calendar
+  Calendar, Layers, BookOpen, CheckCircle2, FileText
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
@@ -75,6 +75,7 @@ export default function HealthmateModal() {
   const pendingOutboundTakeovers = useOpsStore((s) => s.pendingOutboundTakeovers);
   const requestTakeover       = useOpsStore((s) => s.requestTakeover);
   const fetchPendingTakeovers = useOpsStore((s) => s.fetchPendingTakeovers);
+  const verifyCredentials     = useOpsStore((s) => s.verifyCredentials);
 
   const [activeTab, setActiveTab]     = useState('details'); // 'details' | 'screening'
   const [notes, setNotes]             = useState('');
@@ -91,6 +92,11 @@ export default function HealthmateModal() {
 
   const [recallReminder, setRecallReminder] = useState('');
   const [reminderSaving, setReminderSaving] = useState(false);
+
+  const [programTitle, setProgramTitle] = useState('');
+  const [programStartDate, setProgramStartDate] = useState('');
+  const [programEndDate, setProgramEndDate] = useState('');
+  const [savingProgram, setSavingProgram] = useState(false);
 
   // Per-button sending state to prevent double-clicks
   const [sending, setSending] = useState({ EMAIL: false, WHATSAPP: false });
@@ -145,6 +151,10 @@ export default function HealthmateModal() {
         setRecallReminder('');
       }
 
+      setProgramTitle(selectedHealthmate.programTitle ?? '');
+      setProgramStartDate(selectedHealthmate.programStartDate ? new Date(selectedHealthmate.programStartDate).toISOString().split('T')[0] : '');
+      setProgramEndDate(selectedHealthmate.programEndDate ? new Date(selectedHealthmate.programEndDate).toISOString().split('T')[0] : '');
+
       setActiveTab(selectedHealthmate.phase === 'PRE_QUALIFY' ? 'screening' : 'details');
     }
   }, [selectedHealthmate?.id]);
@@ -190,7 +200,47 @@ export default function HealthmateModal() {
     return 'bg-[#f2fff3] border-brand-green/20 text-brand-green';
   };
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
+  const handleSaveProgramDetails = async () => {
+    setSavingProgram(true);
+    const result = await updateHealthmate(hm.id, {
+      programTitle,
+      programStartDate: programStartDate ? new Date(programStartDate).toISOString() : null,
+      programEndDate: programEndDate ? new Date(programEndDate).toISOString() : null,
+    });
+    setSavingProgram(false);
+    if (result && result.success) {
+      toast.success('Program details saved!');
+    } else {
+      toast.error('Failed to save program details.');
+    }
+  };
+
+  const handleSimulateRDApproval = async () => {
+    if (!programTitle) {
+      toast.error('Please enter a Program Title first.');
+      return;
+    }
+    setSavingProgram(true);
+    const start = programStartDate || new Date().toISOString().split('T')[0];
+    const end = programEndDate || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    setProgramStartDate(start);
+    setProgramEndDate(end);
+
+    const result = await updateHealthmate(hm.id, {
+      programStatus: 'APPROVED',
+      programApprovedMsg: `R&D Team: The proposed health program "${programTitle}" has been reviewed and meets all standard clinical & operational protocols. Approved for public listings.`,
+      programTitle,
+      programStartDate: new Date(start).toISOString(),
+      programEndDate: new Date(end).toISOString(),
+    });
+    setSavingProgram(false);
+    if (result && result.success) {
+      toast.success('R&D approval simulated successfully!');
+    } else {
+      toast.error('Failed to approve program.');
+    }
+  };
 
   const handleSaveNotes = async () => {
     setNotesSaving(true);
@@ -198,6 +248,13 @@ export default function HealthmateModal() {
     setNotesSaving(false);
     setNotesSaved(true);
     setTimeout(() => setNotesSaved(false), 2000);
+  };
+
+  const handleSimulateRDVerification = async () => {
+    const result = await verifyCredentials(hm.id, 'Credentials verified successfully via simulated R&D API request.');
+    if (result && result.success) {
+      toast.success('R&D Credentials verified successfully!');
+    }
   };
 
   const handleSaveScreeningRemarks = async () => {
@@ -384,6 +441,17 @@ export default function HealthmateModal() {
           className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#142b27]/10 flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* R&D Credential Status Bar */}
+          <div 
+            className={`w-full h-2 shrink-0 ${
+              hm.registrationStatus === 'VERIFIED'
+                ? 'bg-brand-green'
+                : hm.registrationStatus === 'ESCALATED'
+                  ? 'bg-red-500 animate-pulse'
+                  : 'bg-slate-300'
+            }`} 
+            title={`R&D Credentials: ${hm.registrationStatus || 'PENDING'}`} 
+          />
           {/* ── Header ── */}
           <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-border-leaf/40 shrink-0 bg-white">
             <div className="min-w-0">
@@ -488,9 +556,21 @@ export default function HealthmateModal() {
                       <span className={`w-2 h-2 rounded-full shrink-0 ${new Date(hm.recallReminder) < new Date() ? 'bg-red-500 animate-pulse' : 'bg-brand-teal'}`} />
                     )}
                   </button>
+                  {(hm.phase === 'REGISTER' || hm.phase === 'REVIEW' || hm.phase === 'LIVE') && (
+                    <button
+                      onClick={() => setActiveTab('rdReview')}
+                      className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                        activeTab === 'rdReview'
+                          ? 'border-brand-teal text-brand-teal'
+                          : 'border-transparent text-text-muted/60 hover:text-text-main'
+                      }`}
+                    >
+                      R&D Review
+                    </button>
+                  )}
                 </div>
 
-                {activeTab === 'details' ? (
+                {activeTab === 'details' && (
                   <div className="space-y-5">
                     <div>
                       <div className="flex items-center justify-between mb-3">
@@ -610,6 +690,28 @@ export default function HealthmateModal() {
                               </span>
                             }
                           />
+                          <InfoRow
+                            icon={<CheckCircle2 className="w-4 h-4 text-brand-teal" />}
+                            label="R&D Status"
+                            value={
+                              <span className={`inline-flex items-center gap-1 font-extrabold ${
+                                hm.registrationStatus === 'VERIFIED'
+                                  ? 'text-brand-green'
+                                  : hm.registrationStatus === 'ESCALATED'
+                                    ? 'text-red-500 animate-pulse'
+                                    : 'text-text-muted/60'
+                              }`}>
+                                {hm.registrationStatus || 'PENDING'}
+                              </span>
+                            }
+                          />
+                          {hm.registrationRemark && (
+                            <InfoRow
+                              icon={<FileText className="w-4 h-4 text-brand-teal" />}
+                              label="R&D Remarks"
+                              value={<span className="italic font-bold text-text-main">"{hm.registrationRemark}"</span>}
+                            />
+                          )}
                         </div>
                       )}
                     </div>
@@ -652,7 +754,9 @@ export default function HealthmateModal() {
                       )}
                     </div>
                   </div>
-                ) : (
+                )}
+
+                {activeTab === 'screening' && (
                   <div className="space-y-6">
                     {/* Screening Call Remarks */}
                     <div>
@@ -781,6 +885,137 @@ export default function HealthmateModal() {
                             }
                             {screeningQueriesSaving ? 'Saving…' : 'Save Queries'}
                           </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'rdReview' && (
+                  <div className="space-y-5">
+                    <div className="bg-slate-50/50 p-4 rounded-2xl border border-border-leaf/35 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-brand-teal" />
+                        <h3 className="text-text-main font-extrabold text-xs uppercase tracking-wider">
+                          Program Listing Details
+                        </h3>
+                      </div>
+                      <p className="text-[10px] text-text-muted/80 font-semibold">
+                        Enter the program details submitted by the partner for R&D review.
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Program Title</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 12-Week Mindfulness & Yoga course"
+                            value={programTitle}
+                            onChange={(e) => setProgramTitle(e.target.value)}
+                            disabled={!canModify}
+                            className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Start Date</label>
+                            <input
+                              type="date"
+                              value={programStartDate}
+                              onChange={(e) => setProgramStartDate(e.target.value)}
+                              disabled={!canModify}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">End Date</label>
+                            <input
+                              type="date"
+                              value={programEndDate}
+                              onChange={(e) => setProgramEndDate(e.target.value)}
+                              disabled={!canModify}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                            />
+                          </div>
+                        </div>
+
+                        {canModify && (
+                          <button
+                            type="button"
+                            onClick={handleSaveProgramDetails}
+                            disabled={savingProgram}
+                            className="bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
+                          >
+                            {savingProgram ? 'Saving...' : 'Save Program Details'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-50/50 p-4 rounded-2xl border border-border-leaf/35 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-text-main flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4 text-brand-teal" />
+                          R&D Team Review Feedback
+                        </span>
+                        <span className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                          hm.programStatus === 'APPROVED' 
+                            ? 'text-brand-green bg-brand-green/10 border-brand-green/20'
+                            : 'text-amber-600 bg-amber-50 border-amber-200'
+                        }`}>
+                          {hm.programStatus || 'PENDING'}
+                        </span>
+                      </div>
+
+                      {hm.programStatus === 'APPROVED' ? (
+                        <div className="space-y-2">
+                          <div className="bg-brand-green/10 border border-brand-green/20 text-brand-green rounded-xl p-3 text-xs font-semibold leading-relaxed">
+                            <p className="font-extrabold uppercase text-[9px] tracking-wider mb-1">✓ Approved Message from R&D Team:</p>
+                            <p className="text-text-main italic">"{hm.programApprovedMsg || 'Program has been reviewed and approved for public listings.'}"</p>
+                          </div>
+                          
+                          {hm.phase !== 'LIVE' && canModify && (
+                            <p className="text-[10px] text-text-muted font-bold">
+                              💡 Program is approved! You can now mark the partner as **Live** to publish this program on the calendar.
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-800 rounded-xl p-3 text-xs font-semibold leading-relaxed">
+                            Program is currently pending R&D team review. Submit details above and trigger review approval.
+                          </div>
+
+                          {canModify && (
+                            <div className="border border-dashed border-slate-200 p-3 rounded-xl bg-white space-y-3">
+                              <span className="text-[9px] font-extrabold text-text-muted uppercase tracking-wider block">R&D Team Simulator</span>
+                              <div className="flex flex-col gap-2">
+                                {hm.registrationStatus !== 'VERIFIED' && (
+                                  <button
+                                    type="button"
+                                    onClick={handleSimulateRDVerification}
+                                    className="bg-brand-teal hover:bg-brand-teal-hover text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
+                                  >
+                                    Verify Registration Credentials
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={handleSimulateRDApproval}
+                                  disabled={savingProgram || !programTitle}
+                                  className="bg-[#112421] hover:bg-[#0c1a18] disabled:opacity-50 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
+                                >
+                                  Approve Program as R&D
+                                </button>
+                              </div>
+                              {!programTitle && (
+                                <p className="text-[9px] text-red-500 font-bold">
+                                  * Please save a Program Title above before simulating approval.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

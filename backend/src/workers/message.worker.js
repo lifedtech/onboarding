@@ -64,6 +64,22 @@ async function processMessage(job) {
       return result;
     }
 
+    case 'REGISTRATION_SLA': {
+      if (healthmate.registrationStatus === 'PENDING') {
+        await prisma.healthmate.update({
+          where: { id: healthmateId },
+          data: { registrationStatus: 'ESCALATED' }
+        });
+        console.log(`[Worker] SLA Breach: Healthmate ${healthmateId} (${healthmate.name}) status escalated to ESCALATED.`);
+
+        // Outbound alert ("Revoke Message") to R&D team's portal
+        console.log(`[Webhook Alert] Outbound Alert "Revoke Message" sent to R&D team's portal demanding immediate completion for Healthmate ${healthmateId} (${healthmate.name}).`);
+        return { status: 'escalated', id: healthmateId };
+      }
+      console.log(`[Worker] SLA Check: Healthmate ${healthmateId} (${healthmate.name}) has registration status "${healthmate.registrationStatus}". No escalation needed.`);
+      return { status: 'ignored', currentStatus: healthmate.registrationStatus };
+    }
+
     default:
       throw new Error(`Unknown message type "${type}". Discarding job.`);
   }

@@ -98,13 +98,16 @@ backend/
 │   │   ├── auth.controller.js
 │   │   ├── healthmate.controller.js
 │   │   ├── task.controller.js
-│   │   └── user.controller.js
+│   │   ├── user.controller.js
+│   │   └── webhook.controller.js # Webhook endpoint transitions & statuses
 │   ├── middleware/            # Security verification & file upload filters
 │   │   ├── auth.middleware.js
-│   │   └── upload.js
+│   │   ├── upload.js
+│   │   └── verifyRdSignature.js  # HMAC-SHA256 signature webhook verification
 │   ├── routes/                # Modular Express API route declarations
 │   │   └── api.routes.js
 │   ├── services/              # External communication drivers & job triggers
+│   │   ├── credential.service.js # Auto credential provisioning service
 │   │   ├── email.service.js
 │   │   ├── queue.service.js
 │   │   └── whatsapp.service.js
@@ -116,6 +119,7 @@ backend/
 ├── .env                       # Environment credentials & database URLs
 ├── server.js                  # Express bootstrapper & background thread startup
 └── package.json
+RD_INTEGRATION_GUIDE.md        # Reference guide for R&D webhook & api keys integration
 ```
 
 ### 3.2 Frontend Layout
@@ -330,11 +334,27 @@ All endpoints require standard application/json requests and (unless noted as pu
 * **`DELETE /api/users/:userId`**
   * Safely deletes an account and reassigns all managed partners to the executing administrator.
 
+### 7.7 R&D Webhooks (Public — HMAC Signature Protected)
+These endpoints require a valid signature in the `X-RD-Signature` header, computed as `HMAC-SHA256(payload, RD_WEBHOOK_SECRET)`.
+* **`POST /api/webhooks/registration-submitted`**
+  * Body: `{ "healthmateId": "UUID" }`
+  * Transitions partner to `REGISTER` phase and seeds standard registration compliance checklist.
+* **`POST /api/webhooks/verification-completed`**
+  * Body: `{ "healthmateId": "UUID", "remark": "string" }`
+  * Updates `registrationStatus` to `VERIFIED` and triggers the credential provisioning service to generate and dispatch login details via email/WhatsApp.
+* **`POST /api/webhooks/program-submitted`**
+  * Body: `{ "healthmateId": "UUID", "programTitle": "string", "programStartDate": "ISOString", "programEndDate": "ISOString" }`
+  * Saves submitted program title/schedule details and automatically transitions partner to `REVIEW` phase.
+* **`POST /api/webhooks/program-status`**
+  * Body: `{ "healthmateId": "UUID", "status": "APPROVED" | "CORRECTION_REQUIRED", "approvedMessage": "string" }`
+  * Updates partner's `programStatus` and saves the associated approved message/remarks.
+
 ---
 
 ## 8. Resilience Safeguards
 
 * **Suppressed Redis Noise:** If Redis is down, ioredis normally logs repeated connection failure notices that can flood the console and starve the single-threaded Node.js event loop. The system resolves this using custom error listeners in the server and background worker, suppressing warning logs while maintaining retries silently in the background. The main REST API remains fully operational, degrading background messaging features gracefully instead of crashing.
+* **Webhook & Credential Service Graceful Degradation:** If Redis/BullMQ is offline, the credential provisioning service automatically bypasses the message queue and delivers email/WhatsApp notifications directly via SendGrid/Twilio API drivers (or logs/console simulation fallbacks), ensuring incoming webhooks never hang or time out.
 * **Database Relational Integrity:** Using Prisma cascade deletions prevents database bloat by automatically cleaning up tasks, documents, and logs when a parent entity is deleted.
 * **Form Validation:** All requests are validated at the API router layer before hitting database transactions to prevent SQL state crashes.
 
@@ -365,6 +385,9 @@ DATABASE_URL="postgresql://username:password@localhost:5432/lifed_db?schema=publ
 JWT_SECRET="YOUR_SECURE_JWT_SECRET_STRING"
 CLIENT_ORIGIN="http://localhost:5173"
 REDIS_URL="redis://localhost:6379"
+
+# R&D Webhooks (Shared HMAC secret)
+RD_WEBHOOK_SECRET="your_shared_webhook_secret_key_here"
 
 # Third-Party Integrations (Optional — system simulates actions if keys are missing)
 SENDGRID_API_KEY=""
