@@ -8,6 +8,9 @@
   "assets": {
     "directory": "frontend/dist"
   },
+  "build": {
+    "command": "npm install --prefix frontend && npm run build --prefix frontend"
+  },
   "compatibility_flags": [
     "nodejs_compat"
   ]
