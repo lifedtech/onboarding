@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Mail, Lock, Loader2, AlertCircle, Activity } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
+import SoothingBackground from './SoothingBackground';
 
 export default function Login() {
   const login = useOpsStore((s) => s.login);
@@ -28,19 +29,8 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-bg-base flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.06] pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(#00ad9c 1px, transparent 1px), linear-gradient(90deg, #00ad9c 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
-      
-      {/* Glow shapes */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-bg-mint blur-[120px] opacity-70 pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-teal/5 blur-[120px] opacity-70 pointer-events-none" />
+      {/* Interactive soothing grid background */}
+      <SoothingBackground />
 
       <div className="relative w-full max-w-md">
         {/* Card */}
@@ -87,7 +77,7 @@ export default function Login() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ops@lifed.com"
+                  placeholder="Enter your email"
                   disabled={isLoading}
                   className="w-full bg-slate-50 border border-border-leaf text-text-main placeholder-text-muted/50
                              rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium

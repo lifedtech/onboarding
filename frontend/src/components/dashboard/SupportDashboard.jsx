@@ -26,7 +26,6 @@ export default function SupportDashboard() {
     await updateHealthmate(healthmateId, { opsUserId });
     setAssigningId(null);
   };
-
   const handleManualRefresh = async () => {
     setRefreshing(true);
     await fetchTeamMembers();

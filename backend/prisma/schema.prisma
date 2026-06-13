@@ -39,11 +39,16 @@ model OpsUser {
   passwordHash String
   name         String
   role         String      @default("ops") // e.g. "ops", "admin"
+  publicKey    String?     @db.Text
+  avatar       String?     // URL to profile picture
+  statusMode   String      @default("online") // "online", "busy", "dnd", "offline"
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
   // An OpsUser can own many Healthmates
   healthmates  Healthmate[]
+  participants Participant[]
+  messages     OpsMessage[]
 }
 
 model Healthmate {
@@ -104,4 +109,38 @@ model Task {
   // Relationships
   healthmateId String
   healthmate   Healthmate @relation(fields: [healthmateId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id        String        @id @default(uuid())
+  type      String        // "DIRECT" or "GROUP"
+  name      String?       // Optional group name
+  createdBy String?       // Creator user ID (Admin)
+  createdAt DateTime      @default(now())
+
+  participants Participant[]
+  messages     OpsMessage[]
+}
+
+model Participant {
+  id             String       @id @default(uuid())
+  userId         String
+  conversationId String
+  encryptedKey   String?      @db.Text // Symmetric group key encrypted for this user
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           OpsUser      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, conversationId])
+}
+
+model OpsMessage {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  encryptedText  String       @db.Text // Ciphertext
+  createdAt      DateTime     @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         OpsUser      @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }

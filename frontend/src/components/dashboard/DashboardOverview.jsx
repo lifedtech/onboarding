@@ -7,7 +7,8 @@ import {
   Clock,
   ArrowRight,
   TrendingUp,
-  Briefcase
+  Briefcase,
+  Zap
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 
@@ -84,7 +85,7 @@ export default function DashboardOverview() {
   const activeRecallsCount = sortedRecalls.length;
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto">
+    <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto overflow-auto flex-1">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -219,7 +220,9 @@ export default function DashboardOverview() {
               </button>
             </div>
             <span className="text-[10px] font-bold text-text-muted bg-slate-50 border border-border-leaf/50 px-2 py-0.5 rounded-full hidden sm:inline">
-              {dashboardTab === 'activity' ? 'Latest 5 active' : `${activeRecallsCount} active reminder(s)`}
+              {dashboardTab === 'activity' 
+                ? 'Latest 5 active' 
+                : `${activeRecallsCount} active reminder(s)`}
             </span>
           </div>
 
@@ -373,64 +376,125 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {/* Right: Operational Pipeline Status breakdown (1 Col) */}
-        <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6 space-y-5 flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <h3 className="text-text-main font-extrabold text-sm tracking-wide">Pipeline Breakdown</h3>
-            </div>
-            
-            <div className="space-y-3.5">
-              {Object.keys(PHASE_LABELS).map((phase) => {
-                const count = stats.phaseBreakdown[phase] || 0;
-                const percentage = stats.totalHealthmates > 0
-                  ? Math.round((count / stats.totalHealthmates) * 100)
-                  : 0;
+        {/* Right Column: Pipeline Breakdown & Stress Buster (1 Col) */}
+        <div className="space-y-6 flex flex-col justify-start">
+          {/* Operational Pipeline Status breakdown */}
+          <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6 space-y-5 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-text-main font-extrabold text-sm tracking-wide">Pipeline Breakdown</h3>
+              </div>
+              
+              <div className="space-y-3.5">
+                {Object.keys(PHASE_LABELS).map((phase) => {
+                  const count = stats.phaseBreakdown[phase] || 0;
+                  const percentage = stats.totalHealthmates > 0
+                    ? Math.round((count / stats.totalHealthmates) * 100)
+                    : 0;
 
-                const indicatorColor = {
-                  PRE_QUALIFY: 'bg-slate-400',
-                  PREPARE:     'bg-brand-teal',
-                  REGISTER:    'bg-amber-500',
-                  REVIEW:      'bg-purple-500',
-                  LIVE:        'bg-brand-green',
-                }[phase];
+                  const indicatorColor = {
+                    PRE_QUALIFY: 'bg-slate-400',
+                    PREPARE:     'bg-brand-teal',
+                    REGISTER:    'bg-amber-500',
+                    REVIEW:      'bg-purple-500',
+                    LIVE:        'bg-brand-green',
+                  }[phase];
 
-                return (
-                  <div key={phase} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-bold text-text-main">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${indicatorColor}`} />
-                        <span>{PHASE_LABELS[phase]}</span>
+                  return (
+                    <div key={phase} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-bold text-text-main">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${indicatorColor}`} />
+                          <span>{PHASE_LABELS[phase]}</span>
+                        </div>
+                        <span className="text-text-muted">{count} partner{count !== 1 ? 's' : ''} ({percentage}%)</span>
                       </div>
-                      <span className="text-text-muted">{count} partner{count !== 1 ? 's' : ''} ({percentage}%)</span>
+                      <div className="w-full h-1 bg-slate-50 border border-slate-200/30 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${indicatorColor} rounded-full transition-all duration-500`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full h-1 bg-slate-50 border border-slate-200/30 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${indicatorColor} rounded-full transition-all duration-500`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-border-leaf/30 shrink-0">
+              <span className="text-[10px] font-bold text-text-muted block">
+                Want to manage listings?
+              </span>
+              <button
+                onClick={() => {
+                  // Navigate to pipeline board
+                  const layout = document.querySelector('nav button:nth-child(2)');
+                  if (layout) layout.click();
+                }}
+                className="mt-2 w-full bg-slate-50 border border-border-leaf/80 hover:bg-slate-100 hover:border-brand-teal text-text-main font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm"
+              >
+                Open Pipeline Board
+                <ArrowRight className="w-3.5 h-3.5 text-brand-teal" />
+              </button>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-border-leaf/30 shrink-0">
-            <span className="text-[10px] font-bold text-text-muted block">
-              Want to manage listings?
-            </span>
-            <button
-              onClick={() => {
-                // Navigate to pipeline board
-                const layout = document.querySelector('nav button:nth-child(2)');
-                if (layout) layout.click();
-              }}
-              className="mt-2 w-full bg-slate-50 border border-border-leaf/80 hover:bg-slate-100 hover:border-brand-teal text-text-main font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm"
-            >
-              Open Pipeline Board
-              <ArrowRight className="w-3.5 h-3.5 text-brand-teal" />
-            </button>
+          {/* Stress Buster Mini-game widget */}
+          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
+                <h3 className="text-white font-extrabold text-sm tracking-wide mt-1">Ticket Deflector</h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+                <TrendingUp className="w-5 h-5 animate-pulse" />
+              </div>
+            </div>
+            <p className="text-[10px] font-bold text-slate-400 mt-2 leading-relaxed">
+              Feeling overwhelmed by onboarding checkouts? Take a quick 60-second deflector run to clear your head!
+            </p>
+            <div className="pt-4 border-t border-white/5 shrink-0 mt-4">
+              <button
+                onClick={() => {
+                  window.__initialStressBusterTab = 'deflector';
+                  const btn = Array.from(document.querySelectorAll('nav button')).find(el => el.textContent.includes('Stress Buster'));
+                  if (btn) btn.click();
+                }}
+                className="w-full bg-brand-teal hover:bg-brand-teal-hover text-white font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-brand-teal/10 hover:shadow-lg"
+              >
+                Launch Ticket Deflector
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* Tug of War Mini-game widget */}
+          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
+                <h3 className="text-white font-extrabold text-sm tracking-wide mt-1">Server Tug of War</h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+                <Zap className="w-5 h-5 animate-pulse" />
+              </div>
+            </div>
+            <p className="text-[10px] font-bold text-slate-400 mt-2 leading-relaxed">
+              Relentless traffic is crashing server health! Mash spacebar or click rapidly to stabilize the SLA.
+            </p>
+            <div className="pt-4 border-t border-white/5 shrink-0 mt-4">
+              <button
+                onClick={() => {
+                  window.__initialStressBusterTab = 'tug_of_war';
+                  const btn = Array.from(document.querySelectorAll('nav button')).find(el => el.textContent.includes('Stress Buster'));
+                  if (btn) btn.click();
+                }}
+                className="w-full bg-brand-teal hover:bg-brand-teal-hover text-white font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-brand-teal/10 hover:shadow-lg"
+              >
+                Launch Tug of War
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
+              </button>
+            </div>
           </div>
         </div>
 

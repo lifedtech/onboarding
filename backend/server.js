@@ -1,15 +1,26 @@
-require('dotenv').config();
+require('dotenv').config(); // Trigger reload
 const express = require('express');
 const cors    = require('cors');
+const helmet  = require('helmet');
 
 const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   credentials: true,
 }));
+
+// Easter egg header
+app.use((req, res, next) => {
+  res.setHeader('X-Built-By', 'Ayush');
+  next();
+});
 
 const path    = require('path');
 
@@ -51,5 +62,13 @@ app.listen(PORT, () => {
   } catch (err) {
     console.warn('[Worker] Could not initialise message worker:', err.message);
     console.warn('[Worker] Messaging features will be unavailable until Redis is running.');
+  }
+
+  // Initialise message purge service (E2EE 7-day retention)
+  try {
+    const { startMessagePurgeJob } = require('./src/services/purge.service');
+    startMessagePurgeJob();
+  } catch (err) {
+    console.error('[Purge] Failed to initialize message purge service:', err.message);
   }
 });

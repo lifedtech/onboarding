@@ -3,6 +3,9 @@ const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload');
 
 const { register, login }                          = require('../controllers/auth.controller');
+const { authLimiter }                              = require('../middleware/rateLimit.middleware');
+const { validate }                                 = require('../middleware/validate.middleware');
+const { registerSchema, loginSchema }              = require('../utils/auth.schema');
 const {
   getAllHealthmates, createHealthmate,
   updateHealthmate, updateHealthmatePhase,
@@ -13,7 +16,9 @@ const {
 const { toggleTask, createTask, getPendingTasks, updateTask }                   = require('../controllers/task.controller');
 const { triggerMessage }                           = require('../controllers/message.controller');
 const { getDashboardSummary }                      = require('../controllers/analytics.controller');
-const { getTeamMembers, createTeamMember, deleteTeamMember, heartbeat }         = require('../controllers/user.controller');
+const { getTeamMembers, createTeamMember, deleteTeamMember, heartbeat, updatePublicKey, getMe, updateProfile, uploadAvatar } = require('../controllers/user.controller');
+const { stream, getConversations, createConversation, sendMessage } = require('../controllers/chat.controller');
+const { invitePlayer, acceptInvite, rejectInvite, cancelGame, syncGame } = require('../controllers/game.controller');
 
 const verifyRdSignature = require('../middleware/verifyRdSignature');
 const {
@@ -26,8 +31,8 @@ const {
 const router = Router();
 
 // ─── Public ───────────────────────────────────────────────────────────────────
-router.post('/auth/register', register);
-router.post('/auth/login',    login);
+router.post('/auth/register', authLimiter, validate(registerSchema), register);
+router.post('/auth/login',    authLimiter, validate(loginSchema), login);
 router.post('/rnd/verify-credentials', rndVerifyCredentials);
 
 // Webhooks (Signature Protected)
@@ -71,8 +76,25 @@ router.post('/takeover/decision',           decideTakeover);
 
 // Team Settings (Admin Access Gated)
 router.post('/users/heartbeat',             heartbeat);
+router.get('/users/me',                     getMe);
+router.patch('/users/me',                   updateProfile);
+router.post('/users/me/avatar',             upload.single('avatar'), uploadAvatar);
 router.get('/users',                        getTeamMembers);
 router.post('/users',                       requireAdmin, createTeamMember);
 router.delete('/users/:id',                 requireAdmin, deleteTeamMember);
+router.put('/users/public-key',             updatePublicKey);
+
+// Secure Chat
+router.get('/chat/stream',                  stream);
+router.get('/chat/conversations',           getConversations);
+router.post('/chat/conversations',          createConversation);
+router.post('/chat/conversations/:conversationId/messages', sendMessage);
+
+// Multiplayer Game
+router.post('/game/invite',                 invitePlayer);
+router.post('/game/accept',                 acceptInvite);
+router.post('/game/reject',                 rejectInvite);
+router.post('/game/cancel',                 cancelGame);
+router.post('/game/sync',                   syncGame);
 
 module.exports = router;

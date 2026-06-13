@@ -42,6 +42,7 @@ const useOpsStore = create((set, get) => ({
   pendingOutboundTakeovers: [],
   isLoading:          false,
   error:              null,
+  chatHasUnread:      false,
 
   // ── Auth ───────────────────────────────────────────────────────────────────
 
@@ -137,7 +138,6 @@ const useOpsStore = create((set, get) => ({
       return { success: false, message };
     }
   },
-
 
   addHealthmate: async (healthmateData) => {
     set({ isLoading: true });
@@ -260,25 +260,14 @@ const useOpsStore = create((set, get) => ({
       set((state) => {
         const updatedList = state.healthmates.map((hm) => {
           if (hm.id === healthmateId) {
-            return {
-              ...hm,
-              tasks: [...(hm.tasks || []), data]
-            };
+            return { ...hm, tasks: [...(hm.tasks || []), data] };
           }
           return hm;
         });
-
         const selected = state.selectedHealthmate?.id === healthmateId
-          ? {
-              ...state.selectedHealthmate,
-              tasks: [...(state.selectedHealthmate.tasks || []), data]
-            }
+          ? { ...state.selectedHealthmate, tasks: [...(state.selectedHealthmate.tasks || []), data] }
           : state.selectedHealthmate;
-
-        return {
-          healthmates: updatedList,
-          selectedHealthmate: selected
-        };
+        return { healthmates: updatedList, selectedHealthmate: selected };
       });
       return { success: true, data };
     } catch (err) {
@@ -293,30 +282,18 @@ const useOpsStore = create((set, get) => ({
       set((state) => {
         const patchTask = (hm) => {
           if (hm.id !== healthmateId) return hm;
-          return {
-            ...hm,
-            tasks: (hm.tasks || []).map((t) => (t.id === taskId ? data : t)),
-          };
+          return { ...hm, tasks: (hm.tasks || []).map((t) => (t.id === taskId ? data : t)) };
         };
-
         const updatedList = state.healthmates.map(patchTask);
         const selected = state.selectedHealthmate?.id === healthmateId
           ? patchTask(state.selectedHealthmate)
           : state.selectedHealthmate;
-
         let updatedPending = state.pendingTasks;
         if (payload.completed === true) {
           updatedPending = state.pendingTasks.filter((t) => t.id !== taskId);
         }
-
-        return {
-          healthmates: updatedList,
-          selectedHealthmate: selected,
-          pendingTasks: updatedPending,
-        };
+        return { healthmates: updatedList, selectedHealthmate: selected, pendingTasks: updatedPending };
       });
-
-      // Refresh pending tasks lists in background
       get().fetchPendingTasks();
       return { success: true, data };
     } catch (err) {
@@ -330,13 +307,9 @@ const useOpsStore = create((set, get) => ({
     try {
       const formData = new FormData();
       formData.append('document', file);
-
       const { data } = await api.post(`/healthmates/${healthmateId}/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
       set((state) => ({
         healthmates: replaceHealthmate(state.healthmates, data),
         selectedHealthmate:
@@ -373,11 +346,7 @@ const useOpsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { data } = await api.get('/analytics/summary');
-      set({
-        summaryMetrics: data.metrics,
-        recentActivity: data.recentActivity,
-        isLoading: false
-      });
+      set({ summaryMetrics: data.metrics, recentActivity: data.recentActivity, isLoading: false });
       return { success: true };
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to fetch summary metrics.';
@@ -404,10 +373,7 @@ const useOpsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { data } = await api.post('/users', userData);
-      set((state) => ({
-        teamMembers: [...state.teamMembers, data.user],
-        isLoading: false
-      }));
+      set((state) => ({ teamMembers: [...state.teamMembers, data.user], isLoading: false }));
       toast.success(data.message || 'Team member invited successfully!');
       return { success: true, data: data.user };
     } catch (err) {
@@ -422,10 +388,7 @@ const useOpsStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { data } = await api.delete(`/users/${id}`);
-      set((state) => ({
-        teamMembers: state.teamMembers.filter((m) => m.id !== id),
-        isLoading: false
-      }));
+      set((state) => ({ teamMembers: state.teamMembers.filter((m) => m.id !== id), isLoading: false }));
       toast.success(data.message || 'Team member removed successfully!');
       return { success: true };
     } catch (err) {
@@ -454,19 +417,14 @@ const useOpsStore = create((set, get) => ({
 
   /**
    * Enqueues a message job via the backend queue.
-   * Uses toast.promise so the user sees pending → success/error automatically.
-   *
    * @param {string} healthmateId
    * @param {'EMAIL' | 'WHATSAPP'} type
-   * @returns {Promise<{ success: boolean }>}
    */
   triggerMessage: async (healthmateId, type) => {
     const label = type === 'EMAIL' ? 'email' : 'WhatsApp message';
     const hm    = get().healthmates.find((h) => h.id === healthmateId);
     const name  = hm?.name ?? 'partner';
-
     const promise = api.post(`/healthmates/${healthmateId}/messages`, { type });
-
     toast.promise(promise, {
       loading: `Queuing ${label} for ${name}…`,
       success: (res) => {
@@ -475,12 +433,10 @@ const useOpsStore = create((set, get) => ({
       },
       error: (err) => {
         const msg = err.response?.data?.message;
-        // Surface specific backend errors (missing contact info, Redis down, etc.)
         if (msg) return msg;
         return `Failed to queue ${label}. Please try again.`;
       },
     });
-
     try {
       await promise;
       return { success: true };
@@ -490,6 +446,7 @@ const useOpsStore = create((set, get) => ({
   },
 
   // ── Takeover Actions ───────────────────────────────────────────────────────
+
   fetchPendingTakeovers: async () => {
     try {
       const { data } = await api.get('/takeover/pending');
@@ -531,6 +488,7 @@ const useOpsStore = create((set, get) => ({
 
   // ── Utility ────────────────────────────────────────────────────────────────
   clearError: () => set({ error: null }),
+  setChatHasUnread: (val) => set({ chatHasUnread: val }),
   // eslint-disable-next-line
   dummy: null
 }));

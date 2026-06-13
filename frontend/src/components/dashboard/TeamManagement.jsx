@@ -259,7 +259,6 @@ export default function TeamManagement() {
             )}
           </div>
         </div>
-
       </div>
 
       {/* Invite Modal (Floating overlay) */}
