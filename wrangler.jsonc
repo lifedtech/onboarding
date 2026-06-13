@@ -9,7 +9,7 @@
     "directory": "frontend/dist"
   },
   "build": {
-    "command": "npm install --prefix frontend && npm run build --prefix frontend"
+    "command": "npm install --prefix frontend && VITE_API_URL=https://onboardingdesk.onrender.com/api npm run build --prefix frontend"
   },
   "compatibility_flags": [
     "nodejs_compat"
