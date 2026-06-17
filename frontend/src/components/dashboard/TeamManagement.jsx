@@ -15,12 +15,12 @@ import {
 import useOpsStore from '../../store/useOpsStore';
 
 export default function TeamManagement() {
-  const teamMembers      = useOpsStore((s) => s.teamMembers);
+  const teamMembers = useOpsStore((s) => s.teamMembers);
   const fetchTeamMembers = useOpsStore((s) => s.fetchTeamMembers);
   const createTeamMember = useOpsStore((s) => s.createTeamMember);
   const deleteTeamMember = useOpsStore((s) => s.deleteTeamMember);
-  const currentUser      = useOpsStore((s) => s.user);
-  const isLoading        = useOpsStore((s) => s.isLoading);
+  const currentUser = useOpsStore((s) => s.user);
+  const isLoading = useOpsStore((s) => s.isLoading);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -94,7 +94,7 @@ export default function TeamManagement() {
           <h1 className="text-text-main font-extrabold text-2xl tracking-tight">Team Management</h1>
           <p className="text-text-muted/80 text-sm font-semibold mt-0.5">Control operational credentials, roles, and administrative staff configurations.</p>
         </div>
-        
+
         <button
           onClick={handleOpenModal}
           className="flex items-center justify-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-4 py-2.5 rounded-xl text-sm font-extrabold shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all self-start sm:self-auto"
@@ -106,7 +106,7 @@ export default function TeamManagement() {
 
       {/* Main Grid: Data Card & Stats panel */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-8">
-        
+
         {/* Left Stats sidebar */}
         <div className="space-y-6 lg:col-span-1 flex flex-col justify-start">
           {/* Card 1: Total Admins */}
@@ -225,8 +225,8 @@ export default function TeamManagement() {
                         {/* Role Badge */}
                         <td className="px-6 py-4">
                           <span className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border tracking-wide uppercase
-                            ${isUserAdmin 
-                              ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' 
+                            ${isUserAdmin
+                              ? 'text-amber-400 bg-amber-400/10 border-amber-400/20'
                               : 'text-brand-green bg-brand-green/10 border-brand-green/20'
                             }`}
                           >
@@ -265,11 +265,11 @@ export default function TeamManagement() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
-          
+
           {/* Modal Container */}
           <div className="relative w-full max-w-md bg-[#112421] border border-white/10 rounded-3xl shadow-2xl text-white overflow-hidden animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
@@ -283,7 +283,7 @@ export default function TeamManagement() {
                   <p className="text-slate-400 text-[10px] font-semibold mt-0.5">Invite a team coordinator or admin manager.</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleCloseModal}
                 className="text-slate-400 hover:text-white hover:bg-white/5 p-1.5 rounded-lg transition-colors"
               >

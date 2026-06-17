@@ -58,7 +58,7 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-[#142b27]/60 backdrop-blur-md"
+        className="fixed inset-0 z-40 bg-[#2C3E50]/60 backdrop-blur-md"
         onClick={onClose}
       />
 
@@ -70,7 +70,7 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
         aria-label="Add New Healthmate Partner"
       >
         <div
-          className="relative w-full max-w-md bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#142b27]/10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-md bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

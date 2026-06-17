@@ -2,23 +2,23 @@
 
 @theme {
   --font-sans: "Roboto", sans-serif;
-  --color-brand-teal: #00ad9c;
-  --color-brand-teal-hover: #009b8b;
-  --color-brand-green: #5fba46;
-  --color-brand-green-hover: #52a33c;
-  --color-bg-mint: #f2fff3;
-  --color-bg-base: #f8fcf9;
-  --color-text-main: #142b27;
-  --color-text-muted: #4e6561;
-  --color-border-leaf: #d3ebd7;
+  --color-brand-teal: #00B09B;
+  --color-brand-teal-hover: #009684;
+  --color-brand-green: #78C652;
+  --color-brand-green-hover: #67ac43;
+  --color-bg-mint: #eaf7f4;
+  --color-bg-base: #edf0f2;
+  --color-text-main: #2C3E50;
+  --color-text-muted: #5a738e;
+  --color-border-leaf: #cbd5e1;
 }
 
 @layer base {
   body {
     font-family: "Roboto", sans-serif;
     font-weight: 400;
-    background-color: #f8fcf9;
-    color: #142b27;
+    background-color: #edf0f2;
+    color: #2C3E50;
   }
 }
 

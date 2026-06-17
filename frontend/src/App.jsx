@@ -74,7 +74,7 @@ function Workspace() {
 
       toast((t) => (
         <div className="flex flex-col gap-1.5 p-1">
-          <span className="font-extrabold text-xs text-[#142b27] flex items-center gap-1.5">
+          <span className="font-extrabold text-xs text-text-main flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-teal animate-pulse" />
             🎮 {gameTitle} Invite from {hostName}!
           </span>
@@ -100,7 +100,7 @@ function Workspace() {
                   toast.error('Failed to join game. Session might have expired.');
                 }
               }}
-              className="px-3 py-1 bg-[#00ad9c] hover:bg-[#009687] text-white rounded-lg text-[10px] font-extrabold shadow-sm transition-all"
+              className="px-3 py-1 bg-brand-teal hover:bg-brand-teal-hover text-white rounded-lg text-[10px] font-extrabold shadow-sm transition-all"
             >
               Accept
             </button>
@@ -145,7 +145,7 @@ export default function App() {
   useEffect(() => {
     console.log(
       "%c🎨 Crafted with care by Ayush",
-      "color: #00ad9c; font-size: 13px; font-weight: bold; font-family: monospace;"
+      "color: #00B09B; font-size: 13px; font-weight: bold; font-family: monospace;"
     );
     initAudio(); // Unlock Web Audio API on first user gesture
   }, []);
@@ -168,8 +168,8 @@ export default function App() {
           duration: 4000,
           style: {
             background: '#ffffff',
-            color: '#142b27',
-            border: '1px solid #d3ebd7',
+            color: '#2C3E50',
+            border: '1px solid #cbd5e1',
             borderRadius: '14px',
             fontSize: '13px',
             fontWeight: '700',
@@ -177,13 +177,13 @@ export default function App() {
             boxShadow: '0 10px 35px rgba(20,43,39,0.07)',
           },
           success: {
-            iconTheme: { primary: '#5fba46', secondary: '#ffffff' },
+            iconTheme: { primary: '#78C652', secondary: '#ffffff' },
           },
           error: {
             iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
           },
           loading: {
-            iconTheme: { primary: '#00ad9c', secondary: '#ffffff' },
+            iconTheme: { primary: '#00B09B', secondary: '#ffffff' },
           },
         }}
       />

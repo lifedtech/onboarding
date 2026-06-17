@@ -155,7 +155,7 @@ export default function Support() {
   });
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto h-full flex flex-col">
+    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full h-full flex flex-col">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
@@ -194,8 +194,8 @@ export default function Support() {
 
       {adminTab === 'operators' ? (
         /* ── Team Directory View ── */
-        <div className="flex-1 min-h-0 bg-[#112421] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
-          <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0e1d1b]">
+        <div className="flex-1 min-h-0 bg-[#22313F] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
+          <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
                 <Users className="w-4 h-4" />
@@ -226,7 +226,7 @@ export default function Support() {
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#0e1d1b]/50 border-b border-white/5 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
+                  <tr className="bg-[#1A252F]/50 border-b border-white/5 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
                     <th className="px-6 py-4">Full Name</th>
                     <th className="px-6 py-4">Email Address</th>
                     <th className="px-6 py-4">Presence Status</th>
@@ -301,14 +301,14 @@ export default function Support() {
         /* ── Admin Support View: Raised Tickets Log ── */
         <div className="flex-1 min-h-0 flex flex-col space-y-6">
           {/* Filters & search toolbar */}
-          <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-[#112421] border border-white/5 p-4 rounded-2xl shadow-xl shrink-0">
+          <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-[#22313F] border border-white/5 p-4 rounded-2xl shadow-xl shrink-0">
             <div className="relative flex-1 max-w-md">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search tickets, IDs, or creators..."
-                className="w-full bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
+                className="w-full bg-[#121A21] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
               />
               <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
             </div>
@@ -317,7 +317,7 @@ export default function Support() {
               <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1 shrink-0">
                 <Filter className="w-3 h-3 text-brand-teal" /> Status:
               </span>
-              <div className="flex bg-[#0c1a18] p-1 border border-white/10 rounded-xl">
+              <div className="flex bg-[#121A21] p-1 border border-white/10 rounded-xl">
                 {['ALL', 'PENDING', 'INVESTIGATING', 'RESOLVED'].map((status) => (
                   <button
                     key={status}
@@ -336,8 +336,8 @@ export default function Support() {
           </div>
 
           {/* Tickets list */}
-          <div className="flex-1 bg-[#112421] border border-white/5 rounded-3xl shadow-xl flex flex-col overflow-hidden">
-            <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0e1d1b]">
+          <div className="flex-1 bg-[#22313F] border border-white/5 rounded-3xl shadow-xl flex flex-col overflow-hidden">
+            <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
                   <LifeBuoy className="w-4 h-4" />
@@ -360,7 +360,7 @@ export default function Support() {
                   {filteredTickets.map((ticket) => (
                     <div
                       key={ticket.id}
-                      className="bg-[#0e1d1b] border border-white/5 hover:border-brand-teal/30 p-5 rounded-2xl transition-all shadow-sm hover:shadow flex flex-col justify-between space-y-4"
+                      className="bg-[#1A252F] border border-white/5 hover:border-brand-teal/30 p-5 rounded-2xl transition-all shadow-sm hover:shadow flex flex-col justify-between space-y-4"
                     >
                       <div className="space-y-2">
                         <div className="flex items-start justify-between gap-3">
@@ -426,7 +426,7 @@ export default function Support() {
         /* ── Ops Agent Support View: Submit Ticket Form & My Tickets Log ── */
         <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Panel: Ticket Form */}
-          <div className="lg:col-span-1 bg-[#112421] text-white border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col justify-start space-y-5">
+          <div className="lg:col-span-1 bg-[#22313F] text-white border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col justify-start space-y-5">
             <div className="space-y-1.5 border-b border-white/5 pb-4 shrink-0">
               <div className="flex items-center gap-2 text-brand-teal">
                 <LifeBuoy className="w-5 h-5 animate-spin" style={{ animationDuration: '8s' }} />
@@ -447,7 +447,7 @@ export default function Support() {
                   value={ticketForm.title}
                   onChange={(e) => setTicketForm((p) => ({ ...p, title: e.target.value }))}
                   placeholder="Detail the issue (e.g. Multer file upload throws 500 error on 2MB PDF)..."
-                  className="w-full bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all focus:outline-none resize-none"
+                  className="w-full bg-[#121A21] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all focus:outline-none resize-none"
                 />
               </div>
 
@@ -457,7 +457,7 @@ export default function Support() {
                 <select
                   value={ticketForm.category}
                   onChange={(e) => setTicketForm((p) => ({ ...p, category: e.target.value }))}
-                  className="w-full bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all focus:outline-none"
+                  className="w-full bg-[#121A21] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all focus:outline-none"
                 >
                   <option value="Bug Report">Bug Report</option>
                   <option value="Server Issue">Server Issue</option>
@@ -473,7 +473,7 @@ export default function Support() {
                 <select
                   value={ticketForm.severity}
                   onChange={(e) => setTicketForm((p) => ({ ...p, severity: e.target.value }))}
-                  className="w-full bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all focus:outline-none"
+                  className="w-full bg-[#121A21] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 text-xs font-bold transition-all focus:outline-none"
                 >
                   <option value="Low">Low (Visual tweak)</option>
                   <option value="Medium">Medium (Functional degradation)</option>
@@ -494,8 +494,8 @@ export default function Support() {
           </div>
 
           {/* Right Panel: Agent Ticket List */}
-          <div className="lg:col-span-3 bg-[#112421] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
-            <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0e1d1b]">
+          <div className="lg:col-span-3 bg-[#22313F] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
+            <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
                   <LifeBuoy className="w-4 h-4" />
@@ -519,7 +519,7 @@ export default function Support() {
                   {filteredTickets.map((ticket) => (
                     <div
                       key={ticket.id}
-                      className="bg-[#0e1d1b] border border-white/5 hover:border-brand-teal/30 p-5 rounded-2xl transition-all shadow-sm hover:shadow flex flex-col justify-between space-y-4"
+                      className="bg-[#1A252F] border border-white/5 hover:border-brand-teal/30 p-5 rounded-2xl transition-all shadow-sm hover:shadow flex flex-col justify-between space-y-4"
                     >
                       <div className="space-y-2">
                         <div className="flex items-start justify-between gap-3">

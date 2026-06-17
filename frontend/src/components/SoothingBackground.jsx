@@ -47,8 +47,8 @@ export default function SoothingBackground() {
         x: width * 0.2,
         y: height * 0.25,
         radius: Math.max(width, height) * 0.35,
-        colorStart: 'rgba(215, 248, 231, 0.75)', // Soft Mint
-        colorEnd: 'rgba(215, 248, 231, 0)',
+        colorStart: 'rgba(120, 198, 82, 0.15)', // Soft Green
+        colorEnd: 'rgba(120, 198, 82, 0)',
         speedX: 0.0007,
         speedY: 0.0005,
         ampX: 120,
@@ -62,8 +62,8 @@ export default function SoothingBackground() {
         x: width * 0.8,
         y: height * 0.75,
         radius: Math.max(width, height) * 0.4,
-        colorStart: 'rgba(202, 243, 237, 0.7)', // Light Aqua / Sage
-        colorEnd: 'rgba(202, 243, 237, 0)',
+        colorStart: 'rgba(0, 176, 155, 0.15)', // Soft Teal
+        colorEnd: 'rgba(0, 176, 155, 0)',
         speedX: 0.0006,
         speedY: 0.0008,
         ampX: 150,
@@ -77,8 +77,8 @@ export default function SoothingBackground() {
         x: width * 0.35,
         y: height * 0.7,
         radius: Math.max(width, height) * 0.3,
-        colorStart: 'rgba(255, 245, 218, 0.75)', // Soft Honey / Sunshine
-        colorEnd: 'rgba(255, 245, 218, 0)',
+        colorStart: 'rgba(44, 62, 80, 0.08)', // Soft Slate/Midnight Blue
+        colorEnd: 'rgba(44, 62, 80, 0)',
         speedX: 0.0009,
         speedY: 0.0004,
         ampX: 100,
@@ -123,7 +123,7 @@ export default function SoothingBackground() {
         speed: 3.5,
         opacity: 0.75,
         decay: 0.982,
-        color: '0, 173, 156', // Teal
+        color: '0, 176, 155', // Teal
         lineWidth: 3,
       });
       ripples.push({
@@ -134,7 +134,7 @@ export default function SoothingBackground() {
         speed: 2.5,
         opacity: 0.5,
         decay: 0.978,
-        color: '255, 245, 218', // Honey warm glow secondary ring
+        color: '120, 198, 82', // Green warm glow secondary ring
         lineWidth: 2,
       });
     };
@@ -161,7 +161,7 @@ export default function SoothingBackground() {
       ctx.clearRect(0, 0, width, height);
 
       // 1. Base Calm Background Color
-      ctx.fillStyle = '#f8fcf9';
+      ctx.fillStyle = '#edf0f2';
       ctx.fillRect(0, 0, width, height);
 
       // 2. Render Morphing/Drifting Fluid Blobs
@@ -195,9 +195,9 @@ export default function SoothingBackground() {
           mouse.glowX, mouse.glowY, 0,
           mouse.glowX, mouse.glowY, 220
         );
-        mouseGlow.addColorStop(0, 'rgba(0, 173, 156, 0.045)');
-        mouseGlow.addColorStop(0.5, 'rgba(0, 173, 156, 0.015)');
-        mouseGlow.addColorStop(1, 'rgba(0, 173, 156, 0)');
+        mouseGlow.addColorStop(0, 'rgba(0, 176, 155, 0.045)');
+        mouseGlow.addColorStop(0.5, 'rgba(0, 176, 155, 0.015)');
+        mouseGlow.addColorStop(1, 'rgba(0, 176, 155, 0)');
         ctx.fillStyle = mouseGlow;
         ctx.beginPath();
         ctx.arc(mouse.glowX, mouse.glowY, 220, 0, Math.PI * 2);
@@ -254,8 +254,8 @@ export default function SoothingBackground() {
         // Draw particle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 173, 156, ${currentAlpha * 0.6})`;
-        ctx.shadowColor = 'rgba(0, 173, 156, 0.1)';
+        ctx.fillStyle = `rgba(0, 176, 155, ${currentAlpha * 0.6})`;
+        ctx.shadowColor = 'rgba(0, 176, 155, 0.1)';
         ctx.shadowBlur = 4;
         ctx.fill();
         ctx.shadowBlur = 0; // reset

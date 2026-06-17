@@ -414,7 +414,7 @@ export default function CalendarView() {
   );
 
   return (
-    <div className="p-6 md:p-8 space-y-6 bg-bg-base max-w-7xl mx-auto h-full flex flex-col min-h-0">
+    <div className="p-6 md:p-8 space-y-6 bg-bg-base w-full h-full flex flex-col min-h-0">
       
       {/* Calendar Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
@@ -494,13 +494,13 @@ export default function CalendarView() {
           {/* Quick Filters */}
           <div className="flex flex-wrap items-center gap-3">
             
-            {/* Filter by Assignee (Ops vs Admin) */}
+             {/* Filter by Assignee (Ops vs Admin) */}
             <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/50 p-1 rounded-xl">
               <button
                 onClick={() => setAssigneeFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
                   assigneeFilter === 'all'
-                    ? 'bg-[#112421] text-white shadow-xs'
+                    ? 'bg-[#22313F] text-white shadow-xs'
                     : 'text-text-muted hover:text-text-main'
                 }`}
               >
@@ -510,7 +510,7 @@ export default function CalendarView() {
                 onClick={() => setAssigneeFilter('my')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
                   assigneeFilter === 'my'
-                    ? 'bg-[#112421] text-white shadow-xs'
+                    ? 'bg-[#22313F] text-white shadow-xs'
                     : 'text-text-muted hover:text-text-main'
                 }`}
               >
@@ -518,13 +518,13 @@ export default function CalendarView() {
               </button>
             </div>
 
-            {/* Filter by Type */}
+             {/* Filter by Type */}
             <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/50 p-1 rounded-xl">
               <button
                 onClick={() => setTypeFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
                   typeFilter === 'all'
-                    ? 'bg-[#112421] text-white shadow-xs'
+                    ? 'bg-[#22313F] text-white shadow-xs'
                     : 'text-text-muted hover:text-text-main'
                 }`}
               >
@@ -534,7 +534,7 @@ export default function CalendarView() {
                 onClick={() => setTypeFilter('tasks')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
                   typeFilter === 'tasks'
-                    ? 'bg-[#112421] text-white shadow-xs'
+                    ? 'bg-[#22313F] text-white shadow-xs'
                     : 'text-text-muted hover:text-text-main'
                 }`}
               >
@@ -544,7 +544,7 @@ export default function CalendarView() {
                 onClick={() => setTypeFilter('recalls')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
                   typeFilter === 'recalls'
-                    ? 'bg-[#112421] text-white shadow-xs'
+                    ? 'bg-[#22313F] text-white shadow-xs'
                     : 'text-text-muted hover:text-text-main'
                 }`}
               >
@@ -554,7 +554,7 @@ export default function CalendarView() {
                 onClick={() => setTypeFilter('programs')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
                   typeFilter === 'programs'
-                    ? 'bg-[#112421] text-white shadow-xs'
+                    ? 'bg-[#22313F] text-white shadow-xs'
                     : 'text-text-muted hover:text-text-main'
                 }`}
               >

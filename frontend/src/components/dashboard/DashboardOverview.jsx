@@ -85,7 +85,7 @@ export default function DashboardOverview() {
   const activeRecallsCount = sortedRecalls.length;
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto overflow-auto flex-1">
+    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full overflow-auto flex-1">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -109,7 +109,7 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Card 1: Total Onboarding Partners */}
-        <div className="bg-[#112421] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Total Onboarding Partners</span>
@@ -126,7 +126,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Card 2: Bottleneck Alert */}
-        <div className="bg-[#112421] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-amber-500/80 text-[10px] font-extrabold uppercase tracking-wider">Onboarding Bottleneck</span>
@@ -144,7 +144,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Card 3: Task Completion Progress */}
-        <div className="bg-[#112421] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">Overall Task Progress</span>
@@ -166,7 +166,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Card 4: Action Required */}
-        <div className="bg-[#112421] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <span className="text-red-400/80 text-[10px] font-extrabold uppercase tracking-wider">Action Required</span>
@@ -440,7 +440,7 @@ export default function DashboardOverview() {
           </div>
 
           {/* Stress Buster Mini-game widget */}
-          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+          <div className="bg-[#22313F] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
@@ -469,7 +469,7 @@ export default function DashboardOverview() {
           </div>
 
           {/* Tug of War Mini-game widget */}
-          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+          <div className="bg-[#22313F] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>

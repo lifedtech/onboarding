@@ -569,7 +569,7 @@ export default function SecureChatPanel() {
                         <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center border border-white/5 relative shrink-0">
                           <User className="w-3 h-3 text-slate-300" />
                           <Circle
-                            className={`w-1.5 h-1.5 fill-current absolute -bottom-0.5 -right-0.5 ring-1 ring-[#112421] ${
+                            className={`w-1.5 h-1.5 fill-current absolute -bottom-0.5 -right-0.5 ring-1 ring-[#22313F] ${
                               u.isOnline ? 'text-green-500' : 'text-slate-500'
                             }`}
                           />
@@ -659,7 +659,7 @@ export default function SecureChatPanel() {
                               <>
                                 <User className="w-3 h-3 text-slate-300" />
                                 <Circle
-                                  className={`w-1.5 h-1.5 fill-current absolute -bottom-0.5 -right-0.5 ring-1 ring-[#112421] ${
+                                  className={`w-1.5 h-1.5 fill-current absolute -bottom-0.5 -right-0.5 ring-1 ring-[#22313F] ${
                                     partner?.isOnline ? 'text-green-500' : 'text-slate-500'
                                   }`}
                                 />

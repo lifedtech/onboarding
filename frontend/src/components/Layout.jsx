@@ -59,7 +59,7 @@ export default function Layout({ children, activePage, onNavigate }) {
     }
 
     return (
-      <div className="flex flex-col h-full bg-[#112421] text-slate-100">
+      <div className="flex flex-col h-full bg-[#22313F] text-slate-100">
         {/* Brand */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5">
           <div className="w-8 h-8 border border-white/10 rounded-lg flex items-center justify-center shrink-0 overflow-hidden shadow-inner bg-white/10">
@@ -115,7 +115,7 @@ export default function Layout({ children, activePage, onNavigate }) {
               </div>
             )}
             <span
-              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#112421]"
+              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#22313F]"
               style={{ backgroundColor: getStatusColor(user?.statusMode) }}
             />
           </div>

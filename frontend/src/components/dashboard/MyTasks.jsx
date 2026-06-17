@@ -58,7 +58,7 @@ export default function MyTasks() {
   const overdueCount = pendingTasks.filter((t) => t.dueDate && new Date(t.dueDate) < new Date()).length;
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto h-full flex flex-col">
+    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full h-full flex flex-col">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
@@ -86,7 +86,7 @@ export default function MyTasks() {
         {/* Left Side Metrics Card */}
         <div className="space-y-6 lg:col-span-1 flex flex-col justify-start">
           {/* Stats Deck 1: Tasks Overdue */}
-          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
+          <div className="bg-[#22313F] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-red-400/80 text-[10px] font-extrabold uppercase tracking-wider">Critical Deadlines</span>
@@ -102,7 +102,7 @@ export default function MyTasks() {
           </div>
 
           {/* Stats Deck 2: Caught Up Rate */}
-          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
+          <div className="bg-[#22313F] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">Operational Focus</span>
@@ -121,8 +121,8 @@ export default function MyTasks() {
         </div>
 
         {/* Right Pending Task Aggregation Card */}
-        <div className="lg:col-span-3 bg-[#112421] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
-          <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0e1d1b]">
+        <div className="lg:col-span-3 bg-[#22313F] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
+          <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
                 <Inbox className="w-4 h-4" />
@@ -167,7 +167,7 @@ export default function MyTasks() {
                   return (
                     <div
                       key={task.id}
-                      className="bg-[#0e1d1b] border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:border-brand-teal/40 transition-all group"
+                      className="bg-[#1A252F] border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:border-brand-teal/40 transition-all group"
                     >
                       {/* Checkbox wrapper */}
                       <button

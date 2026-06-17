@@ -58,7 +58,7 @@ export default function SupportDashboard() {
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base max-w-7xl mx-auto h-full flex flex-col">
+    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full h-full flex flex-col">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
@@ -70,8 +70,8 @@ export default function SupportDashboard() {
       </div>
 
       {/* Manual Partner Assignment Workspace */}
-      <div className="flex-1 min-h-0 bg-[#112421] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
-        <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0e1d1b]">
+      <div className="flex-1 min-h-0 bg-[#22313F] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
+        <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
               <Wrench className="w-4 h-4" />
@@ -102,7 +102,7 @@ export default function SupportDashboard() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#0e1d1b]/50 border-b border-white/5 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
+                <tr className="bg-[#1A252F]/50 border-b border-white/5 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
                   <th className="px-6 py-4">Partner Name</th>
                   <th className="px-6 py-4">Type & Category</th>
                   <th className="px-6 py-4">Current Assignee</th>
@@ -163,7 +163,7 @@ export default function SupportDashboard() {
                           value={hm.opsUserId}
                           disabled={assigningId === hm.id}
                           onChange={(e) => handleAssign(hm.id, e.target.value)}
-                          className="bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-1.5 px-3 text-xs font-bold transition-all focus:outline-none cursor-pointer max-w-[180px] truncate"
+                          className="bg-[#121A21] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-1.5 px-3 text-xs font-bold transition-all focus:outline-none cursor-pointer max-w-[180px] truncate"
                         >
                           <option value={hm.opsUserId} disabled>
                             Change Assignment...

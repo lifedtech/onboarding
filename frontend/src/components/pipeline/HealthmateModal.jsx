@@ -197,7 +197,7 @@ export default function HealthmateModal() {
   const getPhaseHeaderClass = (phase, isCurrent, isPast) => {
     if (isCurrent) return 'bg-brand-teal/10 border-brand-teal/20 text-brand-teal';
     if (isPast) return 'bg-slate-100 border-slate-200 text-slate-500 opacity-70';
-    return 'bg-[#f2fff3] border-brand-green/20 text-brand-green';
+    return 'bg-bg-mint border-brand-green/20 text-brand-green';
   };
 
   const handleSaveProgramDetails = async () => {
@@ -426,7 +426,7 @@ export default function HealthmateModal() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-[#142b27]/60 backdrop-blur-md"
+        className="fixed inset-0 z-40 bg-[#2C3E50]/60 backdrop-blur-md"
         onClick={() => setSelectedHealthmate(null)}
       />
 
@@ -438,7 +438,7 @@ export default function HealthmateModal() {
         aria-label={`${hm.name} details`}
       >
         <div
-          className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#142b27]/10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* R&D Credential Status Bar */}
@@ -1004,7 +1004,7 @@ export default function HealthmateModal() {
                                   type="button"
                                   onClick={handleSimulateRDApproval}
                                   disabled={savingProgram || !programTitle}
-                                  className="bg-[#112421] hover:bg-[#0c1a18] disabled:opacity-50 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
+                                  className="bg-[#2C3E50] hover:bg-[#1A252F] disabled:opacity-50 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
                                 >
                                   Approve Program as R&D
                                 </button>
