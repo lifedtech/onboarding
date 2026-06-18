@@ -432,9 +432,9 @@ The Onboarding Manager is styled using a dark, modern palette based on the **Rob
   * Configured in the Tailwind theme as the default sans-serif font family.
   * System font-weight defaults to `400` for a clean, highly readable interface.
 * **Palette Specifications**:
-  * **Brand Colors**: Sleek teal (`#00ad9c`) and fresh green (`#5fba46`).
-  * **Sidebar**: Deep forest green (`#112421`) for a premium look.
-  * **Main Background**: Off-white mint (`#f8fcf9`) to provide high visual contrast.
+  * **Brand Colors**: Sleek teal (`#00B09B`), fresh green (`#78C652`), and Midnight Blue (`#2C3E50`).
+  * **Sidebar**: Midnight Blue (`#22313F`) for a premium look.
+  * **Main Background**: Light Neutral (`#edf0f2`) to provide high visual contrast.
 
 ---
 

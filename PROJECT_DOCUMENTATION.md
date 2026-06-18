@@ -366,11 +366,11 @@ The frontend is styled using a modern, professional palette designed to match cl
 
 * **Typography:** Default system font is **Roboto** (weights: 400 Regular, 500 Medium, 700 Bold), loaded via Google Fonts. This guarantees high readability for large checklists and dashboards.
 * ** harmonious Color Palette:**
-  * **Brand Teal (`#00ad9c`):** Used for primary buttons, active tabs, and positive states.
-  * **Brand Green (`#5fba46`):** Used for success indicators, completed checkboxes, and 'Live' status labels.
-  * **Deep Forest Sidebar (`#112421`):** Used for the sidebar to give the application a premium, modern feel.
-  * **Mint Background (`#f8fcf9`):** Light, clean surface color that keeps the dashboard feeling spacious and readable.
-  * **Light Borders (`#d3ebd7`):** Subtle borders that structure information panels cleanly.
+  * **Brand Teal (`#00B09B`):** Used for primary buttons, active tabs, and positive states.
+  * **Brand Green (`#78C652`):** Used for success indicators, completed checkboxes, and 'Live' status labels.
+  * **Midnight Blue (`#2C3E50` / `#22313F`):** Used for dark background panels, sidebar, text main, and elevated elements.
+  * **Light Neutral (`#edf0f2`):** Clean base surface color that keeps the dashboard feeling spacious and readable.
+  * **Light Borders (`#cbd5e1`):** Subtle borders that structure information panels cleanly.
 * **Micro-Animations:** Interactive elements feature smooth transitions (`transition-all duration-200`) and slight elevation scale transforms on hover to make the interface feel alive and premium.
 
 ---
