@@ -25,7 +25,13 @@ function isUserOnline(userId) {
   return isOnline;
 }
 
+function removePresence(userId) {
+  if (!userId) return;
+  activeUsers.delete(userId);
+}
+
 module.exports = {
   updatePresence,
-  isUserOnline
+  isUserOnline,
+  removePresence
 };

@@ -61,6 +61,7 @@ const useOpsStore = create((set, get) => ({
   },
 
   logout: () => {
+    api.post('/auth/logout').catch(() => {});
     clearAuth();
     set({ token: null, user: null, healthmates: [], selectedHealthmate: null, error: null });
   },

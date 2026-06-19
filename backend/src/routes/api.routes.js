@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload');
 
-const { register, login }                          = require('../controllers/auth.controller');
+const { register, login, logout }                          = require('../controllers/auth.controller');
 const { authLimiter }                              = require('../middleware/rateLimit.middleware');
 const { validate }                                 = require('../middleware/validate.middleware');
 const { registerSchema, loginSchema }              = require('../utils/auth.schema');
@@ -41,8 +41,10 @@ router.post('/webhooks/verification-completed', verifyRdSignature, handleVerific
 router.post('/webhooks/program-submitted',      verifyRdSignature, handleProgramSubmission);
 router.post('/webhooks/program-status',         verifyRdSignature, handleProgramStatus);
 
-// ─── Protected ────────────────────────────────────────────────────────────────
 router.use(authenticate);
+
+// Auth logout
+router.post('/auth/logout', logout);
 
 // Analytics
 router.get('/analytics/summary',            getDashboardSummary);

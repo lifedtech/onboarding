@@ -67,6 +67,14 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
+    // Single active session enforcement: check if the user is already online
+    const { isUserOnline } = require('../services/presence.service');
+    if (isUserOnline(user.id)) {
+      return res.status(403).json({
+        message: 'This account is already logged in on another device. Concurrent logins are not permitted.'
+      });
+    }
+
     const payload = { id: user.id, email: user.email, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
 
@@ -80,4 +88,19 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+/**
+ * POST /api/auth/logout
+ * Clears active user's presence.
+ */
+const logout = async (req, res) => {
+  try {
+    const { removePresence } = require('../services/presence.service');
+    removePresence(req.user.id);
+    return res.status(200).json({ message: 'Logged out successfully.' });
+  } catch (error) {
+    console.error('[logout]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+module.exports = { register, login, logout };
