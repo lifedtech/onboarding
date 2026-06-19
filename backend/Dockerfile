@@ -24,4 +24,5 @@ COPY . .
 EXPOSE 3001
 
 # Command is overridden in docker-compose for database syncing/seeding
-CMD ["npm", "start"]
+# Run migrations before starting server in production
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]

@@ -12,7 +12,25 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    
+    const configuredOrigin = process.env.CLIENT_ORIGIN;
+    
+    // Check if origin matches configured origin, is localhost, 127.0.0.1, or is a workers.dev domain
+    if (
+      origin === configuredOrigin ||
+      origin === 'http://localhost:5173' ||
+      origin === 'http://localhost:5174' ||
+      origin.startsWith('http://localhost:') ||
+      origin.startsWith('http://127.0.0.1:') ||
+      origin.endsWith('.workers.dev')
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 
