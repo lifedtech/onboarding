@@ -98,6 +98,12 @@ export default function HealthmateModal() {
   const [programEndDate, setProgramEndDate] = useState('');
   const [savingProgram, setSavingProgram] = useState(false);
 
+  const [regStatus, setRegStatus] = useState('PENDING');
+  const [regRemark, setRegRemark] = useState('');
+  const [progStatus, setProgStatus] = useState('PENDING');
+  const [progMsg, setProgMsg] = useState('');
+  const [savingManual, setSavingManual] = useState(false);
+
   // Per-button sending state to prevent double-clicks
   const [sending, setSending] = useState({ EMAIL: false, WHATSAPP: false });
 
@@ -154,6 +160,11 @@ export default function HealthmateModal() {
       setProgramTitle(selectedHealthmate.programTitle ?? '');
       setProgramStartDate(selectedHealthmate.programStartDate ? new Date(selectedHealthmate.programStartDate).toISOString().split('T')[0] : '');
       setProgramEndDate(selectedHealthmate.programEndDate ? new Date(selectedHealthmate.programEndDate).toISOString().split('T')[0] : '');
+
+      setRegStatus(selectedHealthmate.registrationStatus ?? 'PENDING');
+      setRegRemark(selectedHealthmate.registrationRemark ?? '');
+      setProgStatus(selectedHealthmate.programStatus ?? 'PENDING');
+      setProgMsg(selectedHealthmate.programApprovedMsg ?? '');
 
       setActiveTab(selectedHealthmate.phase === 'PRE_QUALIFY' ? 'screening' : 'details');
     }
@@ -254,6 +265,31 @@ export default function HealthmateModal() {
     const result = await verifyCredentials(hm.id, 'Credentials verified successfully via simulated R&D API request.');
     if (result && result.success) {
       toast.success('R&D Credentials verified successfully!');
+    }
+  };
+
+  const handleSaveManualVerification = async () => {
+    setSavingManual(true);
+    let result;
+    if (regStatus === 'VERIFIED' && hm.registrationStatus !== 'VERIFIED') {
+      result = await verifyCredentials(hm.id, regRemark || 'Verified manually');
+      if (result && result.success) {
+        result = await updateHealthmate(hm.id, {
+          programStatus: progStatus,
+          programApprovedMsg: progMsg || null,
+        });
+      }
+    } else {
+      result = await updateHealthmate(hm.id, {
+        registrationStatus: regStatus,
+        registrationRemark: regRemark || null,
+        programStatus: progStatus,
+        programApprovedMsg: progMsg || null,
+      });
+    }
+    setSavingManual(false);
+    if (result && result.success) {
+      toast.success('Status overrides saved!');
     }
   };
 
@@ -953,70 +989,101 @@ export default function HealthmateModal() {
                       </div>
                     </div>
 
-                    <div className="bg-slate-50/50 p-4 rounded-2xl border border-border-leaf/35 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-text-main flex items-center gap-1.5">
-                          <BookOpen className="w-4 h-4 text-brand-teal" />
-                          R&D Team Review Feedback
-                        </span>
-                        <span className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border ${
-                          hm.programStatus === 'APPROVED' 
-                            ? 'text-brand-green bg-brand-green/10 border-brand-green/20'
-                            : 'text-amber-600 bg-amber-50 border-amber-200'
-                        }`}>
-                          {hm.programStatus || 'PENDING'}
-                        </span>
+                    <div className="bg-slate-50/50 p-4 rounded-2xl border border-border-leaf/35 space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border-leaf/25 pb-2">
+                        <CheckCircle2 className="w-4 h-4 text-brand-teal" />
+                        <h3 className="text-text-main font-extrabold text-xs uppercase tracking-wider">
+                          Manual Onboarding & Compliance Controls
+                        </h3>
+                      </div>
+                      <p className="text-[10px] text-text-muted/80 font-semibold">
+                        Conduct R&D reviews manually. Directly verify registration credentials and approve/reject program listings below.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Credentials Verification */}
+                        <div className="space-y-3 p-3 bg-white rounded-xl border border-slate-100/80">
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">
+                              Credentials Verification
+                            </label>
+                            <select
+                              value={regStatus}
+                              onChange={(e) => setRegStatus(e.target.value)}
+                              disabled={!canModify}
+                              className="w-full bg-slate-50 border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                            >
+                              <option value="PENDING">Pending Verification</option>
+                              <option value="VERIFIED">Verified (Sends Credentials)</option>
+                              <option value="ESCALATED">Escalated (SLA Breach)</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">
+                              Verification Remark
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Verified certificates manually"
+                              value={regRemark}
+                              onChange={(e) => setRegRemark(e.target.value)}
+                              disabled={!canModify}
+                              className="w-full bg-slate-50 border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal placeholder-text-muted/40"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Program Approval */}
+                        <div className="space-y-3 p-3 bg-white rounded-xl border border-slate-100/80">
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">
+                              Program Listing Status
+                            </label>
+                            <select
+                              value={progStatus}
+                              onChange={(e) => setProgStatus(e.target.value)}
+                              disabled={!canModify}
+                              className="w-full bg-slate-50 border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                            >
+                              <option value="PENDING">Pending Review</option>
+                              <option value="APPROVED">Approved</option>
+                              <option value="CORRECTION_REQUIRED">Correction Required</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">
+                              Program Review Message
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Approved for public listings"
+                              value={progMsg}
+                              onChange={(e) => setProgMsg(e.target.value)}
+                              disabled={!canModify}
+                              className="w-full bg-slate-50 border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal placeholder-text-muted/40"
+                            />
+                          </div>
+                        </div>
                       </div>
 
-                      {hm.programStatus === 'APPROVED' ? (
-                        <div className="space-y-2">
-                          <div className="bg-brand-green/10 border border-brand-green/20 text-brand-green rounded-xl p-3 text-xs font-semibold leading-relaxed">
-                            <p className="font-extrabold uppercase text-[9px] tracking-wider mb-1">✓ Approved Message from R&D Team:</p>
-                            <p className="text-text-main italic">"{hm.programApprovedMsg || 'Program has been reviewed and approved for public listings.'}"</p>
-                          </div>
-                          
-                          {hm.phase !== 'LIVE' && canModify && (
-                            <p className="text-[10px] text-text-muted font-bold">
-                              💡 Program is approved! You can now mark the partner as **Live** to publish this program on the calendar.
-                            </p>
+                      {canModify && (
+                        <button
+                          type="button"
+                          onClick={handleSaveManualVerification}
+                          disabled={savingManual}
+                          className="w-full bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 text-white text-xs font-extrabold py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          {savingManual ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              Saving Status Overrides...
+                            </>
+                          ) : (
+                            'Save Status Overrides'
                           )}
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-800 rounded-xl p-3 text-xs font-semibold leading-relaxed">
-                            Program is currently pending R&D team review. Submit details above and trigger review approval.
-                          </div>
-
-                          {canModify && (
-                            <div className="border border-dashed border-slate-200 p-3 rounded-xl bg-white space-y-3">
-                              <span className="text-[9px] font-extrabold text-text-muted uppercase tracking-wider block">R&D Team Simulator</span>
-                              <div className="flex flex-col gap-2">
-                                {hm.registrationStatus !== 'VERIFIED' && (
-                                  <button
-                                    type="button"
-                                    onClick={handleSimulateRDVerification}
-                                    className="bg-brand-teal hover:bg-brand-teal-hover text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
-                                  >
-                                    Verify Registration Credentials
-                                  </button>
-                                )}
-                                <button
-                                  type="button"
-                                  onClick={handleSimulateRDApproval}
-                                  disabled={savingProgram || !programTitle}
-                                  className="bg-[#2C3E50] hover:bg-[#1A252F] disabled:opacity-50 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"
-                                >
-                                  Approve Program as R&D
-                                </button>
-                              </div>
-                              {!programTitle && (
-                                <p className="text-[9px] text-red-500 font-bold">
-                                  * Please save a Program Title above before simulating approval.
-                                </p>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        </button>
                       )}
                     </div>
                   </div>

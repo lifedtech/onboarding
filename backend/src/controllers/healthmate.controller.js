@@ -187,7 +187,8 @@ const updateHealthmate = async (req, res) => {
   const {
     name, category, contactName, contactEmail, contactPhone, opsUserId,
     screeningRemarks, screeningQueries, recallReminder,
-    programTitle, programStartDate, programEndDate, programStatus, programApprovedMsg
+    programTitle, programStartDate, programEndDate, programStatus, programApprovedMsg,
+    registrationStatus, registrationRemark
   } = req.body;
   const isAdmin = req.user.role?.toLowerCase() === 'admin';
 
@@ -223,6 +224,8 @@ const updateHealthmate = async (req, res) => {
         ...(programEndDate !== undefined && { programEndDate: programEndDate ? new Date(programEndDate) : null }),
         ...(programStatus !== undefined && { programStatus }),
         ...(programApprovedMsg !== undefined && { programApprovedMsg }),
+        ...(registrationStatus !== undefined && { registrationStatus }),
+        ...(registrationRemark !== undefined && { registrationRemark }),
       },
       include: {
         tasks: true,
