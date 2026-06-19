@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
+import CategorySelector from './CategorySelector';
 
 // ─── Phase config ─────────────────────────────────────────────────────────────
 
@@ -676,11 +677,10 @@ export default function HealthmateModal() {
                           </div>
                           <div>
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
-                            <input
-                              type="text"
+                            <CategorySelector
                               value={editCategory}
-                              onChange={(e) => setEditCategory(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                              onChange={setEditCategory}
+                              disabled={false}
                             />
                           </div>
                           <div className="flex items-center gap-2 pt-2">
