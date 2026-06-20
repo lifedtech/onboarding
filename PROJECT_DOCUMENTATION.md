@@ -135,6 +135,9 @@ frontend/
 │   │   │   ├── DashboardOverview.jsx
 │   │   │   ├── MyTasks.jsx
 │   │   │   └── TeamManagement.jsx
+│   │   ├── enquiries/         # Enquiries spreadsheet and intake form
+│   │   │   ├── AddEnquiryModal.jsx
+│   │   │   └── EnquiriesSheet.jsx
 │   │   ├── pipeline/          # Interactive Kanban columns and partner cards
 │   │   │   ├── AddHealthmateModal.jsx
 │   │   │   ├── HealthmateCard.jsx
@@ -165,30 +168,31 @@ The database is built on **PostgreSQL** and managed using **Prisma**. Below is t
   ┌────────────────────────┐                   ┌────────────────────────┐
   │        OpsUser         │                   │       Healthmate       │
   ├────────────────────────┤                   ├────────────────────────┤
-  │ id (PK: UUID)          │                   │ id (PK: UUID)          │
-  │ email (Unique)         │ 1               * │ name (String)          │
-  │ passwordHash (String)  │──────────────────>│ type (Enum)            │
-  │ name (String)          │                   │ category (String)      │
-  │ role (String: default) │                   │ phase (Enum: default)  │
-  └────────────────────────┘                   │ daysInPhase (Int)      │
-                                               │ contactEmail (String)  │
-                                               │ contactPhone (String)  │
-                                               │ regDocUrl (String?)    │
-                                               │ opsUserId (FK)         │
-                                               └────────────────────────┘
-                                                           │
-                                                           │ 1
-                                                           │
-                                                           ▼ *
-                                               ┌────────────────────────┐
-                                               │          Task          │
-                                               ├────────────────────────┤
-                                               │ id (PK: UUID)          │
-                                               │ title (String)         │
-                                               │ completed (Boolean)    │
-                                               │ phase (Enum)           │
-                                               │ healthmateId (FK)      │
-                                               └────────────────────────┘
+  │ id (PK: UUID)          │ 1               * │ id (PK: UUID)          │
+  │ email (Unique)         │ ├────────────────>│ name (String)          │
+  │ passwordHash (String)  │ │                 │ type (Enum)            │
+  │ name (String)          │ │                 │ category (String)      │
+  │ role (String: default) │ │                 │ phase (Enum: default)  │
+  └────────────────────────┘ │                 │ daysInPhase (Int)      │
+         │                   │                 │ contactEmail (String)  │
+         │ 1                 │                 │ contactPhone (String)  │
+         │                   │                 │ regDocUrl (String?)    │
+         ▼ *                 │                 │ opsUserId (FK)         │
+  ┌────────────────────────┐ │                 └────────────────────────┘
+  │        Enquiry         │ │                             │
+  ├────────────────────────┤ │                             │ 1
+  │ id (PK: UUID)          │ │                             │
+  │ name (String)          │ │                             ▼ *
+  │ contact (String)       │ │                 ┌────────────────────────┐
+  │ contacted (Boolean)    │ │                 │          Task          │
+  │ remarks (String?)      │ │                 ├────────────────────────┤
+  │ clientType (String)    │ │                 │ id (PK: UUID)          │
+  │ callbackLater (Boolean)│ │                 │ title (String)         │
+  │ reminderDate (DateTime)│ │                 │ completed (Boolean)    │
+  │ location (String?)     │ │                 │ phase (Enum)           │
+  │ opsUserId (FK)         │ │                 │ healthmateId (FK)      │
+  └────────────────────────┘ │                 └────────────────────────┘
+                             ▼ *
 ```
 
 ### 4.1 Schema Definitions (`schema.prisma`)
@@ -197,8 +201,9 @@ The database is built on **PostgreSQL** and managed using **Prisma**. Below is t
   * **`Phase`:** Traces progression stages: `PRE_QUALIFY` ➔ `PREPARE` ➔ `REGISTER` ➔ `REVIEW` ➔ `LIVE`.
   * **`HealthmateType`:** Categorizes the organization structures: `PRACTITIONER`, `CENTRE`, and `ORGANIZER`.
 * **Models:**
-  * **`OpsUser`:** Holds dashboard credentials. Relates one-to-many with `Healthmate`. Standard roles are `'ops'` (standard coordinator) and `'admin'` (administrator with team management access).
-  * **`Healthmate`:** Repesents the onboarding partner. Holds critical details (e.g., email, phone, category), phase counters, internal notes, and pointers to uploaded regulatory files (`regDocUrl`).
+  * **`OpsUser`:** Holds dashboard credentials. Relates one-to-many with `Healthmate` and `Enquiry`. Standard roles are `'ops'` (standard coordinator) and `'admin'` (administrator with team management access).
+  * **`Enquiry`:** Represents client/partner intake prospects. Tracks name, contact details, contacted status, client type (Service User vs Health Partner), remarks, callback schedules, and geographical location.
+  * **`Healthmate`:** Represents the onboarding partner. Holds critical details (e.g., email, phone, category), phase counters, internal notes, and pointers to uploaded regulatory files (`regDocUrl`).
   * **`Task`:** Individual checklist items. Each task is bound to a specific onboarding `phase`. Cascade constraints are declared (`onDelete: Cascade` on the `Healthmate` relationship) so that deleting a partner automatically removes their checklist history.
 
 ---
@@ -313,7 +318,19 @@ All endpoints require standard application/json requests and (unless noted as pu
 * **`DELETE /api/healthmates/:id/upload`**
   * Physically deletes the file from disk and database records, and unchecks the corresponding compliance task.
 
-### 7.4 Task Checklists (Protected)
+### 7.4 Intake Enquiries (Protected)
+* **`GET /api/enquiries`**
+  * Returns all intake enquiries registered.
+* **`POST /api/enquiries`**
+  * Records a new enquiry (requires name, contact info, client type, and optional location/remarks/callbacks).
+* **`PATCH /api/enquiries/:id`**
+  * Updates details of an enquiry (name, contact, contacted toggle, remarks, callback status, reminder date, and location).
+* **`DELETE /api/enquiries/:id`**
+  * Deletes an enquiry from database logs.
+* **`POST /api/enquiries/:id/promote`**
+  * Promotes a qualified `HEALTH_PARTNER` enquiry to the active Kanban partner pipeline, creating a new `Healthmate` in the `PRE_QUALIFY` phase and copy-routing details.
+
+### 7.5 Task Checklists (Protected)
 * **`POST /api/healthmates/:id/tasks`**
   * Seeds a custom task under a specific phase for a partner.
 * **`PATCH /api/tasks/:taskId/toggle`**
@@ -321,12 +338,12 @@ All endpoints require standard application/json requests and (unless noted as pu
 * **`GET /api/tasks/pending`**
   * Returns a global checklist of all uncompleted tasks across all partners, grouped and sorted.
 
-### 7.5 Background Messaging (Protected)
+### 7.6 Background Messaging (Protected)
 * **`POST /api/healthmates/:id/messages`**
   * Body: `{ "type": "EMAIL" | "WHATSAPP" }`
   * Automatically matches the partner's active stage, builds the message template, and queues the job in Redis.
 
-### 7.6 Team Administration (Admin Role Locked)
+### 7.7 Team Administration (Admin Role Locked)
 * **`GET /api/users`**
   * Returns all system accounts.
 * **`POST /api/users`**
@@ -334,7 +351,7 @@ All endpoints require standard application/json requests and (unless noted as pu
 * **`DELETE /api/users/:userId`**
   * Safely deletes an account and reassigns all managed partners to the executing administrator.
 
-### 7.7 R&D Webhooks (Public — HMAC Signature Protected)
+### 7.8 R&D Webhooks (Public — HMAC Signature Protected)
 These endpoints require a valid signature in the `X-RD-Signature` header, computed as `HMAC-SHA256(payload, RD_WEBHOOK_SECRET)`.
 * **`POST /api/webhooks/registration-submitted`**
   * Body: `{ "healthmateId": "UUID" }`
