@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
   Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User,
-  Calendar, Layers, BookOpen, CheckCircle2, FileText
+  Calendar, Layers, BookOpen, CheckCircle2, FileText, AlertTriangle
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
@@ -125,6 +125,10 @@ export default function HealthmateModal() {
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [deletingDoc, setDeletingDoc] = useState(false);
 
+  // Delete confirm modal states
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingPartner, setDeletingPartner] = useState(false);
+
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -136,6 +140,8 @@ export default function HealthmateModal() {
       setSending({ EMAIL: false, WHATSAPP: false });
       setIsEditing(false);
       setNewTaskTitle('');
+      setShowDeleteConfirm(false);
+      setDeletingPartner(false);
 
       setEditName(selectedHealthmate.name);
       setEditType(selectedHealthmate.type);
@@ -448,12 +454,16 @@ export default function HealthmateModal() {
   };
 
   const handleDeleteHealthmate = async () => {
-    if (!window.confirm(`Are you sure you want to permanently delete onboarding partner "${hm.name}"? This action cannot be undone.`)) {
-      return;
-    }
+    setDeletingPartner(true);
+    const toastId = toast.loading('Deleting partner profile...');
     const result = await deleteHealthmate(hm.id);
+    toast.dismiss(toastId);
+    setDeletingPartner(false);
     if (result && result.success) {
       setSelectedHealthmate(null);
+      setShowDeleteConfirm(false);
+    } else {
+      toast.error('Failed to delete partner profile.');
     }
   };
 
@@ -514,7 +524,7 @@ export default function HealthmateModal() {
             <div className="flex items-center gap-1.5 shrink-0">
               {canModify && (
                 <button
-                  onClick={handleDeleteHealthmate}
+                  onClick={() => setShowDeleteConfirm(true)}
                   className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl p-1.5 transition-colors"
                   title="Delete Partner"
                   aria-label="Delete Partner"
@@ -1368,6 +1378,84 @@ export default function HealthmateModal() {
           </div>
         </div>
       </div>
+
+      {/* Confirm Delete Partner Modal */}
+      {showDeleteConfirm && (
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 z-50 bg-[#2C3E50]/60 backdrop-blur-md animate-in fade-in duration-200"
+            onClick={() => setShowDeleteConfirm(false)}
+          />
+
+          {/* Modal box */}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-200"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirm Delete Partner"
+          >
+            <div
+              className="relative w-full max-w-sm bg-white border border-red-100 rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 shrink-0 bg-white">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center border border-red-100">
+                    <AlertTriangle className="w-4.5 h-4.5 text-red-500" />
+                  </div>
+                  <h2 className="text-text-main font-extrabold text-md tracking-wide">
+                    Delete Partner
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="text-text-muted hover:text-text-main hover:bg-slate-100 rounded-xl p-1.5 transition-colors cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="px-6 py-4">
+                <p className="text-slate-600 text-sm font-semibold leading-relaxed">
+                  Are you sure you want to permanently delete onboarding partner{' '}
+                  <span className="text-text-main font-extrabold">"{hm.name}"</span>?
+                </p>
+                <p className="text-red-500 text-xs font-bold mt-2 bg-red-50/50 p-2 rounded-xl border border-red-100/50">
+                  This action cannot be undone.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100 shrink-0">
+                <button
+                  onClick={handleDeleteHealthmate}
+                  disabled={deletingPartner}
+                  className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white font-extrabold rounded-xl py-2.5 text-sm flex items-center justify-center gap-1.5 transition-all shadow-md shadow-red-500/10 cursor-pointer"
+                >
+                  {deletingPartner ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Yes, Delete'
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 bg-white hover:bg-slate-100 text-text-main border border-slate-200 font-bold rounded-xl py-2.5 text-sm transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
