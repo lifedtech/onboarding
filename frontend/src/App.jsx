@@ -59,6 +59,44 @@ function Workspace() {
   const [gameSession, setGameSession] = useState(null);
   const token = useOpsStore((s) => s.token);
   const currentUser = useOpsStore((s) => s.user);
+  const logout = useOpsStore((s) => s.logout);
+
+  // Inactivity idle timer (15 minutes auto-logout)
+  useEffect(() => {
+    if (!token) return;
+
+    const IDLE_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+    let timeoutId;
+
+    const handleLogout = () => {
+      logout();
+      toast('Session expired due to inactivity. Please log in again.', {
+        icon: '⏰',
+        duration: 8000,
+        id: 'idle-logout-toast'
+      });
+    };
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleLogout, IDLE_TIMEOUT);
+    };
+
+    const activityEvents = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+
+    resetTimer();
+
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [token, logout]);
 
   useEffect(() => {
     if (!token) return;
