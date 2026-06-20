@@ -226,8 +226,23 @@ const promoteToPartner = async (req, res) => {
       }
     }
 
-    // Delete the enquiry since it is now promoted
-    await prisma.enquiry.delete({ where: { id } });
+    // Mark the enquiry as moved to pipeline instead of deleting it
+    const updatedEnquiry = await prisma.enquiry.update({
+      where: { id },
+      data: {
+        movedToPipeline: true,
+        contacted: true
+      },
+      include: {
+        opsUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          }
+        }
+      }
+    });
 
     // Retrieve fresh partner state with all tasks included
     const freshPartner = await prisma.healthmate.findUnique({
@@ -246,7 +261,10 @@ const promoteToPartner = async (req, res) => {
       },
     });
 
-    return res.status(201).json(freshPartner);
+    return res.status(201).json({
+      healthmate: freshPartner,
+      enquiry: updatedEnquiry
+    });
   } catch (error) {
     console.error('[promoteToPartner]', error);
     return res.status(500).json({ message: 'Internal server error.' });

@@ -62,6 +62,7 @@ model Enquiry {
   callbackLater Boolean   @default(false)
   reminderDate  DateTime?
   location      String?   // Location of client/partner
+  movedToPipeline Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

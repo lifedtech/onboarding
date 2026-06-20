@@ -79,7 +79,8 @@ export default function EnquiriesSheet() {
       enq.callbackLater &&
       enq.reminderDate &&
       isToday(enq.reminderDate) &&
-      !enq.contacted
+      !enq.contacted &&
+      !enq.movedToPipeline
   );
 
   // Filtered enquiries
@@ -408,7 +409,14 @@ export default function EnquiriesSheet() {
                             className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
                           />
                         ) : (
-                          enq.name
+                          <div className="flex items-center gap-2">
+                            <span>{enq.name}</span>
+                            {enq.movedToPipeline && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-50 text-indigo-600 border border-indigo-200/50">
+                                Moved to Pipeline
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
 
@@ -586,14 +594,21 @@ export default function EnquiriesSheet() {
                           ) : (
                             <>
                               {enq.clientType === 'HEALTH_PARTNER' && (
-                                <button
-                                  onClick={() => handlePromote(enq.id)}
-                                  className="p-1.5 text-brand-teal hover:bg-brand-teal/5 border border-brand-teal/10 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
-                                  title="Promote to pipeline partner"
-                                >
-                                  <ArrowRight className="w-3.5 h-3.5" />
-                                  Promote
-                                </button>
+                                enq.movedToPipeline ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                                    <Check className="w-3 h-3 text-indigo-600" />
+                                    Moved to Pipeline
+                                  </span>
+                                ) : (
+                                  <button
+                                    onClick={() => handlePromote(enq.id)}
+                                    className="p-1.5 text-brand-teal hover:bg-brand-teal/5 border border-brand-teal/10 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
+                                    title="Promote to pipeline partner"
+                                  >
+                                    <ArrowRight className="w-3.5 h-3.5" />
+                                    Promote
+                                  </button>
+                                )
                               )}
                               <button
                                 onClick={() => startEditing(enq)}

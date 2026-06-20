@@ -140,8 +140,8 @@ const useOpsStore = create((set, get) => ({
     try {
       const { data } = await api.post(`/enquiries/${id}/promote`, { category, type });
       set((state) => ({
-        healthmates: [data, ...state.healthmates],
-        enquiries: state.enquiries.filter((enq) => enq.id !== id),
+        healthmates: [data.healthmate, ...state.healthmates],
+        enquiries: state.enquiries.map((enq) => enq.id === id ? data.enquiry : enq),
         isLoading: false
       }));
       return { success: true, data };
