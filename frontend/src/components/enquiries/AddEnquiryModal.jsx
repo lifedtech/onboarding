@@ -8,6 +8,7 @@ export default function AddEnquiryModal({ isOpen, onClose }) {
 
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
+  const [location, setLocation] = useState('');
   const [clientType, setClientType] = useState('HEALTH_PARTNER'); // 'HEALTH_PARTNER' or 'SERVICE_USER'
   const [contacted, setContacted] = useState(false);
   const [remarks, setRemarks] = useState('');
@@ -37,6 +38,7 @@ export default function AddEnquiryModal({ isOpen, onClose }) {
     const payload = {
       name: name.trim(),
       contact: contact.trim(),
+      location: location.trim() || null,
       clientType,
       contacted,
       remarks: remarks.trim() || null,
@@ -54,6 +56,7 @@ export default function AddEnquiryModal({ isOpen, onClose }) {
       // Reset form
       setName('');
       setContact('');
+      setLocation('');
       setClientType('HEALTH_PARTNER');
       setContacted(false);
       setRemarks('');
@@ -132,6 +135,20 @@ export default function AddEnquiryModal({ isOpen, onClose }) {
                 placeholder="e.g. liam@example.com or +61412345678"
                 className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
                 required
+              />
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                Location (City / State)
+              </label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Mumbai, Maharashtra"
+                className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
               />
             </div>
 

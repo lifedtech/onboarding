@@ -30,7 +30,7 @@ const getAllEnquiries = async (req, res) => {
  * Creates a new enquiry.
  */
 const createEnquiry = async (req, res) => {
-  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted } = req.body;
+  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, location } = req.body;
 
   if (!name || !contact || !clientType) {
     return res.status(400).json({ message: 'name, contact, and clientType are required.' });
@@ -51,6 +51,7 @@ const createEnquiry = async (req, res) => {
         contacted: contacted === true,
         callbackLater: callbackLater === true,
         reminderDate: (callbackLater && reminderDate) ? new Date(reminderDate) : null,
+        location: location || null,
         opsUserId: req.user.id,
       },
       include: {
@@ -77,7 +78,7 @@ const createEnquiry = async (req, res) => {
  */
 const updateEnquiry = async (req, res) => {
   const { id } = req.params;
-  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted } = req.body;
+  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, location } = req.body;
 
   try {
     const existing = await prisma.enquiry.findUnique({ where: { id } });
@@ -102,7 +103,8 @@ const updateEnquiry = async (req, res) => {
         ...(callbackLater !== undefined && { callbackLater }),
         ...(callbackLater !== undefined && {
           reminderDate: callbackLater && reminderDate ? new Date(reminderDate) : null
-        })
+        }),
+        ...(location !== undefined && { location })
       },
       include: {
         opsUser: {
@@ -176,7 +178,9 @@ const promoteToPartner = async (req, res) => {
         contactName: enquiry.name,
         contactEmail: isEmail ? enquiry.contact : null,
         contactPhone: !isEmail ? enquiry.contact : null,
-        notes: enquiry.remarks || 'Promoted from Enquiry.',
+        notes: enquiry.location
+          ? `Location: ${enquiry.location}. ${enquiry.remarks || ''}`
+          : (enquiry.remarks || 'Promoted from Enquiry.'),
         opsUserId: req.user.id,
         phase: 'PRE_QUALIFY',
       }

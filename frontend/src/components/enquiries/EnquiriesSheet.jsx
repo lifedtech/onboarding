@@ -38,6 +38,7 @@ export default function EnquiriesSheet() {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
   const [editContact, setEditContact] = useState('');
+  const [editLocation, setEditLocation] = useState('');
   const [editRemarks, setEditRemarks] = useState('');
   const [editClientType, setEditClientType] = useState('');
   const [editCallbackLater, setEditCallbackLater] = useState(false);
@@ -55,6 +56,20 @@ export default function EnquiriesSheet() {
     return d.getDate() === today.getDate() &&
            d.getMonth() === today.getMonth() &&
            d.getFullYear() === today.getFullYear();
+  };
+
+  const formatIST = (dateString) => {
+    if (!dateString) return '—';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   // Get active reminders for today
@@ -142,6 +157,7 @@ export default function EnquiriesSheet() {
     setEditingId(enq.id);
     setEditName(enq.name);
     setEditContact(enq.contact);
+    setEditLocation(enq.location || '');
     setEditRemarks(enq.remarks || '');
     setEditClientType(enq.clientType);
     setEditCallbackLater(enq.callbackLater);
@@ -170,6 +186,7 @@ export default function EnquiriesSheet() {
     const payload = {
       name: editName,
       contact: editContact,
+      location: editLocation.trim() || null,
       remarks: editRemarks,
       clientType: editClientType,
       callbackLater: editClientType === 'HEALTH_PARTNER' ? editCallbackLater : false,
@@ -356,12 +373,14 @@ export default function EnquiriesSheet() {
               {/* Table Headers */}
               <thead>
                 <tr className="bg-slate-100/70 border-b border-slate-200 text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
-                  <th className="py-3 px-4 w-[20%]">Name</th>
-                  <th className="py-3 px-4 w-[20%]">Contact Info</th>
-                  <th className="py-3 px-4 w-[15%]">Client Type</th>
-                  <th className="py-3 px-4 w-[12%] text-center">Status</th>
-                  <th className="py-3 px-4 w-[25%]">Remarks</th>
-                  <th className="py-3 px-4 w-[18%]">Reminder Callback</th>
+                  <th className="py-3 px-4 w-[15%]">Name</th>
+                  <th className="py-3 px-4 w-[15%]">Contact Info</th>
+                  <th className="py-3 px-4 w-[15%]">Location</th>
+                  <th className="py-3 px-4 w-[12%]">Client Type</th>
+                  <th className="py-3 px-4 w-[10%] text-center">Status</th>
+                  <th className="py-3 px-4 w-[18%]">Remarks</th>
+                  <th className="py-3 px-4 w-[15%]">Reminder Callback</th>
+                  <th className="py-3 px-4 w-[15%]">Entered At (IST)</th>
                   <th className="py-3 px-4 w-[120px] text-center">Actions</th>
                 </tr>
               </thead>
@@ -404,6 +423,20 @@ export default function EnquiriesSheet() {
                           />
                         ) : (
                           enq.contact
+                        )}
+                      </td>
+
+                      {/* Location */}
+                      <td className="py-3 px-4 truncate">
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editLocation}
+                            onChange={(e) => setEditLocation(e.target.value)}
+                            className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                          />
+                        ) : (
+                          enq.location || <span className="text-slate-400 font-semibold">—</span>
                         )}
                       </td>
 
@@ -523,6 +556,11 @@ export default function EnquiriesSheet() {
                         ) : (
                           <span className="text-slate-400/60 font-semibold">—</span>
                         )}
+                      </td>
+
+                      {/* Entered At */}
+                      <td className="py-3 px-4 truncate font-semibold text-slate-500 text-[11px]">
+                        {formatIST(enq.createdAt)}
                       </td>
 
                       {/* Actions */}
