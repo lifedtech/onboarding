@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import AddEnquiryModal from './AddEnquiryModal';
+import PromotePartnerModal from './PromotePartnerModal';
 import toast from 'react-hot-toast';
 
 export default function EnquiriesSheet() {
@@ -33,6 +34,11 @@ export default function EnquiriesSheet() {
   const [typeFilter, setTypeFilter] = useState('ALL'); // 'ALL' | 'HEALTH_PARTNER' | 'SERVICE_USER'
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL' | 'CONTACTED' | 'PENDING'
   const [reminderFilter, setReminderFilter] = useState('ALL'); // 'ALL' | 'TODAY' | 'FUTURE'
+
+  // Promote modal states
+  const [promoteModalOpen, setPromoteModalOpen] = useState(false);
+  const [promoteEnquiryId, setPromoteEnquiryId] = useState('');
+  const [promoteEnquiryName, setPromoteEnquiryName] = useState('');
 
   // Inline editing state
   const [editingId, setEditingId] = useState(null);
@@ -129,28 +135,10 @@ export default function EnquiriesSheet() {
     }
   };
 
-  const handlePromote = async (id) => {
-    const category = window.prompt("Enter Partner Category (e.g. Yoga, Physiotherapy):", "Wellness");
-    if (category === null) return; // user cancelled
-
-    const type = window.prompt("Enter Partner Type (PRACTITIONER, CENTRE, or ORGANIZER):", "PRACTITIONER");
-    if (type === null) return; // user cancelled
-
-    const validTypes = ['PRACTITIONER', 'CENTRE', 'ORGANIZER'];
-    if (!validTypes.includes(type.toUpperCase())) {
-      toast.error("Invalid Partner Type. Must be PRACTITIONER, CENTRE, or ORGANIZER.");
-      return;
-    }
-
-    const toastId = toast.loading('Promoting enquiry to pipeline...');
-    const result = await promoteEnquiry(id, category, type.toUpperCase());
-    toast.dismiss(toastId);
-
-    if (result && result.success) {
-      toast.success('Successfully promoted to partner pipeline!');
-    } else {
-      toast.error(result.message || 'Failed to promote enquiry.');
-    }
+  const handlePromote = (id, name) => {
+    setPromoteEnquiryId(id);
+    setPromoteEnquiryName(name);
+    setPromoteModalOpen(true);
   };
 
   // Inline editing actions
@@ -282,7 +270,7 @@ export default function EnquiriesSheet() {
                       Mark Contacted
                     </button>
                     <button
-                      onClick={() => handlePromote(req.id)}
+                      onClick={() => handlePromote(req.id, req.name)}
                       className="flex-1 bg-brand-teal hover:bg-brand-teal-hover text-white text-[11px] font-extrabold py-2 px-3 rounded-lg shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -594,7 +582,7 @@ export default function EnquiriesSheet() {
                                   </span>
                                 ) : (
                                   <button
-                                    onClick={() => handlePromote(enq.id)}
+                                    onClick={() => handlePromote(enq.id, enq.name)}
                                     className="p-1.5 text-brand-teal hover:bg-brand-teal/5 border border-brand-teal/10 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
                                     title="Promote to pipeline partner"
                                   >
@@ -632,6 +620,14 @@ export default function EnquiriesSheet() {
 
       {/* Add Enquiry Modal */}
       <AddEnquiryModal isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} />
+
+      {/* Promote Partner Modal */}
+      <PromotePartnerModal
+        isOpen={promoteModalOpen}
+        onClose={() => setPromoteModalOpen(false)}
+        enquiryId={promoteEnquiryId}
+        enquiryName={promoteEnquiryName}
+      />
     </div>
   );
 }
