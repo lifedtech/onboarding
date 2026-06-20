@@ -18,6 +18,7 @@ import {
 import useOpsStore from '../../store/useOpsStore';
 import AddEnquiryModal from './AddEnquiryModal';
 import PromotePartnerModal from './PromotePartnerModal';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 import toast from 'react-hot-toast';
 
 export default function EnquiriesSheet() {
@@ -39,6 +40,11 @@ export default function EnquiriesSheet() {
   const [promoteModalOpen, setPromoteModalOpen] = useState(false);
   const [promoteEnquiryId, setPromoteEnquiryId] = useState('');
   const [promoteEnquiryName, setPromoteEnquiryName] = useState('');
+
+  // Delete modal states
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteEnquiryId, setDeleteEnquiryId] = useState('');
+  const [deleteEnquiryName, setDeleteEnquiryName] = useState('');
 
   // Inline editing state
   const [editingId, setEditingId] = useState(null);
@@ -126,13 +132,10 @@ export default function EnquiriesSheet() {
     }
   };
 
-  const handleDelete = async (id, name) => {
-    if (window.confirm(`Are you sure you want to delete the enquiry for ${name}?`)) {
-      const result = await deleteEnquiry(id);
-      if (result && !result.success) {
-        toast.error('Failed to delete enquiry.');
-      }
-    }
+  const handleDelete = (id, name) => {
+    setDeleteEnquiryId(id);
+    setDeleteEnquiryName(name);
+    setDeleteModalOpen(true);
   };
 
   const handlePromote = (id, name) => {
@@ -627,6 +630,14 @@ export default function EnquiriesSheet() {
         onClose={() => setPromoteModalOpen(false)}
         enquiryId={promoteEnquiryId}
         enquiryName={promoteEnquiryName}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        enquiryId={deleteEnquiryId}
+        enquiryName={deleteEnquiryName}
       />
     </div>
   );
