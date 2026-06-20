@@ -15,12 +15,14 @@ import CalendarView from './components/dashboard/CalendarView';
 import ChatBoxTab from './components/dashboard/ChatBoxTab';
 import ProfilePage from './components/profile/ProfilePage';
 import StressBuster from './components/dashboard/StressBuster';
+import EnquiriesSheet from './components/enquiries/EnquiriesSheet';
 import { initAudio, playNotificationSound } from './lib/audio';
 
 // ─── Page registry ────────────────────────────────────────────────────────────
 
 const PAGES = {
   dashboard: <DashboardOverview />,
+  enquiries: <EnquiriesSheet />,
   pipeline:  <PipelineBoard />,
   tasks:     <MyTasks />,
   calendar:  <CalendarView />,

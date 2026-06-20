@@ -54,6 +54,9 @@ export default function CalendarView() {
   const updateTaskDetails = useOpsStore((s) => s.updateTaskDetails);
   const updateHealthmate = useOpsStore((s) => s.updateHealthmate);
   const createTask = useOpsStore((s) => s.createTask);
+  const enquiries = useOpsStore((s) => s.enquiries);
+  const fetchEnquiries = useOpsStore((s) => s.fetchEnquiries);
+  const updateEnquiry = useOpsStore((s) => s.updateEnquiry);
 
   // States
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -83,7 +86,8 @@ export default function CalendarView() {
   // Load healthmates on mount
   useEffect(() => {
     fetchHealthmates();
-  }, [fetchHealthmates]);
+    fetchEnquiries();
+  }, [fetchHealthmates, fetchEnquiries]);
 
   const isUserAdmin = user?.role?.toUpperCase() === 'ADMIN';
 
@@ -187,6 +191,31 @@ export default function CalendarView() {
         }
       }
     });
+
+    // Add Enquiry Callback Reminders
+    if (enquiries) {
+      enquiries.forEach((enq) => {
+        const isMyEnquiry = enq.opsUserId === user?.id;
+        if (assigneeFilter === 'my' && !isMyEnquiry) return;
+
+        if (enq.clientType === 'HEALTH_PARTNER' && enq.callbackLater && enq.reminderDate) {
+          if (typeFilter !== 'all' && typeFilter !== 'recalls') return;
+
+          list.push({
+            type: 'ENQUIRY_CALLBACK',
+            id: enq.id,
+            title: `Callback: ${enq.name}`,
+            dueDate: new Date(enq.reminderDate),
+            enquiry: enq,
+            healthmate: {
+              id: enq.id,
+              name: enq.name,
+              category: 'Enquiry Callback'
+            }
+          });
+        }
+      });
+    }
 
     return list.sort((a, b) => a.dueDate - b.dueDate);
   };
@@ -344,26 +373,53 @@ export default function CalendarView() {
       } else {
         toast.error(result.message || 'Failed to update recall reminder.');
       }
+    } else if (editingEvent.type === 'ENQUIRY_CALLBACK') {
+      const result = await updateEnquiry(editingEvent.enquiry.id, {
+        reminderDate: editDueDate ? new Date(editDueDate).toISOString() : null,
+        callbackLater: !!editDueDate,
+      });
+      setSavingEvent(false);
+      toast.dismiss(toastId);
+      if (result && result.success) {
+        toast.success('Callback reminder updated!');
+        setEditingEvent(null);
+        fetchEnquiries(); // Refresh
+      } else {
+        toast.error(result.message || 'Failed to update callback reminder.');
+      }
     }
   };
 
   const handleClearRecall = async () => {
-    if (!editingEvent || editingEvent.type !== 'RECALL') return;
-    if (!window.confirm('Are you sure you want to clear this recall reminder?')) return;
+    if (!editingEvent) return;
+    if (editingEvent.type !== 'RECALL' && editingEvent.type !== 'ENQUIRY_CALLBACK') return;
+    if (!window.confirm('Are you sure you want to clear this reminder?')) return;
 
     setSavingEvent(true);
-    const toastId = toast.loading('Clearing recall reminder...');
-    const result = await updateHealthmate(editingEvent.healthmate.id, {
-      recallReminder: null,
-    });
+    const toastId = toast.loading('Clearing reminder...');
+    let result;
+    if (editingEvent.type === 'RECALL') {
+      result = await updateHealthmate(editingEvent.healthmate.id, {
+        recallReminder: null,
+      });
+    } else {
+      result = await updateEnquiry(editingEvent.enquiry.id, {
+        callbackLater: false,
+        reminderDate: null,
+      });
+    }
     setSavingEvent(true);
     toast.dismiss(toastId);
     if (result && result.success) {
-      toast.success('Recall reminder cleared!');
+      toast.success('Reminder cleared!');
       setEditingEvent(null);
-      fetchHealthmates();
+      if (editingEvent.type === 'RECALL') {
+        fetchHealthmates();
+      } else {
+        fetchEnquiries();
+      }
     } else {
-      toast.error(result.message || 'Failed to clear recall reminder.');
+      toast.error(result.message || 'Failed to clear reminder.');
     }
   };
 
@@ -647,18 +703,23 @@ export default function CalendarView() {
                                   : `${PHASE_COLORS[ev.phase]} border-current/20`
                                 : ev.type === 'RECALL'
                                 ? 'bg-red-50 text-red-700 border-red-200/60'
+                                : ev.type === 'ENQUIRY_CALLBACK'
+                                ? 'bg-violet-50 text-violet-700 border-violet-200/60 animate-pulse'
                                 : 'bg-emerald-50 text-emerald-800 border-emerald-200/60'
                             }`}
                           >
                             <span className="truncate flex-1">
                               {ev.title}
                             </span>
-                            {ev.type === 'RECALL' && (
-                              <Clock className="w-2.5 h-2.5 shrink-0 text-red-500" />
-                            )}
-                            {ev.type === 'PROGRAM' && (
-                              <Layers className="w-2.5 h-2.5 shrink-0 text-emerald-600" />
-                            )}
+                             {ev.type === 'RECALL' && (
+                               <Clock className="w-2.5 h-2.5 shrink-0 text-red-500" />
+                             )}
+                             {ev.type === 'ENQUIRY_CALLBACK' && (
+                               <Clock className="w-2.5 h-2.5 shrink-0 text-violet-500" />
+                             )}
+                             {ev.type === 'PROGRAM' && (
+                               <Layers className="w-2.5 h-2.5 shrink-0 text-emerald-600" />
+                             )}
                             {ev.type === 'TASK' && (
                               <span className={`w-1 h-1 rounded-full shrink-0 ${PHASE_DOTS[ev.phase]}`} />
                             )}
@@ -736,6 +797,8 @@ export default function CalendarView() {
                                   : `${PHASE_COLORS[ev.phase]} border-current/25`
                                 : ev.type === 'RECALL'
                                 ? 'bg-red-50 text-red-700 border-red-200/60'
+                                : ev.type === 'ENQUIRY_CALLBACK'
+                                ? 'bg-violet-50 text-violet-700 border-violet-200/60 animate-pulse'
                                 : 'bg-emerald-50 text-emerald-800 border-emerald-200/60'
                             }`}
                           >
@@ -745,6 +808,9 @@ export default function CalendarView() {
                               </span>
                               {ev.type === 'RECALL' && (
                                 <Clock className="w-3 h-3 shrink-0 text-red-500 mt-0.5" />
+                              )}
+                              {ev.type === 'ENQUIRY_CALLBACK' && (
+                                <Clock className="w-3 h-3 shrink-0 text-violet-500 mt-0.5" />
                               )}
                               {ev.type === 'PROGRAM' && (
                                 <Layers className="w-3 h-3 shrink-0 text-emerald-600 mt-0.5" />
@@ -825,6 +891,10 @@ export default function CalendarView() {
                             </button>
                           ) : ev.type === 'RECALL' ? (
                             <div className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center text-red-500 border border-red-200">
+                              <Clock className="w-2.5 h-2.5" />
+                            </div>
+                          ) : ev.type === 'ENQUIRY_CALLBACK' ? (
+                            <div className="w-4 h-4 rounded-full bg-violet-100 flex items-center justify-center text-violet-500 border border-violet-200">
                               <Clock className="w-2.5 h-2.5" />
                             </div>
                           ) : (
@@ -936,6 +1006,10 @@ export default function CalendarView() {
                         <>
                           <CheckSquare className="w-3.5 h-3.5" /> Edit Task Details
                         </>
+                      ) : editingEvent.type === 'ENQUIRY_CALLBACK' ? (
+                        <>
+                          <Clock className="w-3.5 h-3.5" /> Edit Callback Details
+                        </>
                       ) : (
                         <>
                           <Clock className="w-3.5 h-3.5" /> Edit Recall Details
@@ -1018,7 +1092,7 @@ export default function CalendarView() {
                         {savingEvent ? 'Saving...' : 'Save Changes'}
                       </button>
                       
-                      {editingEvent.type === 'RECALL' && (
+                      {(editingEvent.type === 'RECALL' || editingEvent.type === 'ENQUIRY_CALLBACK') && (
                         <button
                           type="button"
                           onClick={handleClearRecall}
@@ -1159,6 +1233,8 @@ export default function CalendarView() {
                               ? ev.completed
                                 ? 'bg-slate-50/50 border-slate-200/50 text-slate-400 line-through'
                                 : 'border-border-leaf/40'
+                              : ev.type === 'ENQUIRY_CALLBACK'
+                              ? 'bg-violet-50/30 border-violet-200/50 text-violet-700'
                               : 'bg-red-50/30 border-red-200/50 text-red-700'
                           }`}
                         >
@@ -1178,6 +1254,8 @@ export default function CalendarView() {
                                 </button>
                               ) : ev.type === 'RECALL' ? (
                                 <Clock className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                              ) : ev.type === 'ENQUIRY_CALLBACK' ? (
+                                <Clock className="w-4 h-4 text-violet-500 mt-0.5 shrink-0" />
                               ) : (
                                 <Layers className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                               )}
@@ -1200,18 +1278,28 @@ export default function CalendarView() {
                           {/* Footer details */}
                           <div className="flex items-center justify-between border-t border-slate-100 pt-2 text-[9px] font-semibold text-text-muted">
                             {/* Partner Info and Link */}
-                            <div
-                              onClick={() => {
-                                setSelectedDay(null);
-                                setSelectedHealthmate(ev.healthmate);
-                              }}
-                              className="flex items-center gap-1 text-brand-teal hover:underline cursor-pointer font-extrabold truncate"
-                              title="Click to view partner dashboard"
-                            >
-                              <User className="w-3 h-3 text-slate-400" />
-                              {ev.healthmate.name}
-                              <ExternalLink className="w-2.5 h-2.5 shrink-0" />
-                            </div>
+                            {ev.type === 'ENQUIRY_CALLBACK' ? (
+                              <div
+                                className="flex items-center gap-1 text-violet-600 font-extrabold truncate"
+                                title="Enquiry Callback Reminder"
+                              >
+                                <User className="w-3 h-3 text-slate-400" />
+                                {ev.healthmate.name}
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => {
+                                  setSelectedDay(null);
+                                  setSelectedHealthmate(ev.healthmate);
+                                }}
+                                className="flex items-center gap-1 text-brand-teal hover:underline cursor-pointer font-extrabold truncate"
+                                title="Click to view partner dashboard"
+                              >
+                                <User className="w-3 h-3 text-slate-400" />
+                                {ev.healthmate.name}
+                                <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                              </div>
+                            )}
 
                             {/* Phase or Recall tag */}
                             {ev.type === 'TASK' ? (
@@ -1221,6 +1309,10 @@ export default function CalendarView() {
                             ) : ev.type === 'RECALL' ? (
                               <span className="px-1.5 py-0.25 rounded-md bg-red-100 border border-red-200 text-red-600 text-[8px] font-black uppercase">
                                 Recall Alert
+                              </span>
+                            ) : ev.type === 'ENQUIRY_CALLBACK' ? (
+                              <span className="px-1.5 py-0.25 rounded-md bg-violet-100 border border-violet-200 text-violet-600 text-[8px] font-black uppercase">
+                                Callback
                               </span>
                             ) : (
                               <span className="px-1.5 py-0.25 rounded-md bg-emerald-100 border border-emerald-200 text-emerald-800 text-[8px] font-black uppercase">

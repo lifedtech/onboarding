@@ -33,6 +33,7 @@ const useOpsStore = create((set, get) => ({
   // ── State ──────────────────────────────────────────────────────────────────
   ...loadFromStorage(),
   healthmates:        [],
+  enquiries:          [],
   selectedHealthmate: null,
   summaryMetrics:     null,
   recentActivity:     [],
@@ -72,6 +73,83 @@ const useOpsStore = create((set, get) => ({
     if (!healthmate) { set({ selectedHealthmate: null }); return; }
     const fresh = get().healthmates.find((hm) => hm.id === healthmate.id) ?? healthmate;
     set({ selectedHealthmate: fresh });
+  },
+
+  // ── Enquiry Actions ────────────────────────────────────────────────────────
+
+  fetchEnquiries: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.get('/enquiries');
+      set({ enquiries: data, isLoading: false });
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to fetch enquiries.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  createEnquiry: async (payload) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.post('/enquiries', payload);
+      set((state) => ({ enquiries: [data, ...state.enquiries], isLoading: false }));
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to create enquiry.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  updateEnquiry: async (id, payload) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.patch(`/enquiries/${id}`, payload);
+      set((state) => ({
+        enquiries: state.enquiries.map((enq) => (enq.id === id ? data : enq)),
+        isLoading: false
+      }));
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update enquiry.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  deleteEnquiry: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.delete(`/enquiries/${id}`);
+      set((state) => ({
+        enquiries: state.enquiries.filter((enq) => enq.id !== id),
+        isLoading: false
+      }));
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to delete enquiry.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  promoteEnquiry: async (id, category, type) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.post(`/enquiries/${id}/promote`, { category, type });
+      set((state) => ({
+        healthmates: [data, ...state.healthmates],
+        enquiries: state.enquiries.filter((enq) => enq.id !== id),
+        isLoading: false
+      }));
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to promote enquiry.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
   },
 
   // ── Healthmate Actions ─────────────────────────────────────────────────────

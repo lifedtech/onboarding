@@ -49,6 +49,23 @@ model OpsUser {
   healthmates  Healthmate[]
   participants Participant[]
   messages     OpsMessage[]
+  enquiries    Enquiry[]
+}
+
+model Enquiry {
+  id            String    @id @default(uuid())
+  name          String
+  contact       String
+  contacted     Boolean   @default(false)
+  remarks       String?   @db.Text
+  clientType    String    // "SERVICE_USER" or "HEALTH_PARTNER"
+  callbackLater Boolean   @default(false)
+  reminderDate  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  opsUserId     String
+  opsUser       OpsUser   @relation(fields: [opsUserId], references: [id], onDelete: Cascade)
 }
 
 model Healthmate {

@@ -19,6 +19,10 @@ const { getDashboardSummary }                      = require('../controllers/ana
 const { getTeamMembers, createTeamMember, deleteTeamMember, heartbeat, updatePublicKey, getMe, updateProfile, uploadAvatar } = require('../controllers/user.controller');
 const { stream, getConversations, createConversation, sendMessage } = require('../controllers/chat.controller');
 const { invitePlayer, acceptInvite, rejectInvite, cancelGame, syncGame } = require('../controllers/game.controller');
+const {
+  getAllEnquiries, createEnquiry,
+  updateEnquiry, deleteEnquiry, promoteToPartner
+} = require('../controllers/enquiry.controller');
 
 const verifyRdSignature = require('../middleware/verifyRdSignature');
 const {
@@ -42,6 +46,13 @@ router.post('/webhooks/program-submitted',      verifyRdSignature, handleProgram
 router.post('/webhooks/program-status',         verifyRdSignature, handleProgramStatus);
 
 router.use(authenticate);
+
+// Enquiries
+router.get('/enquiries',                  getAllEnquiries);
+router.post('/enquiries',                 createEnquiry);
+router.patch('/enquiries/:id',            updateEnquiry);
+router.delete('/enquiries/:id',           deleteEnquiry);
+router.post('/enquiries/:id/promote',     promoteToPartner);
 
 // Auth logout
 router.post('/auth/logout', logout);
