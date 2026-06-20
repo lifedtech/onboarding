@@ -409,14 +409,7 @@ export default function EnquiriesSheet() {
                             className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
                           />
                         ) : (
-                          <div className="flex items-center gap-2">
-                            <span>{enq.name}</span>
-                            {enq.movedToPipeline && (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-50 text-indigo-600 border border-indigo-200/50">
-                                Moved to Pipeline
-                              </span>
-                            )}
-                          </div>
+                          enq.name
                         )}
                       </td>
 
