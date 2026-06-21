@@ -30,6 +30,10 @@ function getRequestsSentByUser(userId) {
   return takeoverRequests.filter((r) => r.requesterId === userId && r.status === 'PENDING');
 }
 
+function getRequestById(requestId) {
+  return takeoverRequests.find((r) => r.id === requestId);
+}
+
 function handleRequestDecision(requestId, decision) {
   const req = takeoverRequests.find((r) => r.id === requestId);
   if (!req) return null;
@@ -41,6 +45,7 @@ module.exports = {
   createRequest,
   getRequestsForUser,
   getRequestsSentByUser,
+  getRequestById,
   handleRequestDecision,
   takeoverRequests
 };

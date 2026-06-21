@@ -3,6 +3,7 @@ const {
   createRequest,
   getRequestsForUser,
   getRequestsSentByUser,
+  getRequestById,
   handleRequestDecision
 } = require('../services/takeover.service');
 
@@ -83,14 +84,17 @@ const decideTakeover = async (req, res) => {
   }
 
   try {
-    const request = handleRequestDecision(requestId, decision);
-    if (!request) {
+    const request = getRequestById(requestId);
+    if (!request || request.status !== 'PENDING') {
       return res.status(404).json({ message: 'Take over request not found or already processed.' });
     }
 
     if (request.assigneeId !== req.user.id) {
       return res.status(403).json({ message: 'Unauthorized: You are not the assigned coordinator for this request.' });
     }
+
+    // Now mutate the request status securely
+    const updatedRequest = handleRequestDecision(requestId, decision);
 
     if (decision === 'ACCEPTED') {
       // Transfer access inside database
@@ -102,7 +106,7 @@ const decideTakeover = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: 'Take over request approved. Access successfully transferred!',
-        request
+        request: updatedRequest
       });
     }
 

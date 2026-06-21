@@ -2,10 +2,10 @@ const { Router } = require('express');
 const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload');
 
-const { register, login, logout }                          = require('../controllers/auth.controller');
+const { login, logout }                          = require('../controllers/auth.controller');
 const { authLimiter }                              = require('../middleware/rateLimit.middleware');
 const { validate }                                 = require('../middleware/validate.middleware');
-const { registerSchema, loginSchema }              = require('../utils/auth.schema');
+const { loginSchema }              = require('../utils/auth.schema');
 const {
   getAllHealthmates, createHealthmate,
   updateHealthmate, updateHealthmatePhase,
@@ -35,9 +35,7 @@ const {
 const router = Router();
 
 // ─── Public ───────────────────────────────────────────────────────────────────
-router.post('/auth/register', authLimiter, validate(registerSchema), register);
 router.post('/auth/login',    authLimiter, validate(loginSchema), login);
-router.post('/rnd/verify-credentials', rndVerifyCredentials);
 
 // Webhooks (Signature Protected)
 router.post('/webhooks/registration-submitted', verifyRdSignature, handleRegistrationSubmission);
@@ -46,6 +44,8 @@ router.post('/webhooks/program-submitted',      verifyRdSignature, handleProgram
 router.post('/webhooks/program-status',         verifyRdSignature, handleProgramStatus);
 
 router.use(authenticate);
+
+router.post('/rnd/verify-credentials', rndVerifyCredentials);
 
 // Enquiries
 router.get('/enquiries',                  getAllEnquiries);

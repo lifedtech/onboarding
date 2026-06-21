@@ -93,9 +93,11 @@ const createTask = async (req, res) => {
  */
 const getPendingTasks = async (req, res) => {
   try {
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
     const tasks = await prisma.task.findMany({
       where: {
         completed: false,
+        ...(isAdmin ? {} : { healthmate: { opsUserId: req.user.id } }),
       },
       include: {
         healthmate: {

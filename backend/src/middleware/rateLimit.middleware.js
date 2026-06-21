@@ -10,13 +10,6 @@ const authLimiter = rateLimit({
   message: {
     message: 'Too many authentication attempts from this IP. Please try again after 15 minutes.',
   },
-  skip: (req) => {
-    const email = req.body?.email;
-    if (email && typeof email === 'string' && email.trim().toLowerCase() === 'admin@lifed.com') {
-      return true; // Bypass rate limit for admin login
-    }
-    return false;
-  },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });

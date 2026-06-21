@@ -7,7 +7,9 @@ const prisma = require('../lib/prisma');
  */
 const getAllHealthmates = async (req, res) => {
   try {
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
     const healthmates = await prisma.healthmate.findMany({
+      where: isAdmin ? {} : { opsUserId: req.user.id },
       include: {
         tasks: {
           orderBy: { createdAt: 'asc' },

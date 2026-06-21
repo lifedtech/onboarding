@@ -110,6 +110,10 @@ const rejectInvite = async (req, res) => {
     return res.status(404).json({ message: 'Game invitation not found.' });
   }
 
+  if (game.guestId !== guestId) {
+    return res.status(403).json({ message: 'You are not authorized to reject this invite.' });
+  }
+
   try {
     // Notify host that invite was rejected
     broadcastToParticipants([game.hostId], 'game_rejected', { gameId });
@@ -138,6 +142,10 @@ const cancelGame = async (req, res) => {
     return res.status(200).json({ success: true }); // Already cleaned up
   }
 
+  if (game.hostId !== userId && game.guestId !== userId) {
+    return res.status(403).json({ message: 'You are not authorized to cancel this game.' });
+  }
+
   try {
     const targetUserId = game.hostId === userId ? game.guestId : game.hostId;
     broadcastToParticipants([targetUserId], 'game_canceled', { gameId });
@@ -160,6 +168,10 @@ const syncGame = async (req, res) => {
   const game = activeGames.get(gameId);
   if (!game) {
     return res.status(404).json({ message: 'Active game not found.' });
+  }
+
+  if (game.hostId !== userId && game.guestId !== userId) {
+    return res.status(403).json({ message: 'You are not authorized to sync this game.' });
   }
 
   try {
