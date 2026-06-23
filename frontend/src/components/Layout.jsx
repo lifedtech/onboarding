@@ -12,8 +12,10 @@ import {
   Wrench,
   Calendar,
   MessageSquare,
-  FileSpreadsheet
+  FileSpreadsheet,
+  HeartHandshake
 } from 'lucide-react';
+
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
 
@@ -34,9 +36,11 @@ const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, href: 'dashboard' },
   { label: 'Enquiries', icon: FileSpreadsheet,   href: 'enquiries' },
   { label: 'Pipeline',  icon: GitBranch,       href: 'pipeline'  },
+  { label: 'Service Users', icon: HeartHandshake, href: 'service_users' },
   { label: 'My Tasks',  icon: CheckSquare,      href: 'tasks'     },
   { label: 'Calendar',  icon: Calendar,        href: 'calendar'  },
 ];
+
 
 
 export default function Layout({ children, activePage, onNavigate }) {

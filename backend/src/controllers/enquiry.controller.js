@@ -1,4 +1,6 @@
 const prisma = require('../lib/prisma');
+const ServiceUserService = require('../services/serviceUser.service');
+
 
 /**
  * GET /api/enquiries
@@ -271,10 +273,72 @@ const promoteToPartner = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/enquiries/:id/promote-user
+ * Promotes an enquiry of type SERVICE_USER to a Service User profile in our JSON database.
+ */
+const promoteToServiceUser = async (req, res) => {
+  const { id } = req.params;
+  const { tier } = req.body;
+
+  try {
+    const enquiry = await prisma.enquiry.findUnique({ where: { id } });
+    if (!enquiry) {
+      return res.status(404).json({ message: 'Enquiry not found.' });
+    }
+
+    if (enquiry.clientType !== 'SERVICE_USER') {
+      return res.status(400).json({ message: 'Only Service User enquiries can be promoted to service users list.' });
+    }
+
+    // Determine email and phone
+    const isEmail = enquiry.contact.includes('@');
+    const email = isEmail ? enquiry.contact : `${enquiry.name.toLowerCase().replace(/\s+/g, '')}@example.com`;
+    const phone = !isEmail ? enquiry.contact : '';
+
+    const newUser = ServiceUserService.create({
+      name: enquiry.name,
+      email,
+      phone,
+      tier: tier || 'BASIC',
+      status: 'ACTIVE',
+      notes: enquiry.remarks || 'Promoted from Enquiry.'
+    });
+
+    // Mark the enquiry as moved to pipeline and contacted
+    const updatedEnquiry = await prisma.enquiry.update({
+      where: { id },
+      data: {
+        movedToPipeline: true,
+        contacted: true
+      },
+      include: {
+        opsUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          }
+        }
+      }
+    });
+
+    return res.status(201).json({
+      serviceUser: newUser,
+      enquiry: updatedEnquiry
+    });
+  } catch (error) {
+    console.error('[promoteToServiceUser]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
 module.exports = {
   getAllEnquiries,
   createEnquiry,
   updateEnquiry,
   deleteEnquiry,
   promoteToPartner,
+  promoteToServiceUser,
 };
+

@@ -34,8 +34,11 @@ const useOpsStore = create((set, get) => ({
   ...loadFromStorage(),
   healthmates:        [],
   enquiries:          [],
+  serviceUsers:        [],
   selectedHealthmate: null,
+  selectedServiceUser: null,
   summaryMetrics:     null,
+
   recentActivity:     [],
   teamMembers:        [],
   pendingTasks:       [],
@@ -565,11 +568,264 @@ const useOpsStore = create((set, get) => ({
     }
   },
 
+  // ── Service User Actions ───────────────────────────────────────────────────
+  fetchServiceUsers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.get('/service-users');
+      set({ serviceUsers: data, isLoading: false });
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to fetch service users.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  fetchServiceUserById: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.get(`/service-users/${id}`);
+      set({ selectedServiceUser: data, isLoading: false });
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to fetch service user details.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  createServiceUser: async (payload) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.post('/service-users', payload);
+      set((state) => ({ serviceUsers: [data, ...state.serviceUsers], isLoading: false }));
+      toast.success('Service user created successfully.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to create service user.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  updateServiceUser: async (id, payload) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.patch(`/service-users/${id}`, payload);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === id ? data : u));
+        const selected = state.selectedServiceUser?.id === id ? data : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected, isLoading: false };
+      });
+      toast.success('Service user details updated.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update service user.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  deleteServiceUser: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.delete(`/service-users/${id}`);
+      set((state) => {
+        const list = state.serviceUsers.filter((u) => u.id !== id);
+        const selected = state.selectedServiceUser?.id === id ? null : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected, isLoading: false };
+      });
+      toast.success('Service user deleted.');
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to delete service user.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  // Bookings
+  addBooking: async (userId, bookingData) => {
+    try {
+      const { data } = await api.post(`/service-users/${userId}/bookings`, bookingData);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data.user : u));
+        const selected = state.selectedServiceUser?.id === userId ? data.user : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Booking added successfully.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to add booking.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  updateBooking: async (userId, bookingId, bookingData) => {
+    try {
+      const { data } = await api.patch(`/service-users/${userId}/bookings/${bookingId}`, bookingData);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data.user : u));
+        const selected = state.selectedServiceUser?.id === userId ? data.user : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Booking updated.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update booking.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  deleteBooking: async (userId, bookingId) => {
+    try {
+      const { data } = await api.delete(`/service-users/${userId}/bookings/${bookingId}`);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data : u));
+        const selected = state.selectedServiceUser?.id === userId ? data : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Booking deleted.');
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to delete booking.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  // Payments
+  addPayment: async (userId, paymentData) => {
+    try {
+      const { data } = await api.post(`/service-users/${userId}/payments`, paymentData);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data.user : u));
+        const selected = state.selectedServiceUser?.id === userId ? data.user : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Payment transaction logged.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to add payment.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  updatePayment: async (userId, paymentId, paymentData) => {
+    try {
+      const { data } = await api.patch(`/service-users/${userId}/payments/${paymentId}`, paymentData);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data.user : u));
+        const selected = state.selectedServiceUser?.id === userId ? data.user : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Payment transaction updated.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update payment.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  deletePayment: async (userId, paymentId) => {
+    try {
+      const { data } = await api.delete(`/service-users/${userId}/payments/${paymentId}`);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data : u));
+        const selected = state.selectedServiceUser?.id === userId ? data : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Payment record deleted.');
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to delete payment.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  // Support Tickets
+  addSupportTicket: async (userId, ticketData) => {
+    try {
+      const { data } = await api.post(`/service-users/${userId}/support`, ticketData);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data.user : u));
+        const selected = state.selectedServiceUser?.id === userId ? data.user : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Support ticket logged.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to add support ticket.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  updateSupportTicket: async (userId, ticketId, ticketData) => {
+    try {
+      const { data } = await api.patch(`/service-users/${userId}/support/${ticketId}`, ticketData);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data.user : u));
+        const selected = state.selectedServiceUser?.id === userId ? data.user : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Support ticket updated.');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update support ticket.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  deleteSupportTicket: async (userId, ticketId) => {
+    try {
+      const { data } = await api.delete(`/service-users/${userId}/support/${ticketId}`);
+      set((state) => {
+        const list = state.serviceUsers.map((u) => (u.id === userId ? data : u));
+        const selected = state.selectedServiceUser?.id === userId ? data : state.selectedServiceUser;
+        return { serviceUsers: list, selectedServiceUser: selected };
+      });
+      toast.success('Support ticket deleted.');
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to delete support ticket.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
+  promoteEnquiryToUser: async (enquiryId, tier) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.post(`/enquiries/${enquiryId}/promote-user`, { tier });
+      set((state) => ({
+        serviceUsers: [data.serviceUser, ...state.serviceUsers],
+        enquiries: state.enquiries.map((enq) => enq.id === enquiryId ? data.enquiry : enq),
+        isLoading: false
+      }));
+      toast.success('Service User onboarded successfully!');
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to onboard Service User.';
+      set({ isLoading: false, error: message });
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
   // ── Utility ────────────────────────────────────────────────────────────────
   clearError: () => set({ error: null }),
   setChatHasUnread: (val) => set({ chatHasUnread: val }),
   // eslint-disable-next-line
   dummy: null
 }));
+
 
 export default useOpsStore;

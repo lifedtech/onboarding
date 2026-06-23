@@ -1,0 +1,241 @@
+[
+  {
+    "id": "su-1",
+    "name": "Emily Thompson",
+    "email": "emily.t@gmail.com",
+    "phone": "+61 488 123 456",
+    "status": "ACTIVE",
+    "tier": "VIP",
+    "notes": "Needs special attention to physical therapy slot coordination. Prefers evening sessions.",
+    "createdAt": "2026-05-24T09:58:48.070Z",
+    "updatedAt": "2026-05-24T09:58:48.070Z",
+    "bookings": [
+      {
+        "id": "b-101",
+        "serviceName": "Yoga Therapy Session",
+        "providerName": "Harmony Wellbeing Centre",
+        "bookingDate": "2026-06-25T09:58:48.070Z",
+        "status": "CONFIRMED",
+        "amount": 150,
+        "paymentStatus": "PAID",
+        "createdAt": "2026-06-20T09:58:48.070Z"
+      },
+      {
+        "id": "b-102",
+        "serviceName": "Physiotherapy Consult",
+        "providerName": "Dr. Sarah Jenkins",
+        "bookingDate": "2026-06-18T09:58:48.070Z",
+        "status": "COMPLETED",
+        "amount": 120,
+        "paymentStatus": "PAID",
+        "createdAt": "2026-06-16T09:58:48.070Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "p-201",
+        "amount": 150,
+        "status": "PAID",
+        "method": "CREDIT_CARD",
+        "transactionId": "txn_98124801",
+        "description": "Payment for Yoga Therapy booking b-101",
+        "billingDate": "2026-06-20T09:58:48.070Z",
+        "createdAt": "2026-06-20T09:58:48.070Z"
+      },
+      {
+        "id": "p-202",
+        "amount": 120,
+        "status": "PAID",
+        "method": "UPI",
+        "transactionId": "txn_87123910",
+        "description": "Physiotherapy Consult fee",
+        "billingDate": "2026-06-16T09:58:48.070Z",
+        "createdAt": "2026-06-16T09:58:48.070Z"
+      }
+    ],
+    "supportTickets": [
+      {
+        "id": "t-301",
+        "title": "Vite dev server didn't load active slot",
+        "description": "Unable to view upcoming sessions on the client portal. Received an blank white page screen.",
+        "category": "TECH",
+        "severity": "MEDIUM",
+        "status": "RESOLVED",
+        "createdAt": "2026-06-19T09:58:48.070Z",
+        "updatedAt": "2026-06-20T09:58:48.070Z"
+      }
+    ]
+  },
+  {
+    "id": "su-2",
+    "name": "Jacob Miller",
+    "email": "jacob.m@outlook.com",
+    "phone": "+61 499 765 432",
+    "status": "ACTIVE",
+    "tier": "PREMIUM",
+    "notes": "Prefers online consultations over in-person if available.",
+    "createdAt": "2026-06-03T09:58:48.070Z",
+    "updatedAt": "2026-06-03T09:58:48.070Z",
+    "bookings": [
+      {
+        "id": "b-103",
+        "serviceName": "Ayurveda Consultation",
+        "providerName": "Dr. Amit Patel",
+        "bookingDate": "2026-06-26T09:58:48.070Z",
+        "status": "CONFIRMED",
+        "amount": 100,
+        "paymentStatus": "PENDING",
+        "createdAt": "2026-06-22T09:58:48.070Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "p-203",
+        "amount": 100,
+        "status": "PENDING",
+        "method": "BANK_TRANSFER",
+        "transactionId": "txn_90219481",
+        "description": "Invoice #2026-9021",
+        "billingDate": "2026-06-22T09:58:48.070Z",
+        "createdAt": "2026-06-22T09:58:48.070Z"
+      }
+    ],
+    "supportTickets": [
+      {
+        "id": "t-302",
+        "title": "Bank transfer pending verification",
+        "description": "Transferred funds via net banking but status is still marked as pending in the portal.",
+        "category": "BILLING",
+        "severity": "LOW",
+        "status": "OPEN",
+        "createdAt": "2026-06-22T09:58:48.070Z",
+        "updatedAt": "2026-06-22T09:58:48.070Z"
+      }
+    ]
+  },
+  {
+    "id": "su-3",
+    "name": "Sophia Martinez",
+    "email": "sophia.m@yahoo.com",
+    "phone": "+61 411 987 654",
+    "status": "ACTIVE",
+    "tier": "BASIC",
+    "notes": "Just getting started with the mindfulness framework.",
+    "createdAt": "2026-06-08T09:58:48.070Z",
+    "updatedAt": "2026-06-08T09:58:48.070Z",
+    "bookings": [
+      {
+        "id": "b-104",
+        "serviceName": "Mindfulness Session",
+        "providerName": "Holistic Retreats Organizer",
+        "bookingDate": "2026-06-19T09:58:48.070Z",
+        "status": "COMPLETED",
+        "amount": 80,
+        "paymentStatus": "PAID",
+        "createdAt": "2026-06-18T09:58:48.070Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "p-204",
+        "amount": 80,
+        "status": "PAID",
+        "method": "CREDIT_CARD",
+        "transactionId": "txn_71829402",
+        "description": "Introductory mindfulness class fee",
+        "billingDate": "2026-06-18T09:58:48.070Z",
+        "createdAt": "2026-06-18T09:58:48.070Z"
+      }
+    ],
+    "supportTickets": []
+  },
+  {
+    "id": "su-4",
+    "name": "William Davies",
+    "email": "william.d@gmail.com",
+    "phone": "+61 422 345 678",
+    "status": "INACTIVE",
+    "tier": "BASIC",
+    "notes": "On hold due to travel plans. Will resume in winter.",
+    "createdAt": "2026-05-09T09:58:48.070Z",
+    "updatedAt": "2026-05-09T09:58:48.070Z",
+    "bookings": [],
+    "payments": [],
+    "supportTickets": []
+  },
+  {
+    "id": "su-5",
+    "name": "Chloe Wilson",
+    "email": "chloe.w@outlook.com",
+    "phone": "+61 433 456 789",
+    "status": "SUSPENDED",
+    "tier": "VIP",
+    "notes": "Account suspended due to billing dispute. Awaiting bank review.",
+    "createdAt": "2026-04-24T09:58:48.070Z",
+    "updatedAt": "2026-04-24T09:58:48.070Z",
+    "bookings": [
+      {
+        "id": "b-105",
+        "serviceName": "Sports Rehabilitation",
+        "providerName": "Elite Sports Rehabilitation",
+        "bookingDate": "2026-06-12T09:58:48.070Z",
+        "status": "CANCELLED",
+        "amount": 200,
+        "paymentStatus": "FAILED",
+        "createdAt": "2026-06-09T09:58:48.070Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "p-205",
+        "amount": 200,
+        "status": "FAILED",
+        "method": "CREDIT_CARD",
+        "transactionId": "txn_12948192",
+        "description": "Sports Rehab booking b-105",
+        "billingDate": "2026-06-09T09:58:48.070Z",
+        "createdAt": "2026-06-09T09:58:48.070Z"
+      }
+    ],
+    "supportTickets": [
+      {
+        "id": "t-303",
+        "title": "Charged twice for cancelled sports rehab session",
+        "description": "I cancelled the session on time, but my credit card statement shows two holds of $200 each.",
+        "category": "BILLING",
+        "severity": "HIGH",
+        "status": "IN_PROGRESS",
+        "createdAt": "2026-06-11T09:58:48.070Z",
+        "updatedAt": "2026-06-12T09:58:48.070Z"
+      }
+    ]
+  },
+  {
+    "id": "su-6678",
+    "name": "ayush",
+    "email": "ayush@example.com",
+    "phone": "67738628",
+    "status": "ACTIVE",
+    "tier": "BASIC",
+    "notes": "Promoted from Enquiry.",
+    "createdAt": "2026-06-23T10:01:07.934Z",
+    "updatedAt": "2026-06-23T10:01:07.934Z",
+    "bookings": [],
+    "payments": [],
+    "supportTickets": []
+  },
+  {
+    "id": "su-9828",
+    "name": "ayush",
+    "email": "ayush@example.com",
+    "phone": "67738628",
+    "status": "ACTIVE",
+    "tier": "BASIC",
+    "notes": "Promoted from Enquiry.",
+    "createdAt": "2026-06-23T10:23:32.227Z",
+    "updatedAt": "2026-06-23T10:23:32.227Z",
+    "bookings": [],
+    "payments": [],
+    "supportTickets": []
+  }
+]

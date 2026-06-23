@@ -21,8 +21,17 @@ const { stream, getConversations, createConversation, sendMessage } = require('.
 const { invitePlayer, acceptInvite, rejectInvite, cancelGame, syncGame } = require('../controllers/game.controller');
 const {
   getAllEnquiries, createEnquiry,
-  updateEnquiry, deleteEnquiry, promoteToPartner
+  updateEnquiry, deleteEnquiry, promoteToPartner, promoteToServiceUser
 } = require('../controllers/enquiry.controller');
+
+const {
+  getAllServiceUsers, getServiceUserById,
+  createServiceUser, updateServiceUser, deleteServiceUser,
+  createBooking, updateBooking, deleteBooking,
+  createPayment, updatePayment, deletePayment,
+  createSupportTicket, updateSupportTicket, deleteSupportTicket
+} = require('../controllers/serviceUser.controller');
+
 
 const verifyRdSignature = require('../middleware/verifyRdSignature');
 const {
@@ -53,6 +62,30 @@ router.post('/enquiries',                 createEnquiry);
 router.patch('/enquiries/:id',            updateEnquiry);
 router.delete('/enquiries/:id',           deleteEnquiry);
 router.post('/enquiries/:id/promote',     promoteToPartner);
+router.post('/enquiries/:id/promote-user', promoteToServiceUser);
+
+// Service Users
+router.get('/service-users',                              getAllServiceUsers);
+router.post('/service-users',                             createServiceUser);
+router.get('/service-users/:id',                          getServiceUserById);
+router.patch('/service-users/:id',                        updateServiceUser);
+router.delete('/service-users/:id',                       deleteServiceUser);
+
+// Service User Bookings
+router.post('/service-users/:id/bookings',                createBooking);
+router.patch('/service-users/:id/bookings/:bookingId',    updateBooking);
+router.delete('/service-users/:id/bookings/:bookingId',   deleteBooking);
+
+// Service User Payments
+router.post('/service-users/:id/payments',                createPayment);
+router.patch('/service-users/:id/payments/:paymentId',    updatePayment);
+router.delete('/service-users/:id/payments/:paymentId',   deletePayment);
+
+// Service User Support Tickets
+router.post('/service-users/:id/support',                 createSupportTicket);
+router.patch('/service-users/:id/support/:ticketId',      updateSupportTicket);
+router.delete('/service-users/:id/support/:ticketId',     deleteSupportTicket);
+
 
 // Auth logout
 router.post('/auth/logout', logout);

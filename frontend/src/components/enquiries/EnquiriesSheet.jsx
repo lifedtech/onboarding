@@ -19,7 +19,9 @@ import useOpsStore from '../../store/useOpsStore';
 import AddEnquiryModal from './AddEnquiryModal';
 import PromotePartnerModal from './PromotePartnerModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import OnboardUserModal from './OnboardUserModal';
 import toast from 'react-hot-toast';
+
 
 export default function EnquiriesSheet() {
   const enquiries = useOpsStore((s) => s.enquiries);
@@ -28,6 +30,8 @@ export default function EnquiriesSheet() {
   const updateEnquiry = useOpsStore((s) => s.updateEnquiry);
   const deleteEnquiry = useOpsStore((s) => s.deleteEnquiry);
   const promoteEnquiry = useOpsStore((s) => s.promoteEnquiry);
+  const promoteEnquiryToUser = useOpsStore((s) => s.promoteEnquiryToUser);
+
 
   // States
   const [isOpenAdd, setIsOpenAdd] = useState(false);
@@ -45,6 +49,12 @@ export default function EnquiriesSheet() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteEnquiryId, setDeleteEnquiryId] = useState('');
   const [deleteEnquiryName, setDeleteEnquiryName] = useState('');
+
+  // Onboard user modal states
+  const [onboardModalOpen, setOnboardModalOpen] = useState(false);
+  const [onboardEnquiryId, setOnboardEnquiryId] = useState('');
+  const [onboardEnquiryName, setOnboardEnquiryName] = useState('');
+
 
   // Inline editing state
   const [editingId, setEditingId] = useState(null);
@@ -143,6 +153,14 @@ export default function EnquiriesSheet() {
     setPromoteEnquiryName(name);
     setPromoteModalOpen(true);
   };
+
+  const handleOnboardUser = (id, name) => {
+    setOnboardEnquiryId(id);
+    setOnboardEnquiryName(name);
+    setOnboardModalOpen(true);
+  };
+
+
 
   // Inline editing actions
   const startEditing = (enq) => {
@@ -594,6 +612,24 @@ export default function EnquiriesSheet() {
                                   </button>
                                 )
                               )}
+                              {enq.clientType === 'SERVICE_USER' && (
+                                enq.movedToPipeline ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                                    <Check className="w-3 h-3 text-indigo-600" />
+                                    Onboarded User
+                                  </span>
+                                ) : (
+                                  <button
+                                    onClick={() => handleOnboardUser(enq.id, enq.name)}
+                                    className="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
+                                    title="Onboard as Service User"
+                                  >
+                                    <ArrowRight className="w-3.5 h-3.5" />
+                                    Onboard
+                                  </button>
+                                )
+                              )}
+
                               <button
                                 onClick={() => startEditing(enq)}
                                 className="p-1 text-slate-400 hover:text-text-main hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
@@ -639,6 +675,15 @@ export default function EnquiriesSheet() {
         enquiryId={deleteEnquiryId}
         enquiryName={deleteEnquiryName}
       />
+
+      {/* Onboard User Modal */}
+      <OnboardUserModal
+        isOpen={onboardModalOpen}
+        onClose={() => setOnboardModalOpen(false)}
+        enquiryId={onboardEnquiryId}
+        enquiryName={onboardEnquiryName}
+      />
     </div>
+
   );
 }
