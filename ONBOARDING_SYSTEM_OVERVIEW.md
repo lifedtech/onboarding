@@ -25,7 +25,7 @@ The platform is designed around a three-tier cloud architecture separating user 
 
 ### Frontend (Client Interface)
 * **React & Vite:** Fast client-side rendering engine with hot module replacement.
-* **TailwindCSS:** Modern CSS framework utilizing variables and smooth animations.
+* **TailwindCSS / Vanilla CSS:** Modern styling utilizing fluid custom properties, HSL colors, and smooth animations.
 * **Zustand:** Ultra-lightweight and high-performance central state management.
 * **dnd-kit:** Responsive, accessible drag-and-drop primitives mapping card movements.
 
@@ -35,8 +35,9 @@ The platform is designed around a three-tier cloud architecture separating user 
 * **BullMQ & Redis:** Background queue processors managing scheduled jobs and notifications.
 
 ### Database & Hosting (Cloud Infrastructure)
-* **Supabase Cloud (PostgreSQL):** PostgreSQL instance managing relations, checks, and cascade triggers.
+* **Supabase Cloud (PostgreSQL):** PostgreSQL instance managing relations, checks, and cascade triggers for partner onboarding.
 * **Supavisor (Supabase Connection Pooler):** High-throughput connection manager handling transaction and session queries.
+* **Local JSON Flat-File Storage:** A segregated JSON database (`backend/src/data/service_users.json`) hosting end-user details (service users), keeping user data strictly isolated from partner compliance data.
 * **Cloudflare Workers/Pages:** Distributed edge network hosting the static frontend assets.
 * **Render Web Services:** Cloud app runner hosting the containerized Node.js backend.
 
@@ -44,12 +45,18 @@ The platform is designed around a three-tier cloud architecture separating user 
 
 ## 3. Core Features & Capabilities
 
-The platform automates the entire onboarding lifecycle of healthcare partners (Healthmates) and secures communication with the R&D compliance systems:
+The platform automates the onboarding lifecycle of healthcare partners (Healthmates), isolates and tracks client database metrics (Service Users), and secures communication with R&D compliance:
 
 ### 📋 Interactive Kanban Pipeline
 * Visualizes partners across 5 onboarding phases: `PRE_QUALIFY` ➔ `PREPARE` ➔ `REGISTER` ➔ `REVIEW` ➔ `LIVE`.
 * Track and update partner statuses, contacts, and uploaded registry documents.
 * Stage transitions reset stage timers (`daysInPhase`) and notify operations agents.
+
+### 👥 Dedicated Service Users CRM
+* A separate, dedicated workspace for operations teams to manage end users (clients) independently from Healthmate partners.
+* Monitors user records containing contact detail indices, membership tier badges (`Silver`, `Gold`, `Platinum`), status indicators (`ACTIVE`, `INACTIVE`, `SUSPENDED`), and notes.
+* Contextual tabs for tracking **Bookings**, **Payments** (in Indian Rupee `₹` currency notation), and **Support Tickets**.
+* Promotion utility transforming inbound `SERVICE_USER` type enquiries into live service user accounts via a custom confirmation modal.
 
 ### 🔒 Webhook Integration with R&D
 Exposes 4 public endpoints to automate compliance transitions:
@@ -76,3 +83,4 @@ Exposes 4 public endpoints to automate compliance transitions:
 | **Frontend UI** | [https://onboarding.pixellon.in](https://onboarding.pixellon.in) (or [onboardingdesk.workers.dev](https://onboardingdesk.aayushraj1601.workers.dev)) | Cloudflare Pages |
 | **Backend Express Server** | [https://onboardingdesk.onrender.com](https://onboardingdesk.onrender.com) | Render |
 | **PostgreSQL Database** | `ihwvwjgamlskaehiofel` at Sydney region | Supabase |
+

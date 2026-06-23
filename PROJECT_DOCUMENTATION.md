@@ -33,14 +33,16 @@ graph TD
         D --> F[Pipeline Board Kanban]
         D --> G[Unified Tasks Checklist]
         D --> H[Team Administration]
+        D --> I[Service Users List]
         F -->|dnd-kit| F1[Draggable Partner Card]
         F1 -->|Click| H2[Healthmate Detail & Document Upload Modal]
+        I -->|Select| I1[Service User Details Drawer]
+        I1 -->|Tab Toggle| I2[Bookings, Payments & Support Logs]
     end
 
-    subgraph Server [Server Application - Express & Prisma]
+    subgraph Server [Server Application - Express & Prisma / File IO]
         J[server.js Entry] --> K[API Gateway & Router]
-        K --> L[authenticate Token JWT Middleware]
-        L --> M[requireAdmin Role Gate Middleware]
+        L[authenticate Token JWT Middleware] --> M[requireAdmin Role Gate Middleware]
         
         K --> N[Controllers]
         N --> N1[auth.controller]
@@ -48,8 +50,10 @@ graph TD
         N --> N3[task.controller]
         N --> N4[user.controller]
         N --> N5[analytics.controller]
+        N --> N6[serviceUser.controller]
         
         N -->|Prisma Client| O[(PostgreSQL Database)]
+        N6 -->|JSON Service File IO| O2[(service_users.json flat-file)]
         N2 -->|Queue Job Request| P[BullMQ Message Queue]
     end
 
@@ -66,6 +70,7 @@ graph TD
 * **Runtime:** **Node.js** (Asynchronous, event-driven JavaScript server environment).
 * **API Layer:** **Express.js** (Fast, unopinionated routing middleware handler).
 * **Database & ORM:** **PostgreSQL** combined with **Prisma ORM** (Provides full type safety, automatic schema migrations, and structured declarative querying).
+* **Data Isolation Storage:** **Flat-file JSON storage** (`service_users.json`) managed by a dedicated service layer (`serviceUser.service.js`) performing transactional read/writes, keeping end-user records completely isolated from partner compliance database layers.
 * **Job & Task Queue:** **BullMQ & Redis (ioredis)** (Asynchronous micro-service worker setup to decouple external API latencies like SMS or email sending).
 * **Security & Auth:** **bcryptjs** (Hashed password safety using 12 salt rounds) and **jsonwebtoken (JWT)** (Stateless cryptographic token passing for secure access).
 * **File Uploads:** **Multer** (Node.js middleware for handling multipart/form-data for compliance documents).
@@ -84,7 +89,6 @@ graph TD
 ## 3. Comprehensive Folder Structures
 
 The codebase is organized cleanly to maintain a strict separation of concerns, separating application routing, business controllers, background workers, and view rendering.
-
 ### 3.1 Backend Layout
 ```
 backend/
@@ -96,10 +100,14 @@ backend/
 │   ├── controllers/           # HTTP controllers implementing core business logic
 │   │   ├── analytics.controller.js
 │   │   ├── auth.controller.js
+│   │   ├── enquiry.controller.js  # Leads management & promote conversions
 │   │   ├── healthmate.controller.js
+│   │   ├── serviceUser.controller.js # End users, bookings, payments & tickets
 │   │   ├── task.controller.js
 │   │   ├── user.controller.js
 │   │   └── webhook.controller.js # Webhook endpoint transitions & statuses
+│   ├── data/                  # Local storage files
+│   │   └── service_users.json # Local flat-file database for Service Users
 │   ├── middleware/            # Security verification & file upload filters
 │   │   ├── auth.middleware.js
 │   │   ├── upload.js
@@ -110,6 +118,7 @@ backend/
 │   │   ├── credential.service.js # Auto credential provisioning service
 │   │   ├── email.service.js
 │   │   ├── queue.service.js
+│   │   ├── serviceUser.service.js # Local JSON filesystem CRUD handler
 │   │   └── whatsapp.service.js
 │   ├── utils/
 │   │   └── template.engine.js # Contextual template engine for hydrating emails/SMS
@@ -132,12 +141,15 @@ frontend/
 │   │   └── favicon.svg        # Source vector brand assets
 │   ├── components/            # Isolated, reusable React elements
 │   │   ├── dashboard/         # Aggregated stats, global checklists, and administration
+│   │   │   ├── ConfirmDeleteUserModal.jsx # Warning-red themed deletion confirmation
 │   │   │   ├── DashboardOverview.jsx
 │   │   │   ├── MyTasks.jsx
+│   │   │   ├── ServiceUsersList.jsx # Main Service Users CRM dashboard
 │   │   │   └── TeamManagement.jsx
 │   │   ├── enquiries/         # Enquiries spreadsheet and intake form
 │   │   │   ├── AddEnquiryModal.jsx
-│   │   │   └── EnquiriesSheet.jsx
+│   │   │   ├── EnquiriesSheet.jsx
+│   │   │   └── OnboardUserModal.jsx # Emerald-green themed membership tier selector
 │   │   ├── pipeline/          # Interactive Kanban columns and partner cards
 │   │   │   ├── AddHealthmateModal.jsx
 │   │   │   ├── HealthmateCard.jsx
@@ -202,9 +214,67 @@ The database is built on **PostgreSQL** and managed using **Prisma**. Below is t
   * **`HealthmateType`:** Categorizes the organization structures: `PRACTITIONER`, `CENTRE`, and `ORGANIZER`.
 * **Models:**
   * **`OpsUser`:** Holds dashboard credentials. Relates one-to-many with `Healthmate` and `Enquiry`. Standard roles are `'ops'` (standard coordinator) and `'admin'` (administrator with team management access).
-  * **`Enquiry`:** Represents client/partner intake prospects. Tracks name, contact details, contacted status, client type (Service User vs Health Partner), remarks, callback schedules, and geographical location.
+  * **`Enquiry`:** Represents client/partner intake prospects. Tracks name, contact details, contacted status, client type (`SERVICE_USER` vs `HEALTH_PARTNER`), remarks, callback schedules, and geographical location.
   * **`Healthmate`:** Represents the onboarding partner. Holds critical details (e.g., email, phone, category), phase counters, internal notes, and pointers to uploaded regulatory files (`regDocUrl`).
   * **`Task`:** Individual checklist items. Each task is bound to a specific onboarding `phase`. Cascade constraints are declared (`onDelete: Cascade` on the `Healthmate` relationship) so that deleting a partner automatically removes their checklist history.
+
+### 4.2 Service Users JSON Schema (`service_users.json`)
+
+To keep customer files detached from Supabase PostgreSQL tables without generating database migrations, Service Users data is isolated in a local flat-file JSON database. The JSON structures map as follows:
+
+```json
+[
+  {
+    "id": "su-1",
+    "name": "Emily Thompson",
+    "email": "emily.t@gmail.com",
+    "phone": "+61 488 123 456",
+    "status": "ACTIVE",
+    "tier": "PLATINUM",
+    "notes": "Prefers evening sessions.",
+    "createdAt": "2026-06-23T10:00:00.000Z",
+    "updatedAt": "2026-06-23T10:00:00.000Z",
+    "bookings": [
+      {
+        "id": "b-101",
+        "serviceName": "Yoga Therapy Session",
+        "providerName": "Harmony Wellbeing Centre",
+        "bookingDate": "2026-06-25T14:00:00.000Z",
+        "status": "CONFIRMED",
+        "amount": 150.0,
+        "paymentStatus": "PAID",
+        "createdAt": "2026-06-20T10:00:00.000Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "p-201",
+        "amount": 150.0,
+        "status": "PAID",
+        "method": "CREDIT_CARD",
+        "transactionId": "txn_98124801",
+        "description": "Payment for Yoga Therapy booking b-101",
+        "billingDate": "2026-06-20T10:00:00.000Z",
+        "createdAt": "2026-06-20T10:00:00.000Z"
+      }
+    ],
+    "supportTickets": [
+      {
+        "id": "t-301",
+        "title": "Client portal connection issues",
+        "description": "Unable to view upcoming sessions.",
+        "category": "TECH",
+        "severity": "MEDIUM",
+        "status": "RESOLVED",
+        "createdAt": "2026-06-19T10:00:00.000Z",
+        "updatedAt": "2026-06-20T10:00:00.000Z"
+      }
+    ]
+  }
+]
+```
+* **Status Enum Mappings**: `ACTIVE`, `INACTIVE`, `SUSPENDED`.
+* **Membership Tier Mappings**: `SILVER`, `GOLD`, `PLATINUM`.
 
 ---
 
@@ -329,8 +399,40 @@ All endpoints require standard application/json requests and (unless noted as pu
   * Deletes an enquiry from database logs.
 * **`POST /api/enquiries/:id/promote`**
   * Promotes a qualified `HEALTH_PARTNER` enquiry to the active Kanban partner pipeline, creating a new `Healthmate` in the `PRE_QUALIFY` phase and copy-routing details.
+* **`POST /api/enquiries/:id/promote-user`**
+  * Promotes a qualified `SERVICE_USER` enquiry to the local service users registry.
 
-### 7.5 Task Checklists (Protected)
+### 7.5 Service Users (Protected)
+* **`GET /api/service-users`**
+  * Returns all service users from local JSON storage.
+* **`POST /api/service-users`**
+  * Manually creates a new service user profile.
+* **`GET /api/service-users/:id`**
+  * Returns a single service user profile details.
+* **`PATCH /api/service-users/:id`**
+  * Updates general details of a service user.
+* **`DELETE /api/service-users/:id`**
+  * Deletes a service user.
+* **`POST /api/service-users/:id/bookings`**
+  * Appends a booking entry to the user's booking history.
+* **`PATCH /api/service-users/:id/bookings/:bookingId`**
+  * Updates a specific booking's details or status.
+* **`DELETE /api/service-users/:id/bookings/:bookingId`**
+  * Removes a specific booking entry.
+* **`POST /api/service-users/:id/payments`**
+  * Appends a payment/invoice transaction to the user's logs.
+* **`PATCH /api/service-users/:id/payments/:paymentId`**
+  * Updates payment/invoice transaction details or status.
+* **`DELETE /api/service-users/:id/payments/:paymentId`**
+  * Removes a specific payment entry.
+* **`POST /api/service-users/:id/support`**
+  * Appends a support ticket log to the user's profile.
+* **`PATCH /api/service-users/:id/support/:ticketId`**
+  * Updates support ticket logs details (status, category, severity).
+* **`DELETE /api/service-users/:id/support/:ticketId`**
+  * Deletes a specific support ticket.
+
+### 7.6 Task Checklists (Protected)
 * **`POST /api/healthmates/:id/tasks`**
   * Seeds a custom task under a specific phase for a partner.
 * **`PATCH /api/tasks/:taskId/toggle`**
@@ -338,12 +440,12 @@ All endpoints require standard application/json requests and (unless noted as pu
 * **`GET /api/tasks/pending`**
   * Returns a global checklist of all uncompleted tasks across all partners, grouped and sorted.
 
-### 7.6 Background Messaging (Protected)
+### 7.7 Background Messaging (Protected)
 * **`POST /api/healthmates/:id/messages`**
   * Body: `{ "type": "EMAIL" | "WHATSAPP" }`
   * Automatically matches the partner's active stage, builds the message template, and queues the job in Redis.
 
-### 7.7 Team Administration (Admin Role Locked)
+### 7.8 Team Administration (Admin Role Locked)
 * **`GET /api/users`**
   * Returns all system accounts.
 * **`POST /api/users`**
@@ -382,12 +484,19 @@ These endpoints require a valid signature in the `X-RD-Signature` header, comput
 The frontend is styled using a modern, professional palette designed to match clinical and professional operations:
 
 * **Typography:** Default system font is **Roboto** (weights: 400 Regular, 500 Medium, 700 Bold), loaded via Google Fonts. This guarantees high readability for large checklists and dashboards.
-* ** harmonious Color Palette:**
+* **Curated Premium Theme & Color Palette:**
   * **Brand Teal (`#00B09B`):** Used for primary buttons, active tabs, and positive states.
   * **Brand Green (`#78C652`):** Used for success indicators, completed checkboxes, and 'Live' status labels.
   * **Midnight Blue (`#2C3E50` / `#22313F`):** Used for dark background panels, sidebar, text main, and elevated elements.
   * **Light Neutral (`#edf0f2`):** Clean base surface color that keeps the dashboard feeling spacious and readable.
   * **Light Borders (`#cbd5e1`):** Subtle borders that structure information panels cleanly.
+  * **Emerald Green Onboarding Accents:** Custom styling for client/partner onboarding modals and status labels.
+  * **Warning Red Deletion Accents:** Design accents highlighting deletion confirm prompts and user removal actions.
+* **Currency Indicators:** The base currency throughout the system (especially for Service User billing records and payment logs) is set to **Indian Rupees (₹)**.
+* **Membership Tiers:** Customer membership tiers are standardized into three categories:
+  * **Silver**: Entry-tier membership.
+  * **Gold**: Mid-tier membership.
+  * **Platinum**: High-tier/VIP membership.
 * **Micro-Animations:** Interactive elements feature smooth transitions (`transition-all duration-200`) and slight elevation scale transforms on hover to make the interface feel alive and premium.
 
 ---
