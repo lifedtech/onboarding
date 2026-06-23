@@ -300,7 +300,7 @@ const promoteToServiceUser = async (req, res) => {
       name: enquiry.name,
       email,
       phone,
-      tier: tier || 'BASIC',
+      tier: tier || 'SILVER',
       status: 'ACTIVE',
       notes: enquiry.remarks || 'Promoted from Enquiry.'
     });

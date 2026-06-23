@@ -66,7 +66,7 @@ export default function ServiceUsersList() {
     name: '',
     email: '',
     phone: '',
-    tier: 'BASIC',
+    tier: 'SILVER',
     status: 'ACTIVE',
     notes: ''
   });
@@ -145,7 +145,7 @@ export default function ServiceUsersList() {
     const res = await createServiceUser(userForm);
     if (res.success) {
       setShowAddUserModal(false);
-      setUserForm({ name: '', email: '', phone: '', tier: 'BASIC', status: 'ACTIVE', notes: '' });
+      setUserForm({ name: '', email: '', phone: '', tier: 'SILVER', status: 'ACTIVE', notes: '' });
     } else {
       toast.error(res.message);
     }
@@ -301,11 +301,11 @@ export default function ServiceUsersList() {
 
   const getTierBadge = (tier) => {
     switch (tier) {
-      case 'VIP':
+      case 'PLATINUM':
         return 'text-amber-800 bg-amber-50 border-amber-200';
-      case 'PREMIUM':
+      case 'GOLD':
         return 'text-indigo-800 bg-indigo-50 border-indigo-200';
-      case 'BASIC':
+      case 'SILVER':
       default:
         return 'text-teal-800 bg-teal-50 border-teal-200';
     }
@@ -407,9 +407,9 @@ export default function ServiceUsersList() {
               className="bg-slate-50 border border-slate-200 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
             >
               <option value="ALL">All Tiers</option>
-              <option value="VIP">VIP</option>
-              <option value="PREMIUM">Premium</option>
-              <option value="BASIC">Basic</option>
+              <option value="PLATINUM">Platinum</option>
+              <option value="GOLD">Gold</option>
+              <option value="SILVER">Silver</option>
             </select>
           </div>
 
@@ -599,9 +599,9 @@ export default function ServiceUsersList() {
                     onChange={(e) => setUserForm({ ...userForm, tier: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                   >
-                    <option value="BASIC">Basic</option>
-                    <option value="PREMIUM">Premium</option>
-                    <option value="VIP">VIP</option>
+                    <option value="SILVER">Silver</option>
+                    <option value="GOLD">Gold</option>
+                    <option value="PLATINUM">Platinum</option>
                   </select>
                 </div>
 
@@ -758,13 +758,13 @@ export default function ServiceUsersList() {
                       <div className="space-y-1">
                         <label className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider">Membership Tier</label>
                         <select
-                          value={selectedUser.tier || 'BASIC'}
+                          value={selectedUser.tier || 'SILVER'}
                           onChange={(e) => handleUpdateUserDetails({ tier: e.target.value })}
                           className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                         >
-                          <option value="BASIC">Basic</option>
-                          <option value="PREMIUM">Premium</option>
-                          <option value="VIP">VIP</option>
+                          <option value="SILVER">Silver</option>
+                          <option value="GOLD">Gold</option>
+                          <option value="PLATINUM">Platinum</option>
                         </select>
                       </div>
                       <div className="space-y-1">

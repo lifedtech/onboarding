@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 
 export default function OnboardUserModal({ isOpen, onClose, enquiryId, enquiryName }) {
   const promoteEnquiryToUser = useOpsStore((s) => s.promoteEnquiryToUser);
-  const [tier, setTier] = useState('BASIC'); // 'BASIC', 'PREMIUM', or 'VIP'
+  const [tier, setTier] = useState('SILVER'); // 'SILVER', 'GOLD', or 'PLATINUM'
   const [onboarding, setOnboarding] = useState(false);
 
   if (!isOpen) return null;
@@ -84,36 +84,36 @@ export default function OnboardUserModal({ isOpen, onClose, enquiryId, enquiryNa
               <div className="grid grid-cols-3 gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50">
                 <button
                   type="button"
-                  onClick={() => setTier('BASIC')}
+                  onClick={() => setTier('SILVER')}
                   className={`py-2 rounded-xl text-[10px] font-extrabold transition-all duration-200 flex items-center justify-center cursor-pointer ${
-                    tier === 'BASIC'
+                    tier === 'SILVER'
                       ? 'bg-brand-green text-white shadow-md'
                       : 'text-text-muted hover:text-text-main hover:bg-white/40'
                   }`}
                 >
-                  Basic
+                  Silver
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTier('PREMIUM')}
+                  onClick={() => setTier('GOLD')}
                   className={`py-2 rounded-xl text-[10px] font-extrabold transition-all duration-200 flex items-center justify-center cursor-pointer ${
-                    tier === 'PREMIUM'
+                    tier === 'GOLD'
                       ? 'bg-brand-green text-white shadow-md'
                       : 'text-text-muted hover:text-text-main hover:bg-white/40'
                   }`}
                 >
-                  Premium
+                  Gold
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTier('VIP')}
+                  onClick={() => setTier('PLATINUM')}
                   className={`py-2 rounded-xl text-[10px] font-extrabold transition-all duration-200 flex items-center justify-center cursor-pointer ${
-                    tier === 'VIP'
+                    tier === 'PLATINUM'
                       ? 'bg-brand-green text-white shadow-md'
                       : 'text-text-muted hover:text-text-main hover:bg-white/40'
                   }`}
                 >
-                  VIP
+                  Platinum
                 </button>
               </div>
             </div>
