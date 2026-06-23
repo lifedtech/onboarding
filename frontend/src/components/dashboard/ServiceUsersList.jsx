@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
+import ConfirmDeleteUserModal from './ConfirmDeleteUserModal';
+
 
 export default function ServiceUsersList() {
   const serviceUsers = useOpsStore((s) => s.serviceUsers);
@@ -54,8 +56,10 @@ export default function ServiceUsersList() {
 
   // Modal / Drawer open states
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [activeTab, setActiveTab] = useState('profile'); // 'profile', 'bookings', 'payments', 'support'
+
 
   // Form states
   const [userForm, setUserForm] = useState({
@@ -159,14 +163,10 @@ export default function ServiceUsersList() {
   };
 
   // Delete User handler
-  const handleDeleteUser = async (id) => {
-    if (window.confirm('Are you sure you want to remove this service user profile permanently?')) {
-      const res = await deleteServiceUser(id);
-      if (res.success) {
-        setSelectedUser(null);
-      }
-    }
+  const handleDeleteUser = (id) => {
+    setShowDeleteModal(true);
   };
+
 
   // Booking handlers
   const handleAddBooking = async (e) => {
@@ -1284,6 +1284,15 @@ export default function ServiceUsersList() {
             </div>
           </div>
         </div>
+      )}
+      {selectedUser && (
+        <ConfirmDeleteUserModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+          onSuccess={() => setSelectedUser(null)}
+        />
       )}
     </div>
   );
