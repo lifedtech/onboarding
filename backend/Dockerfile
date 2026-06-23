@@ -5,17 +5,13 @@ RUN apk add --no-cache openssl
 
 WORKDIR /app
 
-# Copy dependency specifications
+# Copy dependency specifications & Prisma schema
 COPY package*.json ./
-
-# Install all dependencies (production + prisma CLI devDependencies)
-RUN npm install
-
-# Copy Prisma schema definition
 COPY prisma ./prisma/
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Install all dependencies (production + prisma CLI devDependencies)
+# This will automatically trigger 'postinstall' which runs 'prisma generate'
+RUN npm install
 
 # Copy the rest of the backend source code
 COPY . .
