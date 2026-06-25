@@ -10,7 +10,8 @@ import {
   Search,
   Filter,
   Wrench,
-  RefreshCw
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import toast from 'react-hot-toast';
@@ -19,11 +20,7 @@ export default function Support() {
   const currentUser = useOpsStore((s) => s.user);
   const isAdmin = currentUser?.role?.toLowerCase() === 'admin';
 
-  const teamMembersRaw = useOpsStore((s) => s.teamMembers);
-  const teamMembers = Array.isArray(teamMembersRaw) ? teamMembersRaw : [];
-  const fetchTeamMembers = useOpsStore((s) => s.fetchTeamMembers);
 
-  const [adminTab, setAdminTab] = useState('tickets'); // 'tickets' or 'operators'
 
   // Persistence of tickets in localStorage
   const [tickets, setTickets] = useState(() => {
@@ -70,24 +67,14 @@ export default function Support() {
 
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const handleManualRefresh = async () => {
-    setRefreshing(true);
-    await fetchTeamMembers();
-    setRefreshing(false);
-  };
+
 
   // Sync tickets with localStorage
   useEffect(() => {
     localStorage.setItem('support_tickets', JSON.stringify(tickets));
   }, [tickets]);
 
-  // Load team members for reference
-  useEffect(() => {
-    fetchTeamMembers();
-    const interval = setInterval(fetchTeamMembers, 8000);
-    return () => clearInterval(interval);
-  }, [fetchTeamMembers]);
+
 
   const handleRaiseTicket = (e) => {
     e.preventDefault();
@@ -114,6 +101,11 @@ export default function Support() {
       prev.map((t) => (t.id === ticketId ? { ...t, status: nextStatus } : t))
     );
     toast.success(`Ticket ${ticketId} status updated to ${nextStatus}.`);
+  };
+
+  const handleDeleteTicket = (ticketId) => {
+    setTickets((prev) => prev.filter((t) => t.id !== ticketId));
+    toast.success(`Ticket ${ticketId} has been deleted.`);
   };
 
   const getSeverityStyles = (severity) => {
@@ -168,136 +160,7 @@ export default function Support() {
         </div>
       </div>
 
-      {/* Tab Switcher */}
-      <div className="flex border-b border-white/5 shrink-0 gap-6">
-        <button
-          onClick={() => setAdminTab('tickets')}
-          className={`pb-3 font-extrabold text-sm transition-all border-b-2 ${
-            adminTab === 'tickets'
-              ? 'border-black text-black'
-              : 'border-transparent text-blue-500 hover:text-blue-700'
-          }`}
-        >
-          Support Tickets
-        </button>
-        <button
-          onClick={() => setAdminTab('operators')}
-          className={`pb-3 font-extrabold text-sm transition-all border-b-2 ${
-            adminTab === 'operators'
-              ? 'border-black text-black'
-              : 'border-transparent text-blue-500 hover:text-blue-700'
-          }`}
-        >
-          Registered Ops Staff
-        </button>
-      </div>
-
-      {adminTab === 'operators' ? (
-        /* ── Team Directory View ── */
-        <div className="flex-1 min-h-0 bg-[#22313F] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
-          <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
-                <Users className="w-4 h-4" />
-              </div>
-              <h3 className="text-white font-extrabold text-sm tracking-wide">Registered Operations Staff</h3>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleManualRefresh}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all focus:outline-none"
-                title="Refresh Registered Staff"
-                disabled={refreshing}
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-              </button>
-              <span className="text-[10px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full">
-                {teamMembers.filter((m) => m.role?.toLowerCase() !== 'admin').length} agent(s)
-              </span>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-auto">
-            {teamMembers.filter((m) => m.role?.toLowerCase() !== 'admin').length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 gap-2">
-                <Clock className="w-8 h-8 text-brand-teal animate-spin" />
-                <p className="text-slate-400 text-sm font-semibold">Loading operators registry...</p>
-              </div>
-            ) : (
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#1A252F]/50 border-b border-white/5 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
-                    <th className="px-6 py-4">Full Name</th>
-                    <th className="px-6 py-4">Email Address</th>
-                    <th className="px-6 py-4">Presence Status</th>
-                    <th className="px-6 py-4">Authorized Role</th>
-                    <th className="px-6 py-4">Date Joined</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {teamMembers
-                    .filter((member) => member.role?.toLowerCase() !== 'admin')
-                    .map((member) => {
-                      const initials = member.name
-                        ? member.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-                        : 'OP';
-                      const localDate = member.createdAt && !isNaN(new Date(member.createdAt).getTime())
-                        ? new Date(member.createdAt).toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })
-                        : '—';
-                      const isOnline = member.isOnline;
-
-                      return (
-                        <tr key={member.id} className="hover:bg-white/5 transition-colors group">
-                          {/* Name */}
-                          <td className="px-6 py-4">
-                            <span className="text-white font-extrabold text-xs flex items-center gap-2.5">
-                              <span className="w-6 h-6 rounded-full bg-brand-green flex items-center justify-center text-white text-[9px] font-extrabold border border-white/10 shrink-0 shadow-sm">
-                                {initials}
-                              </span>
-                              {member.name}
-                            </span>
-                          </td>
-                          {/* Email */}
-                          <td className="px-6 py-4">
-                            <span className="text-slate-300 text-xs font-semibold">
-                              {member.email}
-                            </span>
-                          </td>
-                          {/* Status */}
-                          <td className="px-6 py-4">
-                            <span className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase tracking-wider">
-                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isOnline ? 'bg-brand-green animate-pulse' : 'bg-red-500'}`} />
-                              <span className={isOnline ? 'text-brand-green' : 'text-red-400'}>
-                                {isOnline ? 'Online' : 'Offline'}
-                              </span>
-                            </span>
-                          </td>
-                          {/* Role */}
-                          <td className="px-6 py-4">
-                            <span className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border tracking-wide uppercase text-brand-green bg-brand-green/10 border-brand-green/20`}>
-                              Ops Agent
-                            </span>
-                          </td>
-                          {/* Joined Date */}
-                          <td className="px-6 py-4">
-                            <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                              {localDate}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-      ) : isAdmin && adminTab === 'tickets' ? (
+      {isAdmin ? (
         /* ── Admin Support View: Raised Tickets Log ── */
         <div className="flex-1 min-h-0 flex flex-col space-y-6">
           {/* Filters & search toolbar */}
@@ -322,11 +185,10 @@ export default function Support() {
                   <button
                     key={status}
                     onClick={() => setFilterStatus(status)}
-                    className={`text-[9px] font-extrabold px-3 py-1.5 rounded-lg transition-all ${
-                      filterStatus === status
+                    className={`text-[9px] font-extrabold px-3 py-1.5 rounded-lg transition-all ${filterStatus === status
                         ? 'bg-brand-teal text-white shadow-sm'
                         : 'text-slate-400 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {status}
                   </button>
@@ -413,6 +275,13 @@ export default function Support() {
                           <span className={`text-[8px] font-extrabold px-2 py-0.5 rounded border tracking-wide uppercase ${getSeverityStyles(ticket.severity)}`}>
                             {ticket.severity} Priority
                           </span>
+                          <button
+                            onClick={() => handleDeleteTicket(ticket.id)}
+                            className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all focus:outline-none"
+                            title="Delete Ticket"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -549,9 +418,18 @@ export default function Support() {
                             minute: '2-digit'
                           })}
                         </span>
-                        <span className={`text-[8px] font-extrabold px-2 py-0.5 rounded border tracking-wide uppercase ${getSeverityStyles(ticket.severity)}`}>
-                          {ticket.severity} Priority
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[8px] font-extrabold px-2 py-0.5 rounded border tracking-wide uppercase ${getSeverityStyles(ticket.severity)}`}>
+                            {ticket.severity} Priority
+                          </span>
+                          <button
+                            onClick={() => handleDeleteTicket(ticket.id)}
+                            className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all focus:outline-none"
+                            title="Delete Ticket"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

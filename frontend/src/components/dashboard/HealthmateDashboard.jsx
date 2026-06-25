@@ -34,7 +34,7 @@ const TYPE_LABELS = {
   ORGANIZER:    'Organizer',
 };
 
-export default function DashboardOverview() {
+export default function HealthmateDashboard() {
   const fetchSummaryMetrics = useOpsStore((s) => s.fetchSummaryMetrics);
   const summaryMetrics     = useOpsStore((s) => s.summaryMetrics);
   const recentActivity     = useOpsStore((s) => s.recentActivity);

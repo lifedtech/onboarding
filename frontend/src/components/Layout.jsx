@@ -1,21 +1,8 @@
 import { useState } from 'react';
 import {
-  Activity,
-  LayoutDashboard,
-  GitBranch,
-  CheckSquare,
-  LogOut,
-  Menu,
-  X,
-  Users,
-  LifeBuoy,
-  Wrench,
-  Calendar,
-  MessageSquare,
-  FileSpreadsheet,
-  HeartHandshake
+  Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar,
+  MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck
 } from 'lucide-react';
-
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
 
@@ -27,85 +14,139 @@ const getStatusColor = (mode) => {
     case 'busy': return '#f59e0b';
     case 'dnd': return '#ef4444';
     case 'offline': return '#64748b';
-    case 'online':
-    default: return '#10b981';
+    case 'online': default: return '#10b981';
   }
 };
 
-const NAV_ITEMS = [
-  { label: 'Dashboard', icon: LayoutDashboard, href: 'dashboard' },
-  { label: 'Enquiries', icon: FileSpreadsheet,   href: 'enquiries' },
-  { label: 'Pipeline',  icon: GitBranch,       href: 'pipeline'  },
-  { label: 'Service Users', icon: HeartHandshake, href: 'service_users' },
-  { label: 'My Tasks',  icon: CheckSquare,      href: 'tasks'     },
-  { label: 'Calendar',  icon: Calendar,        href: 'calendar'  },
-];
-
-
-
 export default function Layout({ children, activePage, onNavigate }) {
-  const user   = useOpsStore((s) => s.user);
+  const user = useOpsStore((s) => s.user);
   const logout = useOpsStore((s) => s.logout);
+  const chatHasUnread = useOpsStore((s) => s.chatHasUnread);
+  
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expanded, setExpanded] = useState({
+    healthmates: true,
+    serviceUsers: true,
+    ops: true,
+    admin: true
+  });
+
+  const toggleGroup = (group) => {
+    setExpanded(prev => ({ ...prev, [group]: !prev[group] }));
+  };
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'OP';
 
-  const SidebarContent = () => {
-    const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
-    const chatHasUnread = useOpsStore((s) => s.chatHasUnread);
-    const currentNavItems = [...NAV_ITEMS];
-    currentNavItems.push({ label: 'Support', icon: LifeBuoy, href: 'support' });
-    currentNavItems.push({ label: 'Team Chat', icon: MessageSquare, href: 'team_chat', showDot: chatHasUnread });
-    currentNavItems.push({ label: 'Stress Buster', icon: Activity, href: 'deflector' });
-    if (isAdmin) {
-      currentNavItems.push({ label: 'Task Manager', icon: Wrench, href: 'support_dashboard' });
-      currentNavItems.push({ label: 'Team Settings', icon: Users, href: 'team' });
-    }
+  const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
+  const scopes = user?.accessScopes || ['HEALTHMATES', 'SERVICE_USERS']; // Fallback for testing if backend not updated yet
+  const showHealthmates = isAdmin || scopes.includes('HEALTHMATES');
+  const showServiceUsers = isAdmin || scopes.includes('SERVICE_USERS');
 
-    return (
-      <div className="flex flex-col h-full bg-[#22313F] text-slate-100">
-        {/* Brand */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5">
-          <div className="w-8 h-8 border border-white/10 rounded-lg flex items-center justify-center shrink-0 overflow-hidden shadow-inner bg-white/10">
-            <img src={logo} alt="Lifed Logo" className="w-full h-full object-cover" />
+  const GROUPS = [];
+
+  if (isAdmin) {
+    GROUPS.push({
+      id: 'admin',
+      label: 'Admin Settings',
+      items: [
+        { label: 'God View Analytics', icon: ShieldCheck, href: 'admin_dashboard' },
+        { label: 'Task Manager', icon: Wrench, href: 'support_dashboard' },
+        { label: 'Team Settings', icon: Users, href: 'team' },
+      ]
+    });
+  }
+
+  if (showHealthmates) {
+    GROUPS.push({
+      id: 'healthmates',
+      label: 'HealthMates - SuperHeros',
+      items: [
+        { label: 'Dashboard', icon: LayoutDashboard, href: 'healthmate_dashboard' },
+        { label: 'Enquiries', icon: FileSpreadsheet, href: 'healthmate_enquiries' },
+        { label: 'Pipeline', icon: GitBranch, href: 'pipeline' },
+        { label: 'Support', icon: LifeBuoy, href: 'healthmate_support' },
+        { label: 'Calendar', icon: Calendar, href: 'healthmate_calendar' },
+      ]
+    });
+  }
+
+  if (showServiceUsers) {
+    GROUPS.push({
+      id: 'serviceUsers',
+      label: 'Service Users',
+      items: [
+        { label: 'Dashboard', icon: LayoutDashboard, href: 'service_user_dashboard' },
+        { label: 'Users List', icon: HeartHandshake, href: 'service_users' },
+        { label: 'Enquiries', icon: FileSpreadsheet, href: 'service_user_enquiries' },
+        { label: 'User Support', icon: LifeBuoy, href: 'service_user_support' },
+        { label: 'Promotions', icon: Megaphone, href: 'promotions' },
+      ]
+    });
+  }
+
+  GROUPS.push({
+    id: 'ops',
+    label: 'Internal / Ops',
+    items: [
+      { label: 'My Tasks', icon: CheckSquare, href: 'tasks' },
+      { label: 'Team Chat', icon: MessageSquare, href: 'team_chat', showDot: chatHasUnread },
+      { label: 'Stress Buster', icon: Activity, href: 'deflector' },
+    ]
+  });
+
+  const handleNav = (href) => {
+    onNavigate(href);
+    setMobileOpen(false);
+  };
+
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-[#1e293b] text-slate-300"> {/* Darker AWS-like sidebar */}
+      {/* Sidebar Nav */}
+      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto min-h-0 custom-scrollbar">
+        {GROUPS.map(group => (
+          <div key={group.id} className="space-y-1">
+            <button
+              onClick={() => toggleGroup(group.id)}
+              className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 transition-colors"
+            >
+              {group.label}
+              {expanded[group.id] ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+            {expanded[group.id] && (
+              <div className="space-y-0.5 mt-1 border-l border-slate-700/50 ml-2 pl-2">
+                {group.items.map(({ label, icon: Icon, href, showDot }) => {
+                  const active = activePage === href;
+                  return (
+                    <button
+                      key={href}
+                      onClick={() => handleNav(href)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-200
+                        ${active
+                          ? 'bg-brand-teal/10 text-brand-teal font-bold'
+                          : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                        }`}
+                    >
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-brand-teal' : 'text-slate-500'}`} />
+                      <span className="flex-1 text-left">{label}</span>
+                      {showDot && (
+                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 shadow-sm shadow-red-500/50" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          <div className="min-w-0">
-            <p className="text-white font-extrabold text-sm leading-tight tracking-wider truncate">Lifed Healthmate</p>
-            <p className="text-brand-teal/80 text-xs font-semibold">Onboarding Manager</p>
-          </div>
-        </div>
+        ))}
+      </nav>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto min-h-0">
-          {currentNavItems.map(({ label, icon: Icon, href, showDot }) => {
-            const active = activePage === href;
-            return (
-              <button
-                key={href}
-                onClick={() => { onNavigate(href); setMobileOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-200
-                  ${active
-                    ? 'bg-brand-teal text-white shadow-lg shadow-brand-teal/15'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                  }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className="flex-1 text-left">{label}</span>
-                {showDot && (
-                  <span className="ml-auto w-2 h-2 rounded-full bg-red-500 shrink-0 shadow-sm shadow-red-500/50" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-
-      {/* User + Logout */}
-      <div className="px-3 py-4 border-t border-white/5 space-y-2 shrink-0">
+      {/* User Footer */}
+      <div className="p-4 border-t border-slate-700/50 space-y-2 shrink-0 bg-[#0f172a]">
         <button
-          onClick={() => { onNavigate('profile'); setMobileOpen(false); }}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-colors text-left group"
+          onClick={() => handleNav('profile')}
+          className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-white/5 transition-colors text-left group"
           title="View Profile"
         >
           <div className="relative shrink-0">
@@ -113,26 +154,26 @@ export default function Layout({ children, activePage, onNavigate }) {
               <img
                 src={UPLOADS_BASE + user.avatar}
                 alt="avatar"
-                className="w-8 h-8 rounded-full object-cover border border-white/10 shadow-sm"
+                className="w-8 h-8 rounded-full object-cover border border-slate-600 shadow-sm"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-brand-green flex items-center justify-center text-white text-xs font-extrabold border border-white/10 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-brand-green flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
                 {initials}
               </div>
             )}
             <span
-              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#22313F]"
+              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#0f172a]"
               style={{ backgroundColor: getStatusColor(user?.statusMode) }}
             />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-white text-sm font-bold truncate group-hover:text-brand-teal transition-colors">{user?.name}</p>
-            <p className="text-slate-400 text-xs truncate">{user?.email}</p>
+            <p className="text-white text-[13px] font-bold truncate group-hover:text-brand-teal transition-colors">{user?.name}</p>
+            <p className="text-slate-500 text-[11px] truncate">{user?.email}</p>
           </div>
         </button>
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          className="w-full flex items-center gap-3 px-2 py-2 rounded-md text-[13px] font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
         >
           <LogOut className="w-4 h-4 shrink-0" />
           Sign out
@@ -140,49 +181,82 @@ export default function Layout({ children, activePage, onNavigate }) {
       </div>
     </div>
   );
-};
 
   return (
-    <div className="flex h-screen bg-bg-base overflow-hidden">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-border-leaf/20 shadow-md">
-        <SidebarContent />
-      </aside>
-
-      {/* Mobile sidebar overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="absolute left-0 top-0 bottom-0 w-60 z-50">
-            <SidebarContent />
-          </aside>
-        </div>
-      )}
-
-      {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Mobile top bar */}
-        <header className="md:hidden flex items-center justify-between px-4 h-14 bg-white border-b border-border-leaf shrink-0 shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md overflow-hidden border border-slate-100 flex items-center justify-center shrink-0">
-              <img src={logo} alt="Lifed Logo" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-text-main font-extrabold text-sm tracking-wide">Lifed Healthmate</span>
-          </div>
+    <div className="flex flex-col h-screen bg-bg-base overflow-hidden">
+      
+      {/* Top Navigation Bar (AWS Style) */}
+      <header className="h-14 bg-[#0f172a] text-white flex items-center justify-between px-4 shrink-0 border-b border-slate-800 z-20">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => setMobileOpen(true)}
-            className="text-text-muted hover:text-brand-teal transition-colors"
-            aria-label="Open menu"
+            className="md:hidden text-slate-400 hover:text-white transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
-        </header>
+          
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
+              <img src={logo} alt="Lifed Logo" className="w-full h-full object-cover" />
+            </div>
+            <span className="font-extrabold text-sm tracking-wide text-slate-100 hidden sm:inline-block">Lifed Operations</span>
+          </div>
+        </div>
 
-        {/* Page content */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-bg-base">
+        {/* Global Search Bar (Mock) */}
+        <div className="flex-1 max-w-lg mx-4 hidden md:block">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search resources, services, and docs" 
+              className="w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md pl-9 pr-3 py-1.5 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal transition-all placeholder-slate-500"
+            />
+          </div>
+        </div>
+
+        {/* Top Right Actions */}
+        <div className="flex items-center gap-3">
+          <button className="relative p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors">
+            <Bell className="w-5 h-5" />
+            {chatHasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0f172a]"></span>}
+          </button>
+          
+          <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-700">
+            <span className="text-[12px] font-semibold text-slate-300">{user?.name}</span>
+            <div className="w-6 h-6 rounded-full bg-brand-teal text-white flex items-center justify-center text-[10px] font-extrabold">
+              {initials}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop sidebar */}
+        <aside className="hidden md:flex flex-col w-64 shrink-0 shadow-xl z-10">
+          <SidebarContent />
+        </aside>
+
+        {/* Mobile sidebar overlay */}
+        {mobileOpen && (
+          <div className="fixed inset-0 z-40 md:hidden">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
+            <aside className="absolute left-0 top-0 bottom-0 w-64 z-50 shadow-2xl">
+              <div className="absolute top-4 right-4 z-50">
+                <button onClick={() => setMobileOpen(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <SidebarContent />
+            </aside>
+          </div>
+        )}
+
+        {/* Main area */}
+        <main className="flex-1 flex flex-col overflow-x-hidden overflow-y-auto bg-slate-50">
           {children}
         </main>
       </div>

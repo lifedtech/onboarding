@@ -42,15 +42,15 @@ export default function Login() {
               <img src={logo} alt="Lifed Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-text-main font-extrabold text-lg leading-tight tracking-wide">Lifed Healthmate</h1>
-              <p className="text-text-muted text-xs font-semibold">Onboarding Manager</p>
+              <h1 className="text-text-main font-extrabold text-lg leading-tight tracking-wide">Lifed Operations</h1>
+              <p className="text-text-muted text-xs font-semibold">Operations Manager's Dashboard</p>
             </div>
           </div>
 
           {/* Heading */}
           <div className="mb-6">
             <h2 className="text-text-main text-2xl font-extrabold tracking-tight">Welcome back</h2>
-            <p className="text-text-muted text-sm mt-1">Sign in to your ops account to continue.</p>
+            <p className="text-text-muted text-sm mt-1">Sign in to your operations account to continue.</p>
           </div>
 
           {/* Error Banner */}

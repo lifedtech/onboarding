@@ -1,16 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  Users,
-  Plus,
-  Mail,
-  Key,
-  Shield,
-  Calendar,
-  X,
-  UserCheck,
-  Clock,
-  Trash2,
-  RefreshCw
+  Users, Plus, Mail, Key, Shield, Calendar, X, UserCheck, Clock, Trash2, RefreshCw, CheckSquare, Edit2
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 
@@ -19,15 +9,18 @@ export default function TeamManagement() {
   const fetchTeamMembers = useOpsStore((s) => s.fetchTeamMembers);
   const createTeamMember = useOpsStore((s) => s.createTeamMember);
   const deleteTeamMember = useOpsStore((s) => s.deleteTeamMember);
+  const updateTeamMember = useOpsStore((s) => s.updateTeamMember);
   const currentUser = useOpsStore((s) => s.user);
   const isLoading = useOpsStore((s) => s.isLoading);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingMemberId, setEditingMemberId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'OPS_AGENT'
+    role: 'OPS_AGENT',
+    accessScopes: ['HEALTHMATES'] // Default
   });
   const [submitting, setSubmitting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -44,8 +37,20 @@ export default function TeamManagement() {
     return () => clearInterval(interval);
   }, [fetchTeamMembers]);
 
-  const handleOpenModal = () => {
-    setFormData({ name: '', email: '', password: '', role: 'OPS_AGENT' });
+  const handleOpenModal = (member = null) => {
+    if (member && member.id) {
+      setEditingMemberId(member.id);
+      setFormData({
+        name: member.name || '',
+        email: member.email || '',
+        password: '', // blank unless changing
+        role: member.role?.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'OPS_AGENT',
+        accessScopes: member.accessScopes || ['HEALTHMATES', 'SERVICE_USERS']
+      });
+    } else {
+      setEditingMemberId(null);
+      setFormData({ name: '', email: '', password: '', role: 'OPS_AGENT', accessScopes: ['HEALTHMATES'] });
+    }
     setModalOpen(true);
   };
 
@@ -58,20 +63,38 @@ export default function TeamManagement() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleScopeToggle = (scope) => {
+    setFormData(prev => {
+      const scopes = prev.accessScopes.includes(scope)
+        ? prev.accessScopes.filter(s => s !== scope)
+        : [...prev.accessScopes, scope];
+      return { ...prev, accessScopes: scopes };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.password || !formData.role) return;
+    if (!formData.name || !formData.email || !formData.role) return;
+    if (!editingMemberId && !formData.password) return;
 
     setSubmitting(true);
     // Map OPS_AGENT to ops for backend model support
     const payload = {
       name: formData.name,
       email: formData.email,
-      password: formData.password,
-      role: formData.role === 'ADMIN' ? 'admin' : 'ops'
+      role: formData.role === 'ADMIN' ? 'admin' : 'ops',
+      accessScopes: formData.accessScopes
     };
+    if (formData.password) {
+      payload.password = formData.password;
+    }
 
-    const res = await createTeamMember(payload);
+    let res;
+    if (editingMemberId) {
+      res = await updateTeamMember(editingMemberId, payload);
+    } else {
+      res = await createTeamMember(payload);
+    }
     setSubmitting(false);
 
     if (res.success) {
@@ -96,7 +119,7 @@ export default function TeamManagement() {
         </div>
 
         <button
-          onClick={handleOpenModal}
+          onClick={() => handleOpenModal()}
           className="flex items-center justify-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-4 py-2.5 rounded-xl text-sm font-extrabold shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
@@ -105,10 +128,10 @@ export default function TeamManagement() {
       </div>
 
       {/* Main Grid: Data Card & Stats panel */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="flex-1 min-h-0 flex flex-col gap-6">
 
-        {/* Left Stats sidebar */}
-        <div className="space-y-6 lg:col-span-1 flex flex-col justify-start">
+        {/* Top Stats Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0">
           {/* Card 1: Total Admins */}
           <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
             <div className="flex items-start justify-between">
@@ -147,7 +170,7 @@ export default function TeamManagement() {
         </div>
 
         {/* Right Data Table card */}
-        <div className="lg:col-span-3 bg-[#112421] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
+        <div className="flex-1 bg-[#112421] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
           <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#0e1d1b]">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
@@ -184,6 +207,7 @@ export default function TeamManagement() {
                     <th className="px-6 py-4">Email Address</th>
                     <th className="px-6 py-4">Presence</th>
                     <th className="px-6 py-4">Authorized Role</th>
+                    <th className="px-6 py-4">Access Scope</th>
                     <th className="px-6 py-4">Date Joined</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
@@ -197,6 +221,7 @@ export default function TeamManagement() {
                       day: 'numeric'
                     });
                     const isOnline = member.isOnline;
+                    const scopes = member.accessScopes || ['HEALTHMATES', 'SERVICE_USERS']; // Fallback for old data
 
                     return (
                       <tr key={member.id} className="hover:bg-white/5 transition-colors group">
@@ -233,6 +258,16 @@ export default function TeamManagement() {
                             {isUserAdmin ? 'Administrator' : 'Ops Agent'}
                           </span>
                         </td>
+                        {/* Scope Badges */}
+                        <td className="px-6 py-4">
+                           <div className="flex gap-1 flex-wrap">
+                             {scopes.map(s => (
+                               <span key={s} className="text-[8px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded-md">
+                                 {s.replace('_', ' ')}
+                               </span>
+                             ))}
+                           </div>
+                        </td>
                         {/* Join Date */}
                         <td className="px-6 py-4">
                           <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
@@ -242,14 +277,23 @@ export default function TeamManagement() {
                         </td>
                         {/* Actions */}
                         <td className="px-6 py-4 text-right">
-                          <button
-                            disabled={member.id === currentUser?.id}
-                            onClick={() => handleDelete(member.id)}
-                            className="inline-flex items-center justify-center p-2 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 active:bg-red-500/20 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-red-400 transition-all shrink-0"
-                            title={member.id === currentUser?.id ? "You cannot delete your own account" : "Delete Team Member"}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleOpenModal(member)}
+                              className="inline-flex items-center justify-center p-2 rounded-xl text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 active:bg-blue-500/20 transition-all shrink-0"
+                              title="Edit Team Member"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              disabled={member.id === currentUser?.id}
+                              onClick={() => handleDelete(member.id)}
+                              className="inline-flex items-center justify-center p-2 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 active:bg-red-500/20 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-red-400 transition-all shrink-0"
+                              title={member.id === currentUser?.id ? "You cannot delete your own account" : "Delete Team Member"}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -279,8 +323,12 @@ export default function TeamManagement() {
                   <UserCheck className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <h3 className="text-white font-extrabold text-sm tracking-wide">Invite Team Member</h3>
-                  <p className="text-slate-400 text-[10px] font-semibold mt-0.5">Invite a team coordinator or admin manager.</p>
+                  <h3 className="text-white font-extrabold text-sm tracking-wide">
+                    {editingMemberId ? 'Edit Team Member' : 'Invite Team Member'}
+                  </h3>
+                  <p className="text-slate-400 text-[10px] font-semibold mt-0.5">
+                    {editingMemberId ? 'Update credentials and access.' : 'Invite a team coordinator or admin manager.'}
+                  </p>
                 </div>
               </div>
               <button
@@ -329,15 +377,17 @@ export default function TeamManagement() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold uppercase text-slate-300 tracking-wider">Temporary Password</label>
+                <label className="text-[10px] font-extrabold uppercase text-slate-300 tracking-wider">
+                  {editingMemberId ? 'Reset Password (Optional)' : 'Temporary Password'}
+                </label>
                 <div className="relative">
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    required
-                    placeholder="Enter system temp password"
+                    required={!editingMemberId}
+                    placeholder={editingMemberId ? "Leave blank to keep current" : "Enter system temp password"}
                     className="w-full bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
                   />
                   <Key className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
@@ -361,6 +411,37 @@ export default function TeamManagement() {
                 </div>
               </div>
 
+              {/* Access Scopes (Multi-select) */}
+              <div className="space-y-2 mt-4 pt-4 border-t border-white/5">
+                <label className="text-[10px] font-extrabold uppercase text-slate-300 tracking-wider">Client Access Scope</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={formData.accessScopes.includes('HEALTHMATES')}
+                      onChange={() => handleScopeToggle('HEALTHMATES')}
+                      className="peer hidden"
+                    />
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${formData.accessScopes.includes('HEALTHMATES') ? 'bg-brand-teal border-brand-teal text-white' : 'border-white/20 text-transparent bg-[#0c1a18]'}`}>
+                       <CheckSquare className="w-3 h-3" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">HealthMates</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={formData.accessScopes.includes('SERVICE_USERS')}
+                      onChange={() => handleScopeToggle('SERVICE_USERS')}
+                      className="peer hidden"
+                    />
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${formData.accessScopes.includes('SERVICE_USERS') ? 'bg-brand-teal border-brand-teal text-white' : 'border-white/20 text-transparent bg-[#0c1a18]'}`}>
+                       <CheckSquare className="w-3 h-3" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">Service Users</span>
+                  </label>
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/5 shrink-0 mt-6">
                 <button
@@ -372,10 +453,11 @@ export default function TeamManagement() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={submitting || formData.accessScopes.length === 0}
                   className="bg-brand-teal hover:bg-brand-teal-hover text-white px-5 py-2 rounded-xl text-xs font-extrabold shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-50"
+                  title={formData.accessScopes.length === 0 ? "Select at least one scope" : ""}
                 >
-                  {submitting ? 'Creating member…' : 'Invite Member'}
+                  {submitting ? (editingMemberId ? 'Saving...' : 'Creating member...') : (editingMemberId ? 'Save Changes' : 'Invite Member')}
                 </button>
               </div>
             </form>

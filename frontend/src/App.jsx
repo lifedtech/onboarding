@@ -4,7 +4,8 @@ import api from './lib/axios';
 import Login from './components/Login';
 import Layout from './components/Layout';
 import PipelineBoard from './components/pipeline/PipelineBoard';
-import DashboardOverview from './components/dashboard/DashboardOverview';
+import HealthmateDashboard from './components/dashboard/HealthmateDashboard';
+import ServiceUserDashboard from './components/dashboard/ServiceUserDashboard';
 import HealthmateModal from './components/pipeline/HealthmateModal';
 import TeamManagement from './components/dashboard/TeamManagement';
 import MyTasks from './components/dashboard/MyTasks';
@@ -17,21 +18,28 @@ import ProfilePage from './components/profile/ProfilePage';
 import StressBuster from './components/dashboard/StressBuster';
 import EnquiriesSheet from './components/enquiries/EnquiriesSheet';
 import ServiceUsersList from './components/dashboard/ServiceUsersList';
+import AdminDashboard from './components/dashboard/AdminDashboard';
 import { initAudio, playNotificationSound } from './lib/audio';
 
 
 // ─── Page registry ────────────────────────────────────────────────────────────
 
 const PAGES = {
-  dashboard: <DashboardOverview />,
-  enquiries: <EnquiriesSheet />,
+  admin_dashboard: <AdminDashboard />,
+  healthmate_dashboard: <HealthmateDashboard />,
+  service_user_dashboard: <ServiceUserDashboard />,
+  healthmate_enquiries: <EnquiriesSheet />, // Currently using same component, can extend to fetch specific ones
+  service_user_enquiries: <EnquiriesSheet />, // Or handle category inside
   pipeline:  <PipelineBoard />,
   service_users: <ServiceUsersList />,
   tasks:     <MyTasks />,
-  calendar:  <CalendarView />,
+  healthmate_calendar:  <CalendarView />, // Pass category prop later if needed
+  service_user_calendar:  <CalendarView />, 
   team:      <TeamManagement />,
-  support:   <Support />,
+  healthmate_support:   <Support />,
+  service_user_support:   <Support />,
   support_dashboard: <SupportDashboard />,
+  promotions: <div className="p-8 text-center text-text-muted">Promotions functionality coming soon.</div>,
 };
 
 
@@ -57,11 +65,12 @@ function ChatNotifier() {
 // ─── Authenticated workspace ──────────────────────────────────────────────────
 
 function Workspace() {
-  const [activePage, setActivePage] = useState('dashboard');
+  const currentUser = useOpsStore((s) => s.user);
+  const isAdmin = currentUser?.role?.toUpperCase() === 'ADMIN';
+  const [activePage, setActivePage] = useState(isAdmin ? 'admin_dashboard' : 'healthmate_dashboard');
   const selectedHealthmate = useOpsStore((s) => s.selectedHealthmate);
   const [gameSession, setGameSession] = useState(null);
   const token = useOpsStore((s) => s.token);
-  const currentUser = useOpsStore((s) => s.user);
   const logout = useOpsStore((s) => s.logout);
 
   // Inactivity idle timer (15 minutes auto-logout)
@@ -165,10 +174,10 @@ function Workspace() {
   }, [token, currentUser]);
 
   const currentPage =
-    activePage === 'team_chat' ? <ChatBoxTab onClose={() => setActivePage('dashboard')} /> :
-    activePage === 'profile'   ? <ProfilePage onClose={() => setActivePage('dashboard')} /> :
-    activePage === 'deflector' ? <StressBuster onClose={() => { setActivePage('dashboard'); setGameSession(null); }} gameSession={gameSession} setGameSession={setGameSession} /> :
-    (PAGES[activePage] ?? PAGES.dashboard);
+    activePage === 'team_chat' ? <ChatBoxTab onClose={() => setActivePage('healthmate_dashboard')} /> :
+    activePage === 'profile'   ? <ProfilePage onClose={() => setActivePage('healthmate_dashboard')} /> :
+    activePage === 'deflector' ? <StressBuster onClose={() => { setActivePage('healthmate_dashboard'); setGameSession(null); }} gameSession={gameSession} setGameSession={setGameSession} /> :
+    (PAGES[activePage] ?? PAGES.healthmate_dashboard);
 
   return (
     <Layout activePage={activePage} onNavigate={setActivePage}>

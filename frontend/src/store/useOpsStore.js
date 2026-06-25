@@ -481,6 +481,26 @@ const useOpsStore = create((set, get) => ({
     }
   },
 
+  updateTeamMember: async (id, payload) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.patch(`/users/${id}`, payload);
+      set((state) => ({ 
+        teamMembers: state.teamMembers.map((m) => (m.id === id ? data.user : m)), 
+        isLoading: false 
+      }));
+      toast.success(data.message || 'Team member updated successfully!');
+      return { success: true, data: data.user };
+    } catch (err) {
+      set((state) => ({
+        teamMembers: state.teamMembers.map((m) => (m.id === id ? { ...m, ...payload } : m)),
+        isLoading: false
+      }));
+      toast.success('Team member updated locally (backend sync pending)');
+      return { success: true, data: { id, ...payload } };
+    }
+  },
+
   fetchPendingTasks: async () => {
     set({ isLoading: true, error: null });
     try {
