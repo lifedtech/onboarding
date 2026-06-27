@@ -75,7 +75,19 @@ function ChatNotifier() {
 function Workspace() {
   const currentUser = useOpsStore((s) => s.user);
   const isAdmin = currentUser?.role?.toUpperCase() === 'ADMIN';
-  const [activePage, setActivePage] = useState(isAdmin ? 'admin_dashboard' : 'healthmate_dashboard');
+  const scopes = currentUser?.accessScopes || [];
+  const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
+  
+  let defaultPage = 'healthmate_dashboard';
+  if (hasFullAccess) {
+    defaultPage = 'admin_dashboard';
+  } else if (scopes.includes('SALES_MARKETING') && !scopes.includes('HEALTHMATES') && !scopes.includes('SERVICE_USERS')) {
+    defaultPage = 'sales_marketing_dashboard';
+  } else if (scopes.includes('SERVICE_USERS') && !scopes.includes('HEALTHMATES')) {
+    defaultPage = 'service_user_dashboard';
+  }
+  
+  const [activePage, setActivePage] = useState(defaultPage);
   const selectedHealthmate = useOpsStore((s) => s.selectedHealthmate);
   const [gameSession, setGameSession] = useState(null);
   const token = useOpsStore((s) => s.token);

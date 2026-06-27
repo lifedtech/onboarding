@@ -16,6 +16,7 @@ const getTeamMembers = async (req, res) => {
         email: true,
         name: true,
         role: true,
+        accessScopes: true,
         publicKey: true,
         avatar: true,
         statusMode: true,

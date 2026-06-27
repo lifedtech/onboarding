@@ -20,7 +20,7 @@ export default function TeamManagement() {
     email: '',
     password: '',
     role: 'OPS_AGENT',
-    accessScopes: ['HEALTHMATES'] // Default
+    accessScopes: ['HEALTHMATES', 'SERVICE_USERS'] // Default for operations
   });
   const [submitting, setSubmitting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,7 +49,7 @@ export default function TeamManagement() {
       });
     } else {
       setEditingMemberId(null);
-      setFormData({ name: '', email: '', password: '', role: 'OPS_AGENT', accessScopes: ['HEALTHMATES'] });
+      setFormData({ name: '', email: '', password: '', role: 'OPS_AGENT', accessScopes: ['HEALTHMATES', 'SERVICE_USERS'] });
     }
     setModalOpen(true);
   };
@@ -254,7 +254,15 @@ export default function TeamManagement() {
                       day: 'numeric'
                     });
                     const isOnline = member.isOnline;
-                    const scopes = member.accessScopes || ['HEALTHMATES', 'SERVICE_USERS']; // Fallback for old data
+                    let scopes = member.accessScopes;
+                    if (!scopes || scopes.length === 0) {
+                      // Fallback for old data or if scopes are empty
+                      scopes = isUserAdmin 
+                        ? ['FULL_ACCESS'] 
+                        : isMarketing 
+                          ? ['SALES_MARKETING'] 
+                          : ['HEALTHMATES', 'SERVICE_USERS'];
+                    }
 
                     return (
                       <tr key={member.id} className="hover:bg-white/5 transition-colors group">

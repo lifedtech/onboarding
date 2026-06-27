@@ -43,8 +43,8 @@ export default function Layout({ children, activePage, onNavigate }) {
   const scopes = user?.accessScopes || [];
   const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
   const hasSalesMarketing = hasFullAccess || scopes.includes('SALES_MARKETING');
-  const showHealthmates = hasFullAccess || scopes.includes('HEALTHMATES') || hasSalesMarketing;
-  const showServiceUsers = hasFullAccess || scopes.includes('SERVICE_USERS') || hasSalesMarketing;
+  const showHealthmates = hasFullAccess || scopes.includes('HEALTHMATES');
+  const showServiceUsers = hasFullAccess || scopes.includes('SERVICE_USERS');
 
   const GROUPS = [];
 
