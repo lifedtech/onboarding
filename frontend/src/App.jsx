@@ -81,7 +81,7 @@ function Workspace() {
   let defaultPage = 'healthmate_dashboard';
   if (hasFullAccess) {
     defaultPage = 'admin_dashboard';
-  } else if (scopes.includes('SALES_MARKETING') && !scopes.includes('HEALTHMATES') && !scopes.includes('SERVICE_USERS')) {
+  } else if (currentUser?.role?.toUpperCase() === 'MARKETING' || scopes.includes('SALES_MARKETING')) {
     defaultPage = 'sales_marketing_dashboard';
   } else if (scopes.includes('SERVICE_USERS') && !scopes.includes('HEALTHMATES')) {
     defaultPage = 'service_user_dashboard';
