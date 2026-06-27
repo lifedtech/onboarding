@@ -1,247 +1,183 @@
 import React, { useState } from 'react';
-import { Users, TrendingUp, Clock, Activity, Target, ShieldCheck, IndianRupee } from 'lucide-react';
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, AreaChart, Area
-} from 'recharts';
+import useOpsStore from '../../store/useOpsStore';
 
 export default function AdminDashboard() {
-  const [showRevenueSplit, setShowRevenueSplit] = useState(false);
-  // --- MOCK DATA ---
-  
-  // Healthmates Pipeline
-  const healthmatePipelineData = [];
+  const currentUser = useOpsStore((s) => s.user);
+  const [activeKpi, setActiveKpi] = useState(null);
 
-  // Users by Location (Service Users)
-  const userLocationData = [];
-  const COLORS = ['#14b8a6', '#8b5cf6', '#f59e0b', '#ef4444', '#3b82f6'];
-
-  // Programs Data
-  const programsData = [];
-
-  // Revenue Analytics Data
-  const revenueData = [];
-
-  // Custom Tooltip for charts to fit the dark theme
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-[#0f172a] border border-slate-700/50 p-3 rounded-xl shadow-xl z-50">
-          <p className="text-white font-bold text-sm mb-2">{label}</p>
-          {payload.map((entry, index) => (
-            <p key={index} className="text-xs font-semibold" style={{ color: entry.color || entry.fill }}>
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  const kpiData = [
+    { id: 'visitors', label: 'Website visitors', value: '6,840', sub: '↑ 18% vs last period', details: 'Organic: 4,200 | Social: 1,840 | Referral: 800' },
+    { id: 'leads', label: 'Qualified leads', value: '118', sub: '52% of inquiries', details: 'High Intent: 45 | Medium Intent: 50 | Low Intent: 23' },
+    { id: 'bookings', label: 'Bookings', value: '24', sub: '20.3% lead → booking', details: 'Residential: 18 | Online Sessions: 6' },
+    { id: 'gbv', label: 'Gross booking value', value: '₹4.82L', sub: 'Residential + sessions', details: 'Residential: ₹3.90L | Sessions: ₹0.92L' },
+    { id: 'commission', label: 'Lifed commission', value: '₹1.02L', sub: '20-25% blended', details: 'Avg Margin: 21.1% | Net Realized: ₹0.98L' }
+  ];
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full overflow-auto flex-1">
+    <div className="p-6 md:p-8 space-y-6 bg-bg-base w-full h-full overflow-y-auto">
       {/* Header */}
       <div>
-         <h1 className="text-text-main font-extrabold text-2xl tracking-tight flex items-center gap-2">
-           <ShieldCheck className="w-7 h-7 text-brand-teal" />
-           God View Analytics
-         </h1>
-         <p className="text-text-muted/80 text-sm font-semibold mt-0.5">Comprehensive overview of platform performance and global statistics.</p>
+        <p className="text-sm font-semibold text-text-muted">
+          A single operating view for users, leads, bookings, program performance, Healthmate readiness, and marketing decisions.
+        </p>
       </div>
 
-      {/* KPI Cards (God Level Metrics) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 flex flex-col justify-between group">
-          <div className="flex justify-between items-start mb-4">
-             <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Total Healthmates</span>
-             <Users className="w-5 h-5 text-brand-teal" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight group-hover:scale-105 origin-left transition-transform">0</p>
-        </div>
-
-        <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 flex flex-col justify-between group">
-          <div className="flex justify-between items-start mb-4">
-             <span className="text-purple-500/80 text-[10px] font-extrabold uppercase tracking-wider">Total Service Users</span>
-             <Users className="w-5 h-5 text-purple-500" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight group-hover:scale-105 origin-left transition-transform">0</p>
-          <span className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
-            <TrendingUp className="w-3.5 h-3.5 text-brand-green" /> 0 active purchases
-          </span>
-        </div>
-
-        <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 flex flex-col justify-between group">
-          <div className="flex justify-between items-start mb-4">
-             <span className="text-amber-500/80 text-[10px] font-extrabold uppercase tracking-wider">Avg Session Time</span>
-             <Clock className="w-5 h-5 text-amber-500" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight group-hover:scale-105 origin-left transition-transform">0m 0s</p>
-          <span className="text-[10px] font-bold text-slate-400 mt-2">On official website</span>
-        </div>
-
-        <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 flex flex-col justify-between group">
-          <div className="flex justify-between items-start mb-4">
-             <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">Avg Conversion Rate</span>
-             <Target className="w-5 h-5 text-brand-green" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight group-hover:scale-105 origin-left transition-transform">0.0%</p>
-          <span className="text-[10px] font-bold text-slate-400 mt-2">Program bookings</span>
-        </div>
-
-        <div 
-          onClick={() => setShowRevenueSplit(!showRevenueSplit)}
-          className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 flex flex-col justify-between group cursor-pointer hover:bg-white/5 transition-colors relative overflow-hidden"
-          title="Click to toggle breakdown"
-        >
-          {showRevenueSplit ? (
-            <>
-              <div className="flex justify-between items-start mb-4">
-                 <span className="text-blue-400/80 text-[10px] font-extrabold uppercase tracking-wider">Revenue Breakdown</span>
-                 <IndianRupee className="w-5 h-5 text-blue-400" />
+      {/* Top 5 Cards */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {kpiData.map((card) => (
+            <div 
+              key={card.id} 
+              onClick={() => setActiveKpi(activeKpi === card.id ? null : card.id)}
+              className={`bg-white rounded-2xl p-5 shadow-sm border cursor-pointer flex flex-col justify-between transition-all ${
+                activeKpi === card.id ? 'border-brand-teal ring-1 ring-brand-teal' : 'border-border-leaf hover:border-brand-teal/50'
+              }`}
+            >
+              <div className="flex justify-between items-start mb-3">
+                <p className="text-[11px] font-bold text-text-muted uppercase tracking-wide">{card.label}</p>
               </div>
-              <div className="space-y-3 mt-auto">
-                <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                  <span className="text-[10px] font-bold text-slate-400">Healthmates</span>
-                  <span className="text-sm font-extrabold text-purple-400">₹0</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-400">Service Users</span>
-                  <span className="text-sm font-extrabold text-brand-teal">₹0</span>
-                </div>
+              <div>
+                <h3 className="text-[28px] font-black text-text-main mb-1 tracking-tight">{card.value}</h3>
+                <p className="text-[11px] font-semibold text-text-muted">{card.sub}</p>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="flex justify-between items-start mb-4">
-                 <span className="text-blue-400/80 text-[10px] font-extrabold uppercase tracking-wider">Total Revenue</span>
-                 <IndianRupee className="w-5 h-5 text-blue-400" />
-              </div>
-              <p className="text-3xl font-extrabold tracking-tight group-hover:scale-105 origin-left transition-transform">₹0</p>
-              <span className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5 text-brand-green" /> 0% this month
-              </span>
-            </>
-          )}
+            </div>
+          ))}
         </div>
+
+        {/* Details Pane */}
+        {activeKpi && (
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-brand-teal/30 bg-brand-teal/5 animate-in slide-in-from-top-2 duration-200">
+            <h4 className="text-sm font-bold text-text-main mb-2">
+              {kpiData.find(k => k.id === activeKpi)?.label} Breakdown
+            </h4>
+            <p className="text-xs font-semibold text-text-muted">
+              {kpiData.find(k => k.id === activeKpi)?.details}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* CHARTS GRID 1: Healthmates Funnel & User Demographics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Middle Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Healthmates Status Bar Chart */}
-        <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-          <h2 className="text-base font-bold text-text-main mb-6 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-brand-teal" />
-            Healthmate Acquisition Funnel
-          </h2>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={healthmatePipelineData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <XAxis type="number" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis dataKey="name" type="category" stroke="#64748b" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} width={80} />
-                <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-                <Bar dataKey="count" fill="#14b8a6" radius={[0, 4, 4, 0]} barSize={30} />
-              </BarChart>
-            </ResponsiveContainer>
+        {/* Funnel Chart - Spans 2 cols */}
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-border-leaf p-6 flex flex-col">
+          <div className="flex justify-between items-start mb-6">
+            <h3 className="text-text-main font-bold text-base">Journey conversion snapshot</h3>
+            <span className="text-[10px] font-extrabold text-brand-teal bg-bg-mint px-2.5 py-1 rounded-md tracking-wide">Live Well. For Real.</span>
+          </div>
+          
+          <div className="flex-1 flex items-end gap-2 md:gap-3 h-[250px] mt-4 mb-6">
+            {[
+              { label: 'Visitors', value: '6,840', height: '100%' },
+              { label: 'Program views', value: '2,140', height: '70%' },
+              { label: 'WhatsApp starts', value: '226', height: '50%' },
+              { label: 'Qualified leads', value: '118', height: '35%' },
+              { label: 'Bookings', value: '24', height: '25%' },
+              { label: 'Reviews', value: '14', height: '20%' }
+            ].map((bar, idx) => (
+              <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group">
+                <div 
+                  className="w-full bg-bg-mint border border-brand-teal/20 rounded-t-xl flex flex-col items-center justify-end pb-4 transition-all hover:bg-brand-teal/20 cursor-pointer" 
+                  style={{ height: bar.height }}
+                >
+                  <p className="font-black text-brand-teal text-lg md:text-xl">{bar.value}</p>
+                  <p className="text-[10px] text-brand-teal/80 font-extrabold mt-1 text-center leading-tight px-1">{bar.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-slate-50 rounded-xl p-4 text-[11px] text-text-muted font-medium leading-relaxed border border-border-leaf">
+            <span className="font-bold text-text-main">Primary drop-off:</span> Program views → WhatsApp starts. Improve trust signals: host video, inclusions, dates, cancellation, "who this is for."
           </div>
         </div>
 
-        {/* Service Users Locations Pie Chart */}
-        <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-          <h2 className="text-base font-bold text-text-main mb-6 flex items-center gap-2">
-            <Users className="w-5 h-5 text-purple-500" />
-            Service User Global Distribution
-          </h2>
-          <div className="h-[300px] w-full flex items-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={userLocationData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {userLocationData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-              </PieChart>
-            </ResponsiveContainer>
-            
-            {/* Custom Legend */}
-            <div className="flex flex-col gap-3 justify-center pl-4 md:pl-6 w-1/2">
-              {userLocationData.map((entry, index) => (
-                <div key={entry.name} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full shadow-inner" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                  <span className="text-xs font-bold text-text-main truncate max-w-[80px]">{entry.name}</span>
-                  <span className="text-xs font-extrabold text-brand-teal ml-auto">{entry.value.toLocaleString()}</span>
+        {/* Strategic Actions */}
+        <div className="bg-transparent flex flex-col">
+          <h3 className="text-text-main font-bold text-base px-2 mb-4 mt-1">This week's strategic actions</h3>
+          <div className="flex flex-col gap-3">
+            {[
+              { 
+                num: 1, 
+                title: 'Scale "Find Your Reset"', 
+                desc: 'Burnt-out professionals are producing the highest qualified lead rate. Increase spend only on the top two ads.'
+              },
+              { 
+                num: 2, 
+                title: 'Fix Ojas booking friction', 
+                desc: 'Strong interest, lower conversion. Add travel logistics, sample day plan, and "can I take leave?" FAQ.'
+              },
+              { 
+                num: 3, 
+                title: 'Run Kochi Session Sprint', 
+                desc: 'Inner Reset and Know Thyself have lower friction and can generate first reviews quickly.'
+              },
+              { 
+                num: 4, 
+                title: 'Interview 10 lost leads', 
+                desc: 'Top objections: time, price, trust, unclear schedule. Use calls to improve program pages.'
+              }
+            ].map((action, idx) => (
+              <div key={idx} className="bg-white rounded-2xl p-5 shadow-sm border border-border-leaf flex gap-4 items-start hover:shadow-md transition-shadow">
+                <div className="w-6 h-6 shrink-0 rounded-full bg-brand-teal text-white flex items-center justify-center text-[11px] font-black mt-0.5 shadow-md">
+                  {action.num}
+                </div>
+                <div>
+                  <h4 className="text-text-main text-[13px] font-bold">{action.title}</h4>
+                  <p className="text-[11px] text-text-muted mt-1.5 leading-relaxed font-medium">{action.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row - Horizontal Bars */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { 
+            title: 'Top audience', 
+            data: [
+              { name: 'Burnt-out professionals', value: 86, width: '90%' },
+              { name: 'Women 30-55', value: 71, width: '75%' },
+              { name: 'Wellness travellers', value: 62, width: '65%' }
+            ]
+          },
+          { 
+            title: 'Top programs', 
+            data: [
+              { name: 'The Inner Reset', value: 88, width: '92%' },
+              { name: 'Ojas Renewal', value: 79, width: '82%' },
+              { name: "Women's Wellbeing", value: 75, width: '78%' }
+            ]
+          },
+          { 
+            title: 'Top channels', 
+            data: [
+              { name: 'Instagram', value: 82, width: '85%' },
+              { name: 'WhatsApp', value: 80, width: '82%' },
+              { name: 'Google Search', value: 68, width: '70%' }
+            ]
+          }
+        ].map((block, idx) => (
+          <div key={idx} className="bg-white rounded-2xl p-6 shadow-sm border border-border-leaf">
+            <h3 className="text-text-main font-bold text-[13px] mb-5">{block.title}</h3>
+            <div className="space-y-4">
+              {block.data.map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <span className="w-32 text-[11px] font-semibold text-text-muted truncate">{item.name}</span>
+                  <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-brand-teal rounded-full" style={{ width: item.width }} />
+                  </div>
+                  <span className="w-6 text-right text-[11px] font-black text-text-main">{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
-        </div>
+        ))}
       </div>
-
-      {/* CHARTS GRID 2: Program Sales Performance */}
-      <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-        <h2 className="text-base font-bold text-text-main mb-6 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-amber-500" />
-          Top Sales vs Top Interested Programs
-        </h2>
-        <div className="h-[350px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={programsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <XAxis dataKey="name" stroke="#64748b" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={{fill: '#f8fafc'}} isAnimationActive={false} />
-              <Bar dataKey="sales" name="Actual Purchases" fill="#14b8a6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="interested" name="Expressed Interest (Enquiries)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* CHARTS GRID 3: Revenue Analytics */}
-      <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-        <h2 className="text-base font-bold text-text-main mb-6 flex items-center gap-2">
-          <IndianRupee className="w-5 h-5 text-brand-green" />
-          Revenue Generation: Healthmates vs Service Users
-        </h2>
-        <div className="h-[350px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={revenueData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <defs>
-                <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#14b8a6" stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="colorHealthmates" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="month" stroke="#64748b" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} />
-              <YAxis 
-                stroke="#94a3b8" 
-                fontSize={12} 
-                tickLine={false} 
-                axisLine={false}
-                tickFormatter={(value) => `₹${value.toLocaleString()}`}
-              />
-              <Tooltip content={<CustomTooltip />} isAnimationActive={false} />
-              <Area type="monotone" dataKey="users" name="Service Users Revenue (₹)" stroke="#14b8a6" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
-              <Area type="monotone" dataKey="healthmates" name="Healthmates Revenue (₹)" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorHealthmates)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
+      
     </div>
   );
 }

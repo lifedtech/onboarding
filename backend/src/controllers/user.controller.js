@@ -57,8 +57,9 @@ const createTeamMember = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Standardize role to lowercase for database consistency (e.g. 'admin', 'ops')
-    const normalizedRole = role.toLowerCase() === 'admin' ? 'admin' : 'ops';
+    // Standardize role to lowercase for database consistency (e.g. 'admin', 'ops', 'marketing')
+    const normalizedRole = role.toLowerCase() === 'admin' ? 'admin' : role.toLowerCase() === 'marketing' ? 'marketing' : 'ops';
+    const finalScopes = Array.isArray(req.body.accessScopes) ? req.body.accessScopes : [];
 
     const user = await prisma.opsUser.create({
       data: {
@@ -66,12 +67,14 @@ const createTeamMember = async (req, res) => {
         email,
         passwordHash,
         role: normalizedRole,
+        accessScopes: finalScopes,
       },
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
+        accessScopes: true,
         createdAt: true,
       },
     });
@@ -160,7 +163,7 @@ const getMe = async (req, res) => {
   try {
     const user = await prisma.opsUser.findUnique({
       where: { id: req.user.id },
-      select: { id: true, email: true, name: true, role: true, avatar: true, statusMode: true, createdAt: true },
+      select: { id: true, email: true, name: true, role: true, accessScopes: true, avatar: true, statusMode: true, createdAt: true },
     });
     return res.status(200).json(user);
   } catch (error) {

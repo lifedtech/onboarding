@@ -33,6 +33,11 @@ export default function ServiceUsersList() {
   const createServiceUser = useOpsStore((s) => s.createServiceUser);
   const updateServiceUser = useOpsStore((s) => s.updateServiceUser);
   const deleteServiceUser = useOpsStore((s) => s.deleteServiceUser);
+  const currentUser = useOpsStore((s) => s.user);
+  const isAdmin = currentUser?.role?.toUpperCase() === 'ADMIN';
+  const scopes = currentUser?.accessScopes || [];
+  const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
+  const isMarketingOnly = !hasFullAccess && !scopes.includes('SERVICE_USERS') && scopes.includes('SALES_MARKETING');
 
   // Sub-resource actions
   const addBooking = useOpsStore((s) => s.addBooking);
@@ -59,7 +64,7 @@ export default function ServiceUsersList() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [activeTab, setActiveTab] = useState('profile'); // 'profile', 'bookings', 'payments', 'support'
-
+  const [activeTile, setActiveTile] = useState(null);
 
   // Form states
   const [userForm, setUserForm] = useState({
@@ -132,7 +137,18 @@ export default function ServiceUsersList() {
     const matchesTier = filterTier === 'ALL' || user.tier === filterTier;
     const matchesStatus = filterStatus === 'ALL' || user.status === filterStatus;
 
-    return matchesSearch && matchesTier && matchesStatus;
+    let matchesTile = true;
+    if (activeTile === 'ACTIVE_USERS') {
+      matchesTile = user.status === 'ACTIVE';
+    } else if (activeTile === 'UPCOMING_BOOKINGS') {
+      matchesTile = user.bookings?.some(b => new Date(b.bookingDate) >= todayStart && b.status !== 'CANCELLED');
+    } else if (activeTile === 'REVENUE_COLLECTED') {
+      matchesTile = user.payments?.some(p => p.status === 'PAID');
+    } else if (activeTile === 'OPEN_TICKETS') {
+      matchesTile = user.supportTickets?.some(t => t.status !== 'RESOLVED');
+    }
+
+    return matchesSearch && matchesTier && matchesStatus && matchesTile;
   });
 
   // Add User handler
@@ -332,9 +348,12 @@ export default function ServiceUsersList() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-5 shrink-0`}>
         {/* Card 1: Active Users */}
-        <div className="bg-white border border-slate-200/60 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+        <div 
+          onClick={() => setActiveTile(activeTile === 'ACTIVE_USERS' ? null : 'ACTIVE_USERS')}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'ACTIVE_USERS' ? 'bg-emerald-50/50 border-emerald-400 ring-2 ring-emerald-400/20' : 'bg-white border-slate-200/60 hover:border-emerald-200'}`}
+        >
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
             <User className="w-5 h-5" />
           </div>
@@ -346,7 +365,10 @@ export default function ServiceUsersList() {
         </div>
 
         {/* Card 2: Today's Bookings */}
-        <div className="bg-white border border-slate-200/60 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+        <div 
+          onClick={() => setActiveTile(activeTile === 'UPCOMING_BOOKINGS' ? null : 'UPCOMING_BOOKINGS')}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'UPCOMING_BOOKINGS' ? 'bg-teal-50/50 border-brand-teal ring-2 ring-brand-teal/20' : 'bg-white border-slate-200/60 hover:border-brand-teal/50'}`}
+        >
           <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-brand-teal">
             <Calendar className="w-5 h-5" />
           </div>
@@ -358,19 +380,27 @@ export default function ServiceUsersList() {
         </div>
 
         {/* Card 3: Total Revenue */}
-        <div className="bg-white border border-slate-200/60 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
-            <IndianRupee className="w-5 h-5" />
+        {isAdmin && (
+          <div 
+            onClick={() => setActiveTile(activeTile === 'REVENUE_COLLECTED' ? null : 'REVENUE_COLLECTED')}
+            className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'REVENUE_COLLECTED' ? 'bg-amber-50/50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-white border-slate-200/60 hover:border-amber-200'}`}
+          >
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
+              <IndianRupee className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[10px] text-text-muted font-extrabold uppercase tracking-wider">Revenue Collected</p>
+              <h3 className="text-text-main font-extrabold text-xl leading-tight mt-0.5">₹{totalRevenue.toLocaleString()}</h3>
+              <p className="text-[10px] text-slate-400 font-semibold mt-0.5">From successful transactions</p>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] text-text-muted font-extrabold uppercase tracking-wider">Revenue Collected</p>
-            <h3 className="text-text-main font-extrabold text-xl leading-tight mt-0.5">₹{totalRevenue.toLocaleString()}</h3>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">From successful transactions</p>
-          </div>
-        </div>
+        )}
 
         {/* Card 4: Open Tickets */}
-        <div className="bg-white border border-slate-200/60 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+        <div 
+          onClick={() => setActiveTile(activeTile === 'OPEN_TICKETS' ? null : 'OPEN_TICKETS')}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'OPEN_TICKETS' ? 'bg-rose-50/50 border-rose-400 ring-2 ring-rose-400/20' : 'bg-white border-slate-200/60 hover:border-rose-200'}`}
+        >
           <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
             <LifeBuoy className="w-5 h-5" />
           </div>
@@ -497,8 +527,8 @@ export default function ServiceUsersList() {
                       {/* Contact */}
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-0.5 text-xs text-text-muted font-semibold">
-                          <span className="flex items-center gap-1"><Mail className="w-3 h-3 text-slate-400" /> {user.email}</span>
-                          {user.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3 text-slate-400" /> {user.phone}</span>}
+                          <span className="flex items-center gap-1"><Mail className="w-3 h-3 text-slate-400" /> {isMarketingOnly ? '***@***.***' : user.email}</span>
+                          {user.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3 text-slate-400" /> {isMarketingOnly ? '+** **** ****' : user.phone}</span>}
                         </div>
                       </td>
 
@@ -703,14 +733,16 @@ export default function ServiceUsersList() {
               {activeTab === 'profile' && (
                 <div className="space-y-6">
                   {/* Account Metrics Grid */}
-                  <div className="grid grid-cols-3 gap-4 bg-slate-50/75 p-4 border border-slate-100 rounded-2xl">
-                    <div className="text-center space-y-0.5">
-                      <p className="text-[9px] text-slate-400 font-extrabold uppercase">Total Paid</p>
-                      <p className="text-text-main font-extrabold text-base">
-                        ₹{selectedUser.payments?.filter((p) => p.status === 'PAID').reduce((sum, p) => sum + p.amount, 0) || 0}
-                      </p>
-                    </div>
-                    <div className="text-center border-x border-slate-200/50 space-y-0.5">
+                  <div className={`grid ${isAdmin ? 'grid-cols-3' : 'grid-cols-2'} gap-4 bg-slate-50/75 p-4 border border-slate-100 rounded-2xl`}>
+                    {isAdmin && (
+                      <div className="text-center space-y-0.5">
+                        <p className="text-[9px] text-slate-400 font-extrabold uppercase">Total Paid</p>
+                        <p className="text-text-main font-extrabold text-base">
+                          ₹{selectedUser.payments?.filter((p) => p.status === 'PAID').reduce((sum, p) => sum + p.amount, 0) || 0}
+                        </p>
+                      </div>
+                    )}
+                    <div className={`text-center ${isAdmin ? 'border-x border-slate-200/50' : 'border-r border-slate-200/50'} space-y-0.5`}>
                       <p className="text-[9px] text-slate-400 font-extrabold uppercase">Bookings Count</p>
                       <p className="text-text-main font-extrabold text-base">{selectedUser.bookings?.length || 0}</p>
                     </div>
@@ -738,9 +770,10 @@ export default function ServiceUsersList() {
                         <label className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider">Email Address</label>
                         <input
                           type="email"
-                          value={selectedUser.email || ''}
+                          value={isMarketingOnly ? '***@***.***' : (selectedUser.email || '')}
                           onChange={(e) => handleUpdateUserDetails({ email: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                          disabled={isMarketingOnly}
+                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none disabled:opacity-50"
                         />
                       </div>
                     </div>
@@ -750,9 +783,10 @@ export default function ServiceUsersList() {
                         <label className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider">Phone Number</label>
                         <input
                           type="tel"
-                          value={selectedUser.phone || ''}
+                          value={isMarketingOnly ? '+** **** ****' : (selectedUser.phone || '')}
                           onChange={(e) => handleUpdateUserDetails({ phone: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                          disabled={isMarketingOnly}
+                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none disabled:opacity-50"
                         />
                       </div>
                       <div className="space-y-1">

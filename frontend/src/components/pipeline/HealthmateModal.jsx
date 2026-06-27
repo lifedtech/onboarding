@@ -184,6 +184,8 @@ export default function HealthmateModal() {
     return () => window.removeEventListener('keydown', handler);
   }, [setSelectedHealthmate]);
 
+
+
   useEffect(() => {
     if (selectedHealthmate) {
       fetchPendingTakeovers();
@@ -195,6 +197,9 @@ export default function HealthmateModal() {
   const hm           = selectedHealthmate;
   const isAdmin      = user?.role?.toUpperCase() === 'ADMIN';
   const canModify    = isAdmin || (hm.opsUserId === user?.id);
+  const scopes       = user?.accessScopes || [];
+  const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
+  const isMarketingOnly = !hasFullAccess && !scopes.includes('HEALTHMATES') && scopes.includes('SALES_MARKETING');
   const isPending    = pendingOutboundTakeovers.some((req) => req.healthmateId === hm.id && req.status === 'PENDING');
   const currentIndex = PHASES.indexOf(hm.phase);
   const nextPhase    = PHASES[currentIndex + 1] ?? null;
@@ -671,18 +676,20 @@ export default function HealthmateModal() {
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Email</label>
                             <input
                               type="email"
-                              value={editContactEmail}
+                              value={isMarketingOnly ? '***@***.***' : editContactEmail}
                               onChange={(e) => setEditContactEmail(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                              disabled={isMarketingOnly}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal disabled:opacity-50"
                             />
                           </div>
                           <div>
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Contact Phone</label>
                             <input
                               type="tel"
-                              value={editContactPhone}
+                              value={isMarketingOnly ? '+** **** ****' : editContactPhone}
                               onChange={(e) => setEditContactPhone(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                              disabled={isMarketingOnly}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal disabled:opacity-50"
                             />
                           </div>
                           <div>
@@ -716,14 +723,14 @@ export default function HealthmateModal() {
                           <InfoRow
                             icon={<Mail className="w-4 h-4 text-brand-teal" />}
                             label="Email"
-                            value={hm.contactEmail || '—'}
-                            muted={!hm.contactEmail}
+                            value={isMarketingOnly ? '***@***.***' : (hm.contactEmail || '—')}
+                            muted={!hm.contactEmail && !isMarketingOnly}
                           />
                           <InfoRow
                             icon={<Phone className="w-4 h-4 text-brand-teal" />}
                             label="Phone"
-                            value={hm.contactPhone || '—'}
-                            muted={!hm.contactPhone}
+                            value={isMarketingOnly ? '+** **** ****' : (hm.contactPhone || '—')}
+                            muted={!hm.contactPhone && !isMarketingOnly}
                           />
                           <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
                           <InfoRow

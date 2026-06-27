@@ -44,7 +44,7 @@ export default function TeamManagement() {
         name: member.name || '',
         email: member.email || '',
         password: '', // blank unless changing
-        role: member.role?.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'OPS_AGENT',
+        role: member.role?.toUpperCase() === 'ADMIN' ? 'ADMIN' : member.role?.toUpperCase() === 'MARKETING' ? 'MARKETING' : 'OPS_AGENT',
         accessScopes: member.accessScopes || ['HEALTHMATES', 'SERVICE_USERS']
       });
     } else {
@@ -60,7 +60,18 @@ export default function TeamManagement() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'role') {
+      setFormData((prev) => {
+        let newScopes = [...prev.accessScopes];
+        // If Marketing is selected, default to giving Sales & Marketing scope
+        if (value === 'MARKETING' && !newScopes.includes('SALES_MARKETING')) {
+          newScopes.push('SALES_MARKETING');
+        }
+        return { ...prev, [name]: value, accessScopes: newScopes };
+      });
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleScopeToggle = (scope) => {
@@ -82,7 +93,7 @@ export default function TeamManagement() {
     const payload = {
       name: formData.name,
       email: formData.email,
-      role: formData.role === 'ADMIN' ? 'admin' : 'ops',
+      role: formData.role === 'ADMIN' ? 'admin' : formData.role === 'MARKETING' ? 'marketing' : 'ops',
       accessScopes: formData.accessScopes
     };
     if (formData.password) {
@@ -131,12 +142,12 @@ export default function TeamManagement() {
       <div className="flex-1 min-h-0 flex flex-col gap-6">
 
         {/* Top Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 shrink-0">
-          {/* Card 1: Total Admins */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 shrink-0">
+          {/* Card 1: Full Access */}
           <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Total Administrators</span>
+                <span className="text-amber-400/80 text-[10px] font-extrabold uppercase tracking-wider">Full Access</span>
                 <p className="text-3xl font-extrabold tracking-tight">
                   {teamMembers.filter((m) => m.role?.toLowerCase() === 'admin').length}
                 </p>
@@ -150,13 +161,13 @@ export default function TeamManagement() {
             </div>
           </div>
 
-          {/* Card 2: Total Operations Agents */}
+          {/* Card 2: Department-wise Access */}
           <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">Operations Agents</span>
+                <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">Department Access</span>
                 <p className="text-3xl font-extrabold tracking-tight">
-                  {teamMembers.filter((m) => m.role?.toLowerCase() !== 'admin').length}
+                  {teamMembers.filter((m) => m.role?.toLowerCase() !== 'admin' && m.role?.toLowerCase() !== 'marketing').length}
                 </p>
               </div>
               <div className="w-9 h-9 rounded-xl bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green group-hover:scale-105 transition-transform shrink-0 shadow-inner">
@@ -165,6 +176,24 @@ export default function TeamManagement() {
             </div>
             <div className="text-[10px] font-bold text-slate-400 mt-2">
               Frontline onboarding coordinators
+            </div>
+          </div>
+
+          {/* Card 3: Marketing */}
+          <div className="bg-[#112421] border border-white/5 shadow-xl text-white rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between group min-h-[120px]">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <span className="text-blue-400/80 text-[10px] font-extrabold uppercase tracking-wider">Marketing</span>
+                <p className="text-3xl font-extrabold tracking-tight">
+                  {teamMembers.filter((m) => m.role?.toLowerCase() === 'marketing').length}
+                </p>
+              </div>
+              <div className="w-9 h-9 rounded-xl bg-blue-400/10 border border-blue-400/30 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+                <Users className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-[10px] font-bold text-slate-400 mt-2">
+              Sales and performance managers
             </div>
           </div>
         </div>
@@ -215,6 +244,7 @@ export default function TeamManagement() {
                 <tbody className="divide-y divide-white/5">
                   {teamMembers.map((member) => {
                     const isUserAdmin = member.role?.toLowerCase() === 'admin';
+                    const isMarketing = member.role?.toLowerCase() === 'marketing';
                     const localDate = new Date(member.createdAt).toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'short',
@@ -228,7 +258,7 @@ export default function TeamManagement() {
                         {/* Name */}
                         <td className="px-6 py-4">
                           <span className="text-white font-extrabold text-xs flex items-center gap-2">
-                            <span className={`w-1.5 h-1.5 rounded-full ${isUserAdmin ? 'bg-amber-400' : 'bg-brand-green'}`} />
+                            <span className={`w-1.5 h-1.5 rounded-full ${isUserAdmin ? 'bg-amber-400' : isMarketing ? 'bg-blue-400' : 'bg-brand-green'}`} />
                             {member.name}
                           </span>
                         </td>
@@ -252,10 +282,12 @@ export default function TeamManagement() {
                           <span className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border tracking-wide uppercase
                             ${isUserAdmin
                               ? 'text-amber-400 bg-amber-400/10 border-amber-400/20'
-                              : 'text-brand-green bg-brand-green/10 border-brand-green/20'
+                              : isMarketing
+                                ? 'text-blue-400 bg-blue-400/10 border-blue-400/20'
+                                : 'text-brand-green bg-brand-green/10 border-brand-green/20'
                             }`}
                           >
-                            {isUserAdmin ? 'Administrator' : 'Ops Agent'}
+                            {isUserAdmin ? 'Admin' : isMarketing ? 'Marketing' : 'Operations'}
                           </span>
                         </td>
                         {/* Scope Badges */}
@@ -404,8 +436,9 @@ export default function TeamManagement() {
                     onChange={handleChange}
                     className="w-full bg-[#0c1a18] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-2 px-3 pl-9 text-xs font-bold transition-all focus:outline-none appearance-none"
                   >
-                    <option value="OPS_AGENT">Ops Agent (Onboarding coordinator)</option>
-                    <option value="ADMIN">Administrator (Full credential controls)</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="OPS_AGENT">Operations</option>
+                    <option value="MARKETING">Marketing</option>
                   </select>
                   <Shield className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
                 </div>
@@ -414,7 +447,19 @@ export default function TeamManagement() {
               {/* Access Scopes (Multi-select) */}
               <div className="space-y-2 mt-4 pt-4 border-t border-white/5">
                 <label className="text-[10px] font-extrabold uppercase text-slate-300 tracking-wider">Client Access Scope</label>
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={formData.accessScopes.includes('FULL_ACCESS')}
+                      onChange={() => handleScopeToggle('FULL_ACCESS')}
+                      className="peer hidden"
+                    />
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${formData.accessScopes.includes('FULL_ACCESS') ? 'bg-amber-500 border-amber-500 text-white' : 'border-white/20 text-transparent bg-[#0c1a18]'}`}>
+                       <CheckSquare className="w-3 h-3" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">Full Access</span>
+                  </label>
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
@@ -438,6 +483,18 @@ export default function TeamManagement() {
                        <CheckSquare className="w-3 h-3" />
                     </div>
                     <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">Service Users</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={formData.accessScopes.includes('SALES_MARKETING')}
+                      onChange={() => handleScopeToggle('SALES_MARKETING')}
+                      className="peer hidden"
+                    />
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${formData.accessScopes.includes('SALES_MARKETING') ? 'bg-blue-400 border-blue-400 text-white' : 'border-white/20 text-transparent bg-[#0c1a18]'}`}>
+                       <CheckSquare className="w-3 h-3" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">Sales & Marketing</span>
                   </label>
                 </div>
               </div>

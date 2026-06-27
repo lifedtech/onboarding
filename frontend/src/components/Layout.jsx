@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar,
+  Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
@@ -40,20 +40,34 @@ export default function Layout({ children, activePage, onNavigate }) {
     : 'OP';
 
   const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
-  const scopes = user?.accessScopes || ['HEALTHMATES', 'SERVICE_USERS']; // Fallback for testing if backend not updated yet
-  const showHealthmates = isAdmin || scopes.includes('HEALTHMATES');
-  const showServiceUsers = isAdmin || scopes.includes('SERVICE_USERS');
+  const scopes = user?.accessScopes || [];
+  const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
+  const hasSalesMarketing = hasFullAccess || scopes.includes('SALES_MARKETING');
+  const showHealthmates = hasFullAccess || scopes.includes('HEALTHMATES') || hasSalesMarketing;
+  const showServiceUsers = hasFullAccess || scopes.includes('SERVICE_USERS') || hasSalesMarketing;
 
   const GROUPS = [];
 
-  if (isAdmin) {
+  if (hasFullAccess) {
     GROUPS.push({
       id: 'admin',
-      label: 'Admin Settings',
+      label: 'Admin',
       items: [
         { label: 'God View Analytics', icon: ShieldCheck, href: 'admin_dashboard' },
         { label: 'Task Manager', icon: Wrench, href: 'support_dashboard' },
         { label: 'Team Settings', icon: Users, href: 'team' },
+      ]
+    });
+  }
+
+  if (hasSalesMarketing) {
+    GROUPS.push({
+      id: 'sales_marketing',
+      label: 'Sales & Marketing',
+      items: [
+        { label: 'Dashboard', icon: LayoutDashboard, href: 'sales_marketing_dashboard' },
+        { label: 'Program Performance', icon: Target, href: 'program_performance' },
+        { label: 'Booking Operations', icon: Activity, href: 'booking_operations' },
       ]
     });
   }
@@ -64,6 +78,7 @@ export default function Layout({ children, activePage, onNavigate }) {
       label: 'HealthMates - SuperHeros',
       items: [
         { label: 'Dashboard', icon: LayoutDashboard, href: 'healthmate_dashboard' },
+        { label: 'Healthmates List', icon: Users, href: 'healthmates_list' },
         { label: 'Enquiries', icon: FileSpreadsheet, href: 'healthmate_enquiries' },
         { label: 'Pipeline', icon: GitBranch, href: 'pipeline' },
         { label: 'Support', icon: LifeBuoy, href: 'healthmate_support' },

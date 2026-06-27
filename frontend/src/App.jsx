@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Layout from './components/Layout';
 import PipelineBoard from './components/pipeline/PipelineBoard';
 import HealthmateDashboard from './components/dashboard/HealthmateDashboard';
+import HealthmatesList from './components/dashboard/HealthmatesList';
 import ServiceUserDashboard from './components/dashboard/ServiceUserDashboard';
 import HealthmateModal from './components/pipeline/HealthmateModal';
 import TeamManagement from './components/dashboard/TeamManagement';
@@ -19,6 +20,9 @@ import StressBuster from './components/dashboard/StressBuster';
 import EnquiriesSheet from './components/enquiries/EnquiriesSheet';
 import ServiceUsersList from './components/dashboard/ServiceUsersList';
 import AdminDashboard from './components/dashboard/AdminDashboard';
+import BookingOperations from './components/dashboard/BookingOperations';
+import ProgramPerformance from './components/dashboard/ProgramPerformance';
+import SalesMarketingDashboard from './components/dashboard/SalesMarketingDashboard';
 import { initAudio, playNotificationSound } from './lib/audio';
 
 
@@ -26,7 +30,11 @@ import { initAudio, playNotificationSound } from './lib/audio';
 
 const PAGES = {
   admin_dashboard: <AdminDashboard />,
+  sales_marketing_dashboard: <SalesMarketingDashboard />,
+  booking_operations: <BookingOperations />,
+  program_performance: <ProgramPerformance />,
   healthmate_dashboard: <HealthmateDashboard />,
+  healthmates_list: <HealthmatesList />,
   service_user_dashboard: <ServiceUserDashboard />,
   healthmate_enquiries: <EnquiriesSheet />, // Currently using same component, can extend to fetch specific ones
   service_user_enquiries: <EnquiriesSheet />, // Or handle category inside

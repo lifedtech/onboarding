@@ -1,7 +1,7 @@
 require('dotenv').config(); // Trigger reload
 const express = require('express');
-const cors    = require('cors');
-const helmet  = require('helmet');
+const cors = require('cors');
+const helmet = require('helmet');
 
 const app = express();
 
@@ -15,9 +15,9 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, postman)
     if (!origin) return callback(null, true);
-    
+
     const configuredOrigin = process.env.CLIENT_ORIGIN;
-    
+
     // Check if origin matches configured origin, is localhost, 127.0.0.1, or is a workers.dev domain
     if (
       origin === configuredOrigin ||
@@ -36,11 +36,11 @@ app.use(cors({
 
 // Easter egg header
 app.use((req, res, next) => {
-  res.setHeader('X-Built-By', 'Ayush');
+  res.setHeader('X-Built-By', 'axshh');
   next();
 });
 
-const path    = require('path');
+const path = require('path');
 
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -38,7 +38,8 @@ model OpsUser {
   email        String      @unique
   passwordHash String
   name         String
-  role         String      @default("ops") // e.g. "ops", "admin"
+  role         String      @default("ops") // e.g. "ops", "admin", "marketing"
+  accessScopes String[]    @default([])
   publicKey    String?     @db.Text
   avatar       String?     // URL to profile picture
   statusMode   String      @default("online") // "online", "busy", "dnd", "offline"
