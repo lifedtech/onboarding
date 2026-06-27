@@ -87,6 +87,61 @@ const createTeamMember = async (req, res) => {
 };
 
 /**
+ * PATCH /api/users/:id
+ * Updates a team member's details, role, and/or access scopes.
+ */
+const updateTeamMember = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password, role, accessScopes } = req.body;
+
+  try {
+    const userToUpdate = await prisma.opsUser.findUnique({ where: { id } });
+    if (!userToUpdate) {
+      return res.status(404).json({ message: 'Team member not found.' });
+    }
+
+    const data = {};
+    if (name) data.name = name;
+    if (email) data.email = email;
+    if (role) {
+      const normalizedRole = role.toLowerCase() === 'admin' ? 'admin' : role.toLowerCase() === 'marketing' ? 'marketing' : 'ops';
+      data.role = normalizedRole;
+    }
+    if (Array.isArray(accessScopes)) data.accessScopes = accessScopes;
+    
+    if (password) {
+      data.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    }
+
+    const updatedUser = await prisma.opsUser.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        accessScopes: true,
+        createdAt: true,
+        statusMode: true,
+        avatar: true,
+      },
+    });
+
+    // include isOnline since the frontend might expect it when updating the local state
+    const userWithPresence = {
+      ...updatedUser,
+      isOnline: isUserOnline(updatedUser.id)
+    };
+
+    return res.status(200).json({ message: 'Team member updated successfully.', user: userWithPresence });
+  } catch (error) {
+    console.error('[updateTeamMember]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+/**
  * DELETE /api/users/:id
  * Removes a team member. Enforces self-deletion guards and automatically reassigns 
  * any active onboarding partners to the executing administrator.
@@ -223,6 +278,7 @@ const uploadAvatar = async (req, res) => {
 module.exports = {
   getTeamMembers,
   createTeamMember,
+  updateTeamMember,
   deleteTeamMember,
   heartbeat,
   updatePublicKey,

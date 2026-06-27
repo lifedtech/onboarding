@@ -62,10 +62,13 @@ export default function TeamManagement() {
     const { name, value } = e.target;
     if (name === 'role') {
       setFormData((prev) => {
-        let newScopes = [...prev.accessScopes];
-        // If Marketing is selected, default to giving Sales & Marketing scope
-        if (value === 'MARKETING' && !newScopes.includes('SALES_MARKETING')) {
-          newScopes.push('SALES_MARKETING');
+        let newScopes = [];
+        if (value === 'MARKETING') {
+          newScopes = ['SALES_MARKETING'];
+        } else if (value === 'ADMIN') {
+          newScopes = ['FULL_ACCESS']; // Or leave it empty and let logic handle Admin. Let's give FULL_ACCESS
+        } else {
+          newScopes = ['HEALTHMATES', 'SERVICE_USERS']; // Default ops scopes
         }
         return { ...prev, [name]: value, accessScopes: newScopes };
       });
