@@ -6,11 +6,11 @@ export default function AdminDashboard() {
   const [activeKpi, setActiveKpi] = useState(null);
 
   const kpiData = [
-    { id: 'visitors', label: 'Website visitors', value: '6,840', sub: '↑ 18% vs last period', details: 'Organic: 4,200 | Social: 1,840 | Referral: 800' },
-    { id: 'leads', label: 'Qualified leads', value: '118', sub: '52% of inquiries', details: 'High Intent: 45 | Medium Intent: 50 | Low Intent: 23' },
-    { id: 'bookings', label: 'Bookings', value: '24', sub: '20.3% lead → booking', details: 'Residential: 18 | Online Sessions: 6' },
-    { id: 'gbv', label: 'Gross booking value', value: '₹4.82L', sub: 'Residential + sessions', details: 'Residential: ₹3.90L | Sessions: ₹0.92L' },
-    { id: 'commission', label: 'Lifed commission', value: '₹1.02L', sub: '20-25% blended', details: 'Avg Margin: 21.1% | Net Realized: ₹0.98L' }
+    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'No data', details: 'Organic: 0 | Social: 0 | Referral: 0' },
+    { id: 'leads', label: 'Qualified leads', value: '0', sub: '0% of inquiries', details: 'High Intent: 0 | Medium Intent: 0 | Low Intent: 0' },
+    { id: 'bookings', label: 'Bookings', value: '0', sub: '0% lead → booking', details: 'Residential: 0 | Online Sessions: 0' },
+    { id: 'gbv', label: 'Gross booking value', value: '₹0', sub: 'Residential + sessions', details: 'Residential: ₹0 | Sessions: ₹0' },
+    { id: 'commission', label: 'Lifed commission', value: '₹0', sub: '0% blended', details: 'Avg Margin: 0% | Net Realized: ₹0' }
   ];
 
   return (
@@ -69,12 +69,12 @@ export default function AdminDashboard() {
           
           <div className="flex-1 flex items-end gap-2 md:gap-3 h-[250px] mt-4 mb-6">
             {[
-              { label: 'Visitors', value: '6,840', height: '100%' },
-              { label: 'Program views', value: '2,140', height: '70%' },
-              { label: 'WhatsApp starts', value: '226', height: '50%' },
-              { label: 'Qualified leads', value: '118', height: '35%' },
-              { label: 'Bookings', value: '24', height: '25%' },
-              { label: 'Reviews', value: '14', height: '20%' }
+              { label: 'Visitors', value: '0', height: '0%' },
+              { label: 'Program views', value: '0', height: '0%' },
+              { label: 'WhatsApp starts', value: '0', height: '0%' },
+              { label: 'Qualified leads', value: '0', height: '0%' },
+              { label: 'Bookings', value: '0', height: '0%' },
+              { label: 'Reviews', value: '0', height: '0%' }
             ].map((bar, idx) => (
               <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group">
                 <div 
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-slate-50 rounded-xl p-4 text-[11px] text-text-muted font-medium leading-relaxed border border-border-leaf">
-            <span className="font-bold text-text-main">Primary drop-off:</span> Program views → WhatsApp starts. Improve trust signals: host video, inclusions, dates, cancellation, "who this is for."
+            <span className="font-bold text-text-main">No data available:</span> Accumulate more user journeys to view drop-off points.
           </div>
         </div>
 
@@ -98,26 +98,6 @@ export default function AdminDashboard() {
           <h3 className="text-text-main font-bold text-base px-2 mb-4 mt-1">This week's strategic actions</h3>
           <div className="flex flex-col gap-3">
             {[
-              { 
-                num: 1, 
-                title: 'Scale "Find Your Reset"', 
-                desc: 'Burnt-out professionals are producing the highest qualified lead rate. Increase spend only on the top two ads.'
-              },
-              { 
-                num: 2, 
-                title: 'Fix Ojas booking friction', 
-                desc: 'Strong interest, lower conversion. Add travel logistics, sample day plan, and "can I take leave?" FAQ.'
-              },
-              { 
-                num: 3, 
-                title: 'Run Kochi Session Sprint', 
-                desc: 'Inner Reset and Know Thyself have lower friction and can generate first reviews quickly.'
-              },
-              { 
-                num: 4, 
-                title: 'Interview 10 lost leads', 
-                desc: 'Top objections: time, price, trust, unclear schedule. Use calls to improve program pages.'
-              }
             ].map((action, idx) => (
               <div key={idx} className="bg-white rounded-2xl p-5 shadow-sm border border-border-leaf flex gap-4 items-start hover:shadow-md transition-shadow">
                 <div className="w-6 h-6 shrink-0 rounded-full bg-brand-teal text-white flex items-center justify-center text-[11px] font-black mt-0.5 shadow-md">
@@ -138,27 +118,15 @@ export default function AdminDashboard() {
         {[
           { 
             title: 'Top audience', 
-            data: [
-              { name: 'Burnt-out professionals', value: 86, width: '90%' },
-              { name: 'Women 30-55', value: 71, width: '75%' },
-              { name: 'Wellness travellers', value: 62, width: '65%' }
-            ]
+            data: []
           },
           { 
             title: 'Top programs', 
-            data: [
-              { name: 'The Inner Reset', value: 88, width: '92%' },
-              { name: 'Ojas Renewal', value: 79, width: '82%' },
-              { name: "Women's Wellbeing", value: 75, width: '78%' }
-            ]
+            data: []
           },
           { 
             title: 'Top channels', 
-            data: [
-              { name: 'Instagram', value: 82, width: '85%' },
-              { name: 'WhatsApp', value: 80, width: '82%' },
-              { name: 'Google Search', value: 68, width: '70%' }
-            ]
+            data: []
           }
         ].map((block, idx) => (
           <div key={idx} className="bg-white rounded-2xl p-6 shadow-sm border border-border-leaf">
