@@ -7,7 +7,10 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
   const createEnquiry = useOpsStore((s) => s.createEnquiry);
 
   const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
+  const [contactCode, setContactCode] = useState('+91');
+  const [contactPhone, setContactPhone] = useState('');
+  const [altContactCode, setAltContactCode] = useState('+91');
+  const [altContactPhone, setAltContactPhone] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
@@ -34,8 +37,8 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       toast.error('Name is required.');
       return;
     }
-    if (!contact.trim()) {
-      toast.error('Contact email or phone is required.');
+    if (!contactPhone.trim() || contactPhone.trim().length < 10) {
+      toast.error('A valid 10-digit primary phone number is required.');
       return;
     }
     if (clientType === 'HEALTH_PARTNER' && callbackLater && !reminderDate) {
@@ -46,7 +49,8 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
     setSaving(true);
     const payload = {
       name: name.trim(),
-      contact: contact.trim(),
+      contact: `${contactCode} ${contactPhone.trim()}`,
+      alternateContact: altContactPhone.trim() ? `${altContactCode} ${altContactPhone.trim()}` : null,
       city: city.trim() || null,
       state: state.trim() || null,
       country: country.trim() || null,
@@ -73,7 +77,10 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       toast.success('New enquiry recorded successfully!');
       // Reset form
       setName('');
-      setContact('');
+      setContactCode('+91');
+      setContactPhone('');
+      setAltContactCode('+91');
+      setAltContactPhone('');
       setCity('');
       setState('');
       setCountry('');
@@ -150,19 +157,64 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
               />
             </div>
 
-            {/* Contact */}
-            <div>
-              <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
-                Contact Details*
-              </label>
-              <input
-                type="text"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                placeholder="e.g. liam@example.com or +61412345678"
-                className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
-                required
-              />
+            {/* Phone Numbers */}
+            <div className="flex gap-4">
+              {/* Primary Phone */}
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Phone Number*
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={contactCode}
+                    onChange={(e) => setContactCode(e.target.value)}
+                    className="w-[90px] bg-slate-50 border border-border-leaf/80 text-text-main rounded-xl px-2 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all cursor-pointer"
+                  >
+                    <option value="+91">+91 (IN)</option>
+                    <option value="+1">+1 (US)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+61">+61 (AU)</option>
+                    <option value="+971">+971 (AE)</option>
+                  </select>
+                  <input
+                    type="text"
+                    maxLength={10}
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value.replace(/\D/g, ''))}
+                    placeholder="e.g. 9967328040"
+                    className="flex-1 bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Alternate Phone */}
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Alternate Phone
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={altContactCode}
+                    onChange={(e) => setAltContactCode(e.target.value)}
+                    className="w-[90px] bg-slate-50 border border-border-leaf/80 text-text-main rounded-xl px-2 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all cursor-pointer"
+                  >
+                    <option value="+91">+91 (IN)</option>
+                    <option value="+1">+1 (US)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+61">+61 (AU)</option>
+                    <option value="+971">+971 (AE)</option>
+                  </select>
+                  <input
+                    type="text"
+                    maxLength={10}
+                    value={altContactPhone}
+                    onChange={(e) => setAltContactPhone(e.target.value.replace(/\D/g, ''))}
+                    placeholder="e.g. 9876543210"
+                    className="flex-1 bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Location */}

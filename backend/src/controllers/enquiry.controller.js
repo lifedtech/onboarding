@@ -52,7 +52,7 @@ const getAllEnquiries = async (req, res) => {
  */
 const createEnquiry = async (req, res) => {
   const { 
-    name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
+    name, contact, alternateContact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
     subcategory, platformFound, programPossibility, format, priceRange, capacity,
     scoreRelevance, scoreSafety, scoreExperience, scoreCredibility, scoreLocation,
     scoreVisual, scoreBooking, scoreUniqueness, scoreCorporate, scoreRepeatability
@@ -72,6 +72,7 @@ const createEnquiry = async (req, res) => {
       data: {
         name,
         contact,
+        alternateContact: alternateContact || null,
         remarks: remarks || null,
         clientType,
         contacted: contacted === true,
@@ -123,7 +124,7 @@ const createEnquiry = async (req, res) => {
 const updateEnquiry = async (req, res) => {
   const { id } = req.params;
   const { 
-    name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
+    name, contact, alternateContact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
     subcategory, platformFound, programPossibility, format, priceRange, capacity,
     scoreRelevance, scoreSafety, scoreExperience, scoreCredibility, scoreLocation,
     scoreVisual, scoreBooking, scoreUniqueness, scoreCorporate, scoreRepeatability 
@@ -146,6 +147,7 @@ const updateEnquiry = async (req, res) => {
       data: {
         ...(name !== undefined && { name }),
         ...(contact !== undefined && { contact }),
+        ...(alternateContact !== undefined && { alternateContact }),
         ...(remarks !== undefined && { remarks }),
         ...(clientType !== undefined && { clientType }),
         ...(contacted !== undefined && { contacted }),

@@ -71,6 +71,9 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
                 <span className="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Contact Details</span>
               </div>
               <p className="text-sm font-bold text-text-main break-all">{enquiry.contact}</p>
+              {enquiry.alternateContact && (
+                <p className="text-sm font-bold text-text-muted break-all mt-1">{enquiry.alternateContact} (Alt)</p>
+              )}
             </div>
 
             {/* Location */}
