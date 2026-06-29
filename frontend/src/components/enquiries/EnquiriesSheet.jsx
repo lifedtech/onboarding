@@ -20,6 +20,7 @@ import AddEnquiryModal from './AddEnquiryModal';
 import PromotePartnerModal from './PromotePartnerModal';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import OnboardUserModal from './OnboardUserModal';
+import EnquiryDetailsModal from './EnquiryDetailsModal';
 import toast from 'react-hot-toast';
 
 
@@ -54,6 +55,9 @@ export default function EnquiriesSheet({ enquiryType }) {
   const [onboardModalOpen, setOnboardModalOpen] = useState(false);
   const [onboardEnquiryId, setOnboardEnquiryId] = useState('');
   const [onboardEnquiryName, setOnboardEnquiryName] = useState('');
+
+  // Selected enquiry for details view
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
 
 
   // Inline editing state
@@ -271,7 +275,11 @@ export default function EnquiriesSheet({ enquiryType }) {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 max-h-[160px] overflow-y-auto pr-1">
               {todayReminders.map((req) => (
-                <div key={req.id} className="bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 flex flex-col justify-between gap-3 hover:bg-white/15 transition-all">
+                <div 
+                  key={req.id} 
+                  onClick={() => setSelectedEnquiry(req)}
+                  className="bg-white/10 backdrop-blur-md border border-white/10 rounded-xl p-3 flex flex-col justify-between gap-3 hover:bg-white/15 transition-all cursor-pointer"
+                >
                   <div>
                     <div className="flex justify-between items-start">
                       <p className="text-white text-sm font-bold truncate">{req.name}</p>
@@ -288,14 +296,14 @@ export default function EnquiriesSheet({ enquiryType }) {
                   </div>
                   <div className="flex items-center gap-2 mt-1">
                     <button
-                      onClick={() => handleToggleContacted(req.id, false)}
+                      onClick={(e) => { e.stopPropagation(); handleToggleContacted(req.id, false); }}
                       className="flex-1 bg-brand-green hover:bg-brand-green/90 text-white text-[11px] font-extrabold py-2 px-3 rounded-lg shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <Check className="w-3.5 h-3.5" />
                       Mark Contacted
                     </button>
                     <button
-                      onClick={() => handlePromote(req.id, req.name)}
+                      onClick={(e) => { e.stopPropagation(); handlePromote(req.id, req.name); }}
                       className="flex-1 bg-brand-teal hover:bg-brand-teal-hover text-white text-[11px] font-extrabold py-2 px-3 rounded-lg shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1"
                     >
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -410,7 +418,8 @@ export default function EnquiriesSheet({ enquiryType }) {
                   return (
                     <tr
                       key={enq.id}
-                      className={`hover:bg-slate-50/50 transition-colors ${
+                      onClick={!isEditing ? () => setSelectedEnquiry(enq) : undefined}
+                      className={`hover:bg-slate-50/50 transition-colors ${!isEditing ? 'cursor-pointer' : ''} ${
                         callbackToday && !enq.contacted ? 'bg-amber-50/30' : ''
                       }`}
                     >
@@ -495,11 +504,12 @@ export default function EnquiriesSheet({ enquiryType }) {
                       {/* Contacted Status checkbox */}
                       <td className="py-3 px-4 text-center">
                         <button
-                          onClick={() => handleToggleContacted(enq.id, enq.contacted)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold cursor-pointer border transition-all ${
+                          onClick={(e) => { e.stopPropagation(); if (!isEditing) handleToggleContacted(enq.id, enq.contacted); }}
+                          disabled={isEditing}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-extrabold uppercase tracking-wider transition-all disabled:opacity-50 mx-auto ${
                             enq.contacted
-                              ? 'bg-brand-green/10 text-brand-green border-brand-green/20'
-                              : 'bg-red-50 text-red-500 border-red-200'
+                              ? 'bg-brand-green/10 text-brand-green border-brand-green/20 hover:bg-brand-green/20'
+                              : 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100'
                           }`}
                         >
                           {enq.contacted ? (
@@ -597,14 +607,14 @@ export default function EnquiriesSheet({ enquiryType }) {
                           {isEditing ? (
                             <>
                               <button
-                                onClick={() => saveEditing(enq.id)}
+                                onClick={(e) => { e.stopPropagation(); saveEditing(enq.id); }}
                                 className="p-1 text-brand-green hover:bg-brand-green/5 rounded-lg transition-colors cursor-pointer"
                                 title="Save changes"
                               >
-                                <Check className="w-4 h-4" />
+                                <Check className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={cancelEditing}
+                                onClick={(e) => { e.stopPropagation(); cancelEditing(); }}
                                 className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                                 title="Cancel editing"
                               >
@@ -621,7 +631,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                                   </span>
                                 ) : (
                                   <button
-                                    onClick={() => handlePromote(enq.id, enq.name)}
+                                    onClick={(e) => { e.stopPropagation(); handlePromote(enq.id, enq.name); }}
                                     className="p-1.5 text-brand-teal hover:bg-brand-teal/5 border border-brand-teal/10 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
                                     title="Promote to pipeline partner"
                                   >
@@ -638,7 +648,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                                   </span>
                                 ) : (
                                   <button
-                                    onClick={() => handleOnboardUser(enq.id, enq.name)}
+                                    onClick={(e) => { e.stopPropagation(); handleOnboardUser(enq.id, enq.name); }}
                                     className="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
                                     title="Onboard as Service User"
                                   >
@@ -649,14 +659,14 @@ export default function EnquiriesSheet({ enquiryType }) {
                               )}
 
                               <button
-                                onClick={() => startEditing(enq)}
+                                onClick={(e) => { e.stopPropagation(); startEditing(enq); }}
                                 className="p-1 text-slate-400 hover:text-text-main hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                                 title="Edit enquiry row"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={() => handleDelete(enq.id, enq.name)}
+                                onClick={(e) => { e.stopPropagation(); handleDelete(enq.id, enq.name); }}
                                 className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                                 title="Delete enquiry"
                               >
@@ -700,6 +710,13 @@ export default function EnquiriesSheet({ enquiryType }) {
         onClose={() => setOnboardModalOpen(false)}
         enquiryId={onboardEnquiryId}
         enquiryName={onboardEnquiryName}
+      />
+
+      {/* Details Modal */}
+      <EnquiryDetailsModal
+        isOpen={!!selectedEnquiry}
+        onClose={() => setSelectedEnquiry(null)}
+        enquiry={selectedEnquiry}
       />
     </div>
 
