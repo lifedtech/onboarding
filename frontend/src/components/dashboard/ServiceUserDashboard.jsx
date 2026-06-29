@@ -7,8 +7,6 @@ export default function ServiceUserDashboard() {
   const fetchServiceUsers = useOpsStore((s) => s.fetchServiceUsers);
   const isLoading = useOpsStore((s) => s.isLoading);
 
-  const [activeTab, setActiveTab] = useState('overview');
-
   useEffect(() => {
     fetchServiceUsers();
   }, [fetchServiceUsers]);
@@ -37,29 +35,11 @@ export default function ServiceUserDashboard() {
         </div>
       </div>
 
-      {/* Analytics Tabs */}
-      <div className="flex items-center gap-6 border-b border-border-leaf/50 pt-2">
-        {['overview', 'activity', 'demographics'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-3 text-sm font-extrabold capitalize tracking-wide transition-all relative
-              ${activeTab === tab ? 'text-brand-teal' : 'text-text-muted hover:text-text-main'}`}
-          >
-            {tab.replace('_', ' ')}
-            {activeTab === tab && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-teal rounded-t-full shadow-[0_-2px_10px_rgba(20,184,166,0.5)]" />
-            )}
-          </button>
-        ))}
-      </div>
-
       {/* Tab Content Area */}
-      <div className="pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className="pt-2 animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-8">
         
-        {/* OVERVIEW TAB */}
-        {activeTab === 'overview' && (
-          <div className="space-y-8">
+        {/* OVERVIEW SECTION */}
+        <div className="space-y-8">
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Total Users */}
@@ -134,10 +114,8 @@ export default function ServiceUserDashboard() {
               )}
             </div>
           </div>
-        )}
 
-        {/* ACTIVITY TAB */}
-        {activeTab === 'activity' && (
+        {/* ACTIVITY SECTION */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white border border-border-leaf rounded-[24px] shadow-sm p-7 min-h-[300px] flex flex-col">
                <div className="flex items-center justify-between mb-8">
@@ -196,10 +174,8 @@ export default function ServiceUserDashboard() {
               </div>
             </div>
           </div>
-        )}
 
-        {/* DEMOGRAPHICS TAB */}
-        {activeTab === 'demographics' && (
+        {/* DEMOGRAPHICS SECTION */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Age Distribution */}
             <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7 flex flex-col">
@@ -278,7 +254,6 @@ export default function ServiceUserDashboard() {
               </div>
             </div>
           </div>
-        )}
 
       </div>
     </div>
