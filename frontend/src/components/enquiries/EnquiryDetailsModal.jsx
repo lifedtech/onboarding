@@ -79,10 +79,8 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
                 <MapPin className="w-4 h-4 text-brand-teal" />
                 <span className="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Location</span>
               </div>
-              <p className="text-sm font-bold text-text-main">
-                {enquiry.city || enquiry.state 
-                  ? [enquiry.city, enquiry.state].filter(Boolean).join(', ') 
-                  : <span className="text-slate-400 italic">Not provided</span>}
+              <p className="text-sm font-bold text-text-main truncate mt-0.5">
+                {[enquiry.city, enquiry.state, enquiry.country].filter(Boolean).join(', ') || <span className="text-slate-400 italic">Not provided</span>}
               </p>
             </div>
           </div>

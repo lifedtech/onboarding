@@ -65,6 +65,7 @@ model Enquiry {
   reminderDate  DateTime?
   city          String?
   state         String?
+  country       String?
   movedToPipeline Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -84,9 +85,11 @@ model Healthmate {
   // Contact info
   contactName  String?
   contactEmail String?
-  contactPhone String?
-  city         String?
-  state        String?
+  contactPhone   String?
+  alternatePhone String?
+  city           String?
+  state          String?
+  country        String?
 
   // Internal notes for ops team
   notes        String?

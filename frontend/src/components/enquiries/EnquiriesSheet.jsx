@@ -66,6 +66,7 @@ export default function EnquiriesSheet({ enquiryType }) {
   const [editContact, setEditContact] = useState('');
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
+  const [editCountry, setEditCountry] = useState('');
   const [editRemarks, setEditRemarks] = useState('');
   const [editClientType, setEditClientType] = useState('');
   const [editCallbackLater, setEditCallbackLater] = useState(false);
@@ -175,6 +176,7 @@ export default function EnquiriesSheet({ enquiryType }) {
     setEditContact(enq.contact);
     setEditCity(enq.city || '');
     setEditState(enq.state || '');
+    setEditCountry(enq.country || '');
     setEditRemarks(enq.remarks || '');
     setEditClientType(enq.clientType);
     setEditCallbackLater(enq.callbackLater);
@@ -205,7 +207,8 @@ export default function EnquiriesSheet({ enquiryType }) {
       contact: editContact,
       city: editCity.trim() || null,
       state: editState.trim() || null,
-      remarks: editRemarks,
+      country: editCountry.trim() || null,
+      remarks: editRemarks.trim() || null,
       clientType: editClientType,
       callbackLater: editClientType === 'HEALTH_PARTNER' ? editCallbackLater : false,
       reminderDate: (editClientType === 'HEALTH_PARTNER' && editCallbackLater && editReminderDate)
@@ -469,10 +472,17 @@ export default function EnquiriesSheet({ enquiryType }) {
                               placeholder="State"
                               className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
                             />
+                            <input
+                              type="text"
+                              value={editCountry}
+                              onChange={(e) => setEditCountry(e.target.value)}
+                              placeholder="Country"
+                              className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                            />
                           </div>
                         ) : (
-                          <span className={(!enq.city && !enq.state) ? "text-slate-400 font-semibold" : "truncate block max-w-[150px]"}>
-                            {[enq.city, enq.state].filter(Boolean).join(', ') || '—'}
+                          <span className={(!enq.city && !enq.state && !enq.country) ? "text-slate-400 font-semibold" : "truncate block max-w-[150px]"}>
+                            {[enq.city, enq.state, enq.country].filter(Boolean).join(', ') || '—'}
                           </span>
                         )}
                       </td>

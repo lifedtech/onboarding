@@ -51,7 +51,7 @@ const getAllEnquiries = async (req, res) => {
  * Creates a new enquiry.
  */
 const createEnquiry = async (req, res) => {
-  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state } = req.body;
+  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country } = req.body;
 
   if (!name || !contact || !clientType) {
     return res.status(400).json({ message: 'name, contact, and clientType are required.' });
@@ -74,6 +74,7 @@ const createEnquiry = async (req, res) => {
         reminderDate: (callbackLater && reminderDate) ? new Date(reminderDate) : null,
         city: city || null,
         state: state || null,
+        country: country || null,
         opsUserId: req.user.id,
       },
       include: {
@@ -100,7 +101,7 @@ const createEnquiry = async (req, res) => {
  */
 const updateEnquiry = async (req, res) => {
   const { id } = req.params;
-  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state } = req.body;
+  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country } = req.body;
 
   try {
     const existing = await prisma.enquiry.findUnique({ where: { id } });
@@ -128,6 +129,7 @@ const updateEnquiry = async (req, res) => {
         }),
         ...(city !== undefined && { city: city || null }),
         ...(state !== undefined && { state: state || null }),
+        ...(country !== undefined && { country: country || null }),
       },
       include: {
         opsUser: {

@@ -116,8 +116,10 @@ export default function HealthmateModal() {
   const [editContactName, setEditContactName] = useState('');
   const [editContactEmail, setEditContactEmail] = useState('');
   const [editContactPhone, setEditContactPhone] = useState('');
+  const [editAlternatePhone, setEditAlternatePhone] = useState('');
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
+  const [editCountry, setEditCountry] = useState('');
 
   // Add-task form states
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -150,9 +152,11 @@ export default function HealthmateModal() {
       setEditCategory(selectedHealthmate.category);
       setEditContactName(selectedHealthmate.contactName ?? '');
       setEditContactEmail(selectedHealthmate.contactEmail ?? '');
-      setEditContactPhone(selectedHealthmate.contactPhone ?? '');
-      setEditCity(selectedHealthmate.city ?? '');
-      setEditState(selectedHealthmate.state ?? '');
+      setEditContactPhone(selectedHealthmate.contactPhone || '');
+      setEditAlternatePhone(selectedHealthmate.alternatePhone || '');
+      setEditCity(selectedHealthmate.city || '');
+      setEditState(selectedHealthmate.state || '');
+      setEditCountry(selectedHealthmate.country || '');
 
       setScreeningRemarks(selectedHealthmate.screeningRemarks ?? '');
       setScreeningRemarksSaved(false);
@@ -379,8 +383,10 @@ export default function HealthmateModal() {
       contactName: editContactName.trim() || null,
       contactEmail: editContactEmail.trim() || null,
       contactPhone: editContactPhone.trim() || null,
+      alternatePhone: editAlternatePhone.trim() || null,
       city: editCity.trim() || null,
       state: editState.trim() || null,
+      country: editCountry.trim() || null,
       notes: notes.trim() || null,
     });
     if (result && result.success) {
@@ -706,6 +712,17 @@ export default function HealthmateModal() {
                             />
                           </div>
                           <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Alternate Phone</label>
+                            <input
+                              type="tel"
+                              value={isMarketingOnly ? '+** **** ****' : editAlternatePhone}
+                              onChange={(e) => setEditAlternatePhone(e.target.value)}
+                              disabled={isMarketingOnly}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal disabled:opacity-50"
+                              placeholder="e.g. +91 9876543210"
+                            />
+                          </div>
+                          <div>
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">City</label>
                             <input
                               type="text"
@@ -723,6 +740,16 @@ export default function HealthmateModal() {
                               onChange={(e) => setEditState(e.target.value)}
                               className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
                               placeholder="e.g. Maharashtra"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Country</label>
+                            <input
+                              type="text"
+                              value={editCountry}
+                              onChange={(e) => setEditCountry(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                              placeholder="e.g. India"
                             />
                           </div>
                           <div>
@@ -765,11 +792,18 @@ export default function HealthmateModal() {
                             value={isMarketingOnly ? '+** **** ****' : (hm.contactPhone || '—')}
                             muted={!hm.contactPhone && !isMarketingOnly}
                           />
-                          {(hm.city || hm.state) && (
+                          {(hm.alternatePhone || isMarketingOnly) && (
+                            <InfoRow
+                              icon={<Phone className="w-4 h-4 text-brand-teal" />}
+                              label="Alt Phone"
+                              value={isMarketingOnly ? '+** **** ****' : hm.alternatePhone}
+                            />
+                          )}
+                          {(hm.city || hm.state || hm.country) && (
                             <InfoRow 
                               icon={<GitBranch className="w-4 h-4 text-brand-teal" />} 
                               label="Location" 
-                              value={[hm.city, hm.state].filter(Boolean).join(', ')} 
+                              value={[hm.city, hm.state, hm.country].filter(Boolean).join(', ')} 
                             />
                           )}
                           <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
@@ -1416,10 +1450,19 @@ export default function HealthmateModal() {
                   </div>
                 )}
               </div>
-            ) : (
-              <span className="text-brand-green text-sm font-extrabold flex items-center gap-1.5 px-3 py-1 bg-brand-green/10 border border-brand-green/20 rounded-full">
+            ) : canAdvancePhase ? (
+              <span className="text-brand-green text-sm font-extrabold flex items-center gap-1.5 px-3 py-1 bg-brand-green/10 border border-brand-green/20 rounded-full shadow-sm">
                 ✓ Partner is Live
               </span>
+            ) : (
+              <div className="relative group">
+                <span className="text-slate-400 text-sm font-extrabold flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed">
+                  Complete Live Tasks
+                </span>
+                <div className="absolute bottom-full mb-2 right-0 w-max px-3 py-1.5 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                  Complete all tasks to go live
+                </div>
+              </div>
             )}
           </div>
         </div>

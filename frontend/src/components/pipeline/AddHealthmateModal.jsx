@@ -13,6 +13,10 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
+  const [alternatePhone, setAlternatePhone] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
   const [saving, setSaving] = useState(false);
 
   if (!isOpen) return null;
@@ -37,6 +41,10 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
       contactName: contactName.trim() || null,
       contactEmail: contactEmail.trim() || null,
       contactPhone: contactPhone.trim() || null,
+      alternatePhone: alternatePhone.trim() || null,
+      city: city.trim() || null,
+      state: state.trim() || null,
+      country: country.trim() || null,
     });
     setSaving(false);
 
@@ -49,6 +57,10 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
       setContactName('');
       setContactEmail('');
       setContactPhone('');
+      setAlternatePhone('');
+      setCity('');
+      setState('');
+      setCountry('');
       onClose();
     } else {
       toast.error(result.message || 'Failed to add partner.');
@@ -167,17 +179,71 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
             </div>
 
             {/* Phone */}
-            <div>
-              <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
-                Contact Phone
-              </label>
-              <input
-                type="tel"
-                value={contactPhone}
-                onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="e.g. +61412345678"
-                className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
-              />
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Contact Phone
+                </label>
+                <input
+                  type="tel"
+                  value={contactPhone}
+                  onChange={(e) => setContactPhone(e.target.value)}
+                  placeholder="e.g. +61412345678"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Alternate Phone
+                </label>
+                <input
+                  type="tel"
+                  value={alternatePhone}
+                  onChange={(e) => setAlternatePhone(e.target.value)}
+                  placeholder="e.g. +91 9876543210"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Location */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Mumbai"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  State
+                </label>
+                <input
+                  type="text"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  placeholder="e.g. Maharashtra"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="e.g. India"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
             </div>
 
             {/* Buttons */}

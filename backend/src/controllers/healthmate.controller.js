@@ -66,7 +66,7 @@ const getAllHealthmates = async (req, res) => {
  * Creates a new healthmate and assigns it to the authenticated OpsUser.
  */
 const createHealthmate = async (req, res) => {
-  const { name, type, category, contactName, contactEmail, contactPhone } = req.body;
+  const { name, type, category, contactName, contactEmail, contactPhone, alternatePhone, city, state, country } = req.body;
 
   if (!name || !type || !category) {
     return res.status(400).json({ message: 'name, type, and category are required.' });
@@ -89,6 +89,10 @@ const createHealthmate = async (req, res) => {
         contactName: contactName || null,
         contactEmail: contactEmail || null,
         contactPhone: contactPhone || null,
+        alternatePhone: alternatePhone || null,
+        city: city || null,
+        state: state || null,
+        country: country || null,
         opsUserId: req.user.id,
         // phase defaults to PRE_QUALIFY, daysInPhase defaults to 0 per schema
       },
@@ -207,7 +211,7 @@ const updateHealthmatePhase = async (req, res) => {
 const updateHealthmate = async (req, res) => {
   const { id } = req.params;
   const {
-    name, category, contactName, contactEmail, contactPhone, city, state: partnerState, opsUserId,
+    name, category, contactName, contactEmail, contactPhone, alternatePhone, city, state: partnerState, country, opsUserId,
     screeningRemarks, screeningQueries, recallReminder,
     programTitle, programStartDate, programEndDate, programStatus, programApprovedMsg,
     registrationStatus, registrationRemark
@@ -237,8 +241,10 @@ const updateHealthmate = async (req, res) => {
         ...(contactName !== undefined && { contactName }),
         ...(contactEmail !== undefined && { contactEmail }),
         ...(contactPhone !== undefined && { contactPhone }),
+        ...(alternatePhone !== undefined && { alternatePhone }),
         ...(city !== undefined && { city }),
         ...(partnerState !== undefined && { state: partnerState }),
+        ...(country !== undefined && { country }),
         ...(opsUserId !== undefined && { opsUserId }),
         ...(screeningRemarks !== undefined && { screeningRemarks }),
         ...(screeningQueries !== undefined && { screeningQueries }),
