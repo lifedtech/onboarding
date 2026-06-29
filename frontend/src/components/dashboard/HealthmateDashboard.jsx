@@ -92,17 +92,6 @@ export default function HealthmateDashboard() {
           <h1 className="text-text-main font-black text-2xl tracking-tight">Onboarding Dashboard</h1>
           <p className="text-text-muted/80 text-sm font-semibold mt-0.5">Real-time operational health and partner pipeline metrics.</p>
         </div>
-        {error ? (
-          <div className="flex items-center gap-2 text-xs font-extrabold bg-red-50 border border-red-200 text-red-500 px-3.5 py-2 rounded-full shrink-0 shadow-sm animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 animate-ping" />
-            SERVER DOWN
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 text-xs font-extrabold bg-red-50 border border-red-200 text-red-500 px-3.5 py-2 rounded-full shrink-0 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-            LIVE
-          </div>
-        )}
       </div>
 
       {/* KPI Cards Grid */}

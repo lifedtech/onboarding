@@ -22,6 +22,7 @@ export default function Layout({ children, activePage, onNavigate }) {
   const user = useOpsStore((s) => s.user);
   const logout = useOpsStore((s) => s.logout);
   const chatHasUnread = useOpsStore((s) => s.chatHasUnread);
+  const error = useOpsStore((s) => s.error);
   
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMinimized, setDesktopMinimized] = useState(false);
@@ -263,6 +264,17 @@ export default function Layout({ children, activePage, onNavigate }) {
 
         {/* Top Right Actions */}
         <div className="flex items-center gap-3">
+          {error ? (
+            <div className="flex items-center gap-2 text-[10px] font-extrabold bg-red-900/40 border border-red-500/50 text-red-400 px-3 py-1 rounded-full shrink-0 shadow-sm animate-pulse mr-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 animate-ping" />
+              SERVER DOWN
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 text-[10px] font-extrabold bg-brand-teal/10 border border-brand-teal/20 text-brand-teal px-3 py-1 rounded-full shrink-0 shadow-sm mr-2 hidden sm:flex">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-teal shrink-0" />
+              LIVE
+            </div>
+          )}
           <button className="relative p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors">
             <Bell className="w-5 h-5" />
             {chatHasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0f172a]"></span>}
