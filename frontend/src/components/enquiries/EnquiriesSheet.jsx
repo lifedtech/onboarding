@@ -60,7 +60,8 @@ export default function EnquiriesSheet() {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
   const [editContact, setEditContact] = useState('');
-  const [editLocation, setEditLocation] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editState, setEditState] = useState('');
   const [editRemarks, setEditRemarks] = useState('');
   const [editClientType, setEditClientType] = useState('');
   const [editCallbackLater, setEditCallbackLater] = useState(false);
@@ -167,7 +168,8 @@ export default function EnquiriesSheet() {
     setEditingId(enq.id);
     setEditName(enq.name);
     setEditContact(enq.contact);
-    setEditLocation(enq.location || '');
+    setEditCity(enq.city || '');
+    setEditState(enq.state || '');
     setEditRemarks(enq.remarks || '');
     setEditClientType(enq.clientType);
     setEditCallbackLater(enq.callbackLater);
@@ -196,7 +198,8 @@ export default function EnquiriesSheet() {
     const payload = {
       name: editName,
       contact: editContact,
-      location: editLocation.trim() || null,
+      city: editCity.trim() || null,
+      state: editState.trim() || null,
       remarks: editRemarks,
       clientType: editClientType,
       callbackLater: editClientType === 'HEALTH_PARTNER' ? editCallbackLater : false,
@@ -437,16 +440,28 @@ export default function EnquiriesSheet() {
                       </td>
 
                       {/* Location */}
-                      <td className="py-3 px-4 truncate">
+                      <td className="py-3 px-4">
                         {isEditing ? (
-                          <input
-                            type="text"
-                            value={editLocation}
-                            onChange={(e) => setEditLocation(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                          />
+                          <div className="flex flex-col gap-1.5">
+                            <input
+                              type="text"
+                              value={editCity}
+                              onChange={(e) => setEditCity(e.target.value)}
+                              placeholder="City"
+                              className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              value={editState}
+                              onChange={(e) => setEditState(e.target.value)}
+                              placeholder="State"
+                              className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                            />
+                          </div>
                         ) : (
-                          enq.location || <span className="text-slate-400 font-semibold">—</span>
+                          <span className={(!enq.city && !enq.state) ? "text-slate-400 font-semibold" : "truncate block max-w-[150px]"}>
+                            {[enq.city, enq.state].filter(Boolean).join(', ') || '—'}
+                          </span>
                         )}
                       </td>
 

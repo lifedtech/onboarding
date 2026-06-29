@@ -63,7 +63,8 @@ model Enquiry {
   clientType    String    // "SERVICE_USER" or "HEALTH_PARTNER"
   callbackLater Boolean   @default(false)
   reminderDate  DateTime?
-  location      String?   // Location of client/partner
+  city          String?
+  state         String?
   movedToPipeline Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -84,6 +85,8 @@ model Healthmate {
   contactName  String?
   contactEmail String?
   contactPhone String?
+  city         String?
+  state        String?
 
   // Internal notes for ops team
   notes        String?

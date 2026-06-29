@@ -207,7 +207,7 @@ const updateHealthmatePhase = async (req, res) => {
 const updateHealthmate = async (req, res) => {
   const { id } = req.params;
   const {
-    name, category, contactName, contactEmail, contactPhone, opsUserId,
+    name, category, contactName, contactEmail, contactPhone, city, state: partnerState, opsUserId,
     screeningRemarks, screeningQueries, recallReminder,
     programTitle, programStartDate, programEndDate, programStatus, programApprovedMsg,
     registrationStatus, registrationRemark
@@ -237,6 +237,8 @@ const updateHealthmate = async (req, res) => {
         ...(contactName !== undefined && { contactName }),
         ...(contactEmail !== undefined && { contactEmail }),
         ...(contactPhone !== undefined && { contactPhone }),
+        ...(city !== undefined && { city }),
+        ...(partnerState !== undefined && { state: partnerState }),
         ...(opsUserId !== undefined && { opsUserId }),
         ...(screeningRemarks !== undefined && { screeningRemarks }),
         ...(screeningQueries !== undefined && { screeningQueries }),
@@ -356,7 +358,7 @@ const updateNotes = async (req, res) => {
  */
 const updateHealthmateDetails = async (req, res) => {
   const { id } = req.params;
-  const { name, type, category, contactName, contactEmail, contactPhone, notes } = req.body;
+  const { name, type, category, contactName, contactEmail, contactPhone, city, state: partnerState, notes } = req.body;
 
   if (!name || !type || !category) {
     return res.status(400).json({ message: 'name, type, and category are required.' });
@@ -394,6 +396,8 @@ const updateHealthmateDetails = async (req, res) => {
         contactName: contactName !== undefined ? contactName : null,
         contactEmail: contactEmail !== undefined ? contactEmail : null,
         contactPhone: contactPhone !== undefined ? contactPhone : null,
+        city: city !== undefined ? city : null,
+        state: partnerState !== undefined ? partnerState : null,
         notes: notes !== undefined ? notes : null,
       },
       include: { tasks: true },

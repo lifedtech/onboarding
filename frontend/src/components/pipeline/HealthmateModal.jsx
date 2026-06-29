@@ -116,6 +116,8 @@ export default function HealthmateModal() {
   const [editContactName, setEditContactName] = useState('');
   const [editContactEmail, setEditContactEmail] = useState('');
   const [editContactPhone, setEditContactPhone] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editState, setEditState] = useState('');
 
   // Add-task form states
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -149,6 +151,8 @@ export default function HealthmateModal() {
       setEditContactName(selectedHealthmate.contactName ?? '');
       setEditContactEmail(selectedHealthmate.contactEmail ?? '');
       setEditContactPhone(selectedHealthmate.contactPhone ?? '');
+      setEditCity(selectedHealthmate.city ?? '');
+      setEditState(selectedHealthmate.state ?? '');
 
       setScreeningRemarks(selectedHealthmate.screeningRemarks ?? '');
       setScreeningRemarksSaved(false);
@@ -368,6 +372,8 @@ export default function HealthmateModal() {
       contactName: editContactName.trim() || null,
       contactEmail: editContactEmail.trim() || null,
       contactPhone: editContactPhone.trim() || null,
+      city: editCity.trim() || null,
+      state: editState.trim() || null,
       notes: notes.trim() || null,
     });
     if (result && result.success) {
@@ -693,6 +699,26 @@ export default function HealthmateModal() {
                             />
                           </div>
                           <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">City</label>
+                            <input
+                              type="text"
+                              value={editCity}
+                              onChange={(e) => setEditCity(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                              placeholder="e.g. Mumbai"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">State / Region</label>
+                            <input
+                              type="text"
+                              value={editState}
+                              onChange={(e) => setEditState(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                              placeholder="e.g. Maharashtra"
+                            />
+                          </div>
+                          <div>
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
                             <CategorySelector
                               value={editCategory}
@@ -732,6 +758,13 @@ export default function HealthmateModal() {
                             value={isMarketingOnly ? '+** **** ****' : (hm.contactPhone || '—')}
                             muted={!hm.contactPhone && !isMarketingOnly}
                           />
+                          {(hm.city || hm.state) && (
+                            <InfoRow 
+                              icon={<GitBranch className="w-4 h-4 text-brand-teal" />} 
+                              label="Location" 
+                              value={[hm.city, hm.state].filter(Boolean).join(', ')} 
+                            />
+                          )}
                           <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
                           <InfoRow
                             icon={<User className="w-4 h-4 text-brand-teal" />}
