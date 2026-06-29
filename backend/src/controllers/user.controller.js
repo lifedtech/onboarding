@@ -184,6 +184,15 @@ const heartbeat = async (req, res) => {
   try {
     const { updatePresence } = require('../services/presence.service');
     updatePresence(req.user.id);
+
+    // Track active session time in DB
+    if (req.user.sessionId) {
+      await prisma.sessionLog.update({
+        where: { id: req.user.sessionId },
+        data: { lastActive: new Date() }
+      }).catch(() => {}); // ignore errors (e.g., if deleted)
+    }
+
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('[heartbeat]', error);
@@ -277,6 +286,30 @@ const uploadAvatar = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/users/logs
+ * Returns session logs for admin.
+ */
+const getSessionLogs = async (req, res) => {
+  if (req.user.role?.toLowerCase() !== 'admin') {
+    return res.status(403).json({ message: 'Access Denied: Admins only.' });
+  }
+  try {
+    const logs = await prisma.sessionLog.findMany({
+      orderBy: { loginAt: 'desc' },
+      include: {
+        opsUser: {
+          select: { name: true, email: true, role: true }
+        }
+      }
+    });
+    return res.status(200).json(logs);
+  } catch (error) {
+    console.error('[getSessionLogs]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
 module.exports = {
   getTeamMembers,
   createTeamMember,
@@ -287,4 +320,5 @@ module.exports = {
   getMe,
   updateProfile,
   uploadAvatar,
+  getSessionLogs,
 };

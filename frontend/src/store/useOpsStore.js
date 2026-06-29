@@ -41,6 +41,7 @@ const useOpsStore = create((set, get) => ({
   adminMetrics:       null,
 
   recentActivity:     [],
+  sessionLogs:        [],
   teamMembers:        [],
   pendingTasks:       [],
   pendingInboundTakeovers: [],
@@ -873,6 +874,19 @@ const useOpsStore = create((set, get) => ({
   },
 
   // ── Utility ────────────────────────────────────────────────────────────────
+
+  fetchSessionLogs: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.get('/users/logs');
+      set({ sessionLogs: data, isLoading: false });
+      return { success: true };
+    } catch (err) {
+      set({ isLoading: false, error: err.response?.data?.message || 'Failed to fetch logs' });
+      return { success: false };
+    }
+  },
+
   refreshAll: async () => {
     const state = get();
     if (!state.token) return; // Don't fetch if not logged in

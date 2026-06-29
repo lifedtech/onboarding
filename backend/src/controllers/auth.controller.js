@@ -75,7 +75,20 @@ const login = async (req, res) => {
       });
     }
 
-    const payload = { id: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion };
+    // Clean up old session logs (older than 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    await prisma.sessionLog.deleteMany({
+      where: { loginAt: { lt: sevenDaysAgo } }
+    });
+
+    // Create a new session log
+    const sessionLog = await prisma.sessionLog.create({
+      data: {
+        opsUserId: user.id
+      }
+    });
+
+    const payload = { id: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion, sessionId: sessionLog.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
 
     return res.status(200).json({
@@ -96,6 +109,14 @@ const logout = async (req, res) => {
   try {
     const { removePresence } = require('../services/presence.service');
     removePresence(req.user.id);
+    
+    // Final update to session log if it exists
+    if (req.user.sessionId) {
+      await prisma.sessionLog.update({
+        where: { id: req.user.sessionId },
+        data: { lastActive: new Date() }
+      }).catch(() => {}); // ignore if already deleted or doesn't exist
+    }
     
     // Instantly invalidate the current JWT and all other active sessions for this user
     await prisma.opsUser.update({

@@ -52,6 +52,15 @@ model OpsUser {
   participants Participant[]
   messages     OpsMessage[]
   enquiries    Enquiry[]
+  sessionLogs  SessionLog[]
+}
+
+model SessionLog {
+  id         String   @id @default(uuid())
+  opsUserId  String
+  opsUser    OpsUser  @relation(fields: [opsUserId], references: [id], onDelete: Cascade)
+  loginAt    DateTime @default(now())
+  lastActive DateTime @default(now())
 }
 
 model Enquiry {

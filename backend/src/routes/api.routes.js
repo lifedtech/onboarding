@@ -16,7 +16,7 @@ const {
 const { toggleTask, createTask, getPendingTasks, updateTask }                   = require('../controllers/task.controller');
 const { triggerMessage }                           = require('../controllers/message.controller');
 const { getDashboardSummary, getAdminSummary } = require('../controllers/analytics.controller');
-const { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember, heartbeat, updatePublicKey, getMe, updateProfile, uploadAvatar } = require('../controllers/user.controller');
+const { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember, heartbeat, updatePublicKey, getMe, updateProfile, uploadAvatar, getSessionLogs } = require('../controllers/user.controller');
 const { stream, getConversations, createConversation, sendMessage } = require('../controllers/chat.controller');
 const { invitePlayer, acceptInvite, rejectInvite, cancelGame, syncGame } = require('../controllers/game.controller');
 const {
@@ -129,6 +129,7 @@ router.get('/users/me',                     getMe);
 router.patch('/users/me',                   updateProfile);
 router.post('/users/me/avatar',             strictLimiter, upload.single('avatar'), uploadAvatar);
 router.get('/users',                        getTeamMembers);
+router.get('/users/logs',                   requireAdmin, getSessionLogs);
 router.post('/users',                       requireAdmin, createTeamMember);
 router.patch('/users/:id',                  requireAdmin, updateTeamMember);
 router.delete('/users/:id',                 requireAdmin, deleteTeamMember);

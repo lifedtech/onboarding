@@ -2,19 +2,24 @@ import React, { useState, useEffect } from 'react';
 import useOpsStore from '../../store/useOpsStore';
 import { 
   Users, Target, CalendarCheck, Wallet, PieChart, 
-  MoreHorizontal, ChevronRight, TrendingUp 
+  MoreHorizontal, ChevronRight, TrendingUp, Clock, AlertCircle
 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const currentUser = useOpsStore((s) => s.user);
   const [activeKpi, setActiveKpi] = useState(null);
+  const [activeTab, setActiveTab] = useState('OVERVIEW'); // 'OVERVIEW' | 'LOG_BOOK'
 
   const fetchAdminSummary = useOpsStore((s) => s.fetchAdminSummary);
   const adminMetrics = useOpsStore((s) => s.adminMetrics);
   
+  const fetchSessionLogs = useOpsStore((s) => s.fetchSessionLogs);
+  const sessionLogs = useOpsStore((s) => s.sessionLogs);
+
   useEffect(() => {
     fetchAdminSummary();
-  }, [fetchAdminSummary]);
+    fetchSessionLogs();
+  }, [fetchAdminSummary, fetchSessionLogs]);
 
   const stats = adminMetrics || {
     qualifiedLeads: 0,
@@ -36,17 +41,38 @@ export default function AdminDashboard() {
   return (
     <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto">
       
-      {/* Header */}
+      {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-[28px] font-black text-text-main tracking-tight mb-1">Admin Overview</h1>
+          <h1 className="text-[28px] font-black text-text-main tracking-tight mb-1">Admin Space</h1>
           <p className="text-[13px] font-medium text-text-muted">
-            A single operating view for users, leads, bookings, program performance, and marketing decisions.
+            A single operating view for performance metrics and system logs.
           </p>
+        </div>
+        <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+          <button
+            onClick={() => setActiveTab('OVERVIEW')}
+            className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors ${
+              activeTab === 'OVERVIEW' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveTab('LOG_BOOK')}
+            className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors flex items-center gap-2 ${
+              activeTab === 'LOG_BOOK' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            Log Book
+          </button>
         </div>
       </div>
 
-      {/* Top 5 Cards */}
+      {activeTab === 'OVERVIEW' ? (
+        <>
+          {/* Top 5 Cards */}
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5">
           {kpiData.map((card) => {
@@ -197,7 +223,86 @@ export default function AdminDashboard() {
           </div>
         ))}
       </div>
-      
+      </>
+      ) : (
+        <div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <div>
+              <h2 className="text-[18px] font-black text-text-main">User Access Logs</h2>
+              <p className="text-[13px] font-medium text-text-muted mt-1">Automatic 7-day retention of login/logout sessions.</p>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+              <AlertCircle className="w-3.5 h-3.5 text-brand-teal" />
+              Logs auto-delete after 7 days
+            </div>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  <th className="py-4 px-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Team Member</th>
+                  <th className="py-4 px-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Role</th>
+                  <th className="py-4 px-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Login Time</th>
+                  <th className="py-4 px-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Last Active (Logout)</th>
+                  <th className="py-4 px-6 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Duration</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {Array.isArray(sessionLogs) && sessionLogs.length > 0 ? (
+                  sessionLogs.map((log) => {
+                    const loginDate = new Date(log.loginAt);
+                    const lastActiveDate = new Date(log.lastActive);
+                    const durationMs = lastActiveDate - loginDate;
+                    const hours = Math.floor(durationMs / (1000 * 60 * 60));
+                    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    return (
+                      <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="text-[13px] font-black text-text-main">{log.opsUser?.name}</span>
+                            <span className="text-[11px] font-semibold text-slate-400">{log.opsUser?.email}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
+                            {log.opsUser?.role}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className="text-[13px] font-semibold text-slate-600">
+                            {loginDate.toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className="text-[13px] font-semibold text-slate-600">
+                            {lastActiveDate.toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={`text-[12px] font-black px-2.5 py-1 rounded-md ${
+                            hours > 0 ? 'bg-brand-teal/10 text-brand-teal' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {hours > 0 ? `${hours}h ` : ''}{minutes}m
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="py-12 text-center">
+                      <Clock className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                      <p className="text-[14px] font-bold text-slate-500">No session logs found</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
