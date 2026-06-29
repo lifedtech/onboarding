@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import {
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
-  MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck
+  MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
+  RefreshCw
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
@@ -23,6 +24,8 @@ export default function Layout({ children, activePage, onNavigate }) {
   const logout = useOpsStore((s) => s.logout);
   const chatHasUnread = useOpsStore((s) => s.chatHasUnread);
   const error = useOpsStore((s) => s.error);
+  const refreshAll = useOpsStore((s) => s.refreshAll);
+  const isLoading = useOpsStore((s) => s.isLoading);
   
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMinimized, setDesktopMinimized] = useState(false);
@@ -275,6 +278,14 @@ export default function Layout({ children, activePage, onNavigate }) {
               LIVE
             </div>
           )}
+          <button 
+            onClick={refreshAll}
+            disabled={isLoading}
+            title="Refresh Data"
+            className="relative p-1.5 text-slate-400 hover:text-brand-teal rounded-md hover:bg-slate-800 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
           <button className="relative p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors">
             <Bell className="w-5 h-5" />
             {chatHasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0f172a]"></span>}

@@ -843,6 +843,22 @@ const useOpsStore = create((set, get) => ({
   },
 
   // ── Utility ────────────────────────────────────────────────────────────────
+  refreshAll: async () => {
+    const state = get();
+    if (!state.token) return; // Don't fetch if not logged in
+    
+    // We run these in parallel to quickly hydrate the store
+    await Promise.allSettled([
+      state.fetchHealthmates(),
+      state.fetchEnquiries(),
+      state.fetchServiceUsers(),
+      state.fetchSummaryMetrics(),
+      state.fetchPendingTakeovers(),
+      state.fetchPendingTasks(),
+      state.fetchTeamMembers()
+    ]);
+  },
+
   clearError: () => set({ error: null }),
   setChatHasUnread: (val) => set({ chatHasUnread: val }),
   // eslint-disable-next-line
