@@ -1003,28 +1003,7 @@ export default function HealthmateModal() {
                           />
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Start Date</label>
-                            <input
-                              type="date"
-                              value={programStartDate}
-                              onChange={(e) => setProgramStartDate(e.target.value)}
-                              disabled={!canModify}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">End Date</label>
-                            <input
-                              type="date"
-                              value={programEndDate}
-                              onChange={(e) => setProgramEndDate(e.target.value)}
-                              disabled={!canModify}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal"
-                            />
-                          </div>
-                        </div>
+
 
                         {canModify && (
                           <button
