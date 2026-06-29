@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
  * Expects a Bearer token in the Authorization header:
  *   Authorization: Bearer <token>
  */
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   let token = null;
   const authHeader = req.headers['authorization'];
 
@@ -24,6 +24,19 @@ const authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Cross-check tokenVersion for instant revocation
+    const prisma = require('../lib/prisma');
+    
+    const user = await prisma.opsUser.findUnique({
+      where: { id: decoded.id },
+      select: { tokenVersion: true }
+    });
+    
+    if (!user || user.tokenVersion !== decoded.tokenVersion) {
+      return res.status(401).json({ message: 'Session expired or invalidated. Please log in again.' });
+    }
+
     req.user = decoded;
 
     // Track active user presence in background

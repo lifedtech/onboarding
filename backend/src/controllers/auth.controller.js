@@ -75,12 +75,12 @@ const login = async (req, res) => {
       });
     }
 
-    const payload = { id: user.id, email: user.email, role: user.role };
+    const payload = { id: user.id, email: user.email, role: user.role, tokenVersion: user.tokenVersion };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
 
     return res.status(200).json({
       token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role, accessScopes: user.accessScopes },
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, accessScopes: user.accessScopes, tokenVersion: user.tokenVersion },
     });
   } catch (error) {
     console.error('[login]', error);
@@ -96,6 +96,13 @@ const logout = async (req, res) => {
   try {
     const { removePresence } = require('../services/presence.service');
     removePresence(req.user.id);
+    
+    // Instantly invalidate the current JWT and all other active sessions for this user
+    await prisma.opsUser.update({
+      where: { id: req.user.id },
+      data: { tokenVersion: { increment: 1 } },
+    });
+    
     return res.status(200).json({ message: 'Logged out successfully.' });
   } catch (error) {
     console.error('[logout]', error);

@@ -484,12 +484,13 @@ These endpoints require a valid signature in the `X-RD-Signature` header, comput
 The frontend is styled using a modern, professional palette designed to match clinical and professional operations:
 
 * **Typography:** Default system font is **Roboto** (weights: 400 Regular, 500 Medium, 700 Bold), loaded via Google Fonts. This guarantees high readability for large checklists and dashboards.
-* **Curated Premium Theme & Color Palette:**
-  * **Brand Teal (`#00B09B`):** Used for primary buttons, active tabs, and positive states.
+* **Curated Premium Light Theme (v1.0.0.12) & Color Palette:**
+  * **Brand Teal (`#00B09B`):** Used for primary buttons, active tabs, hover states, and key accents.
   * **Brand Green (`#78C652`):** Used for success indicators, completed checkboxes, and 'Live' status labels.
-  * **Midnight Blue (`#2C3E50` / `#22313F`):** Used for dark background panels, sidebar, text main, and elevated elements.
-  * **Light Neutral (`#edf0f2`):** Clean base surface color that keeps the dashboard feeling spacious and readable.
-  * **Light Borders (`#cbd5e1`):** Subtle borders that structure information panels cleanly.
+  * **Clean Light Surfaces (`bg-slate-50`, `bg-white`):** Replaced the legacy dark theme with bright, breathable spaces, unified under rounded 24px cards (`rounded-[24px]`).
+  * **Slate Tones (`text-slate-500`, `text-slate-600`):** Used for secondary text, metadata, and borders to provide soft contrast.
+  * **AWS-inspired Sidebar:** Dark sidebar (`#0f172a`, `#1e293b`) that remains distinct from the light dashboard canvas, complete with a new minimizable toggle for spatial efficiency.
+  * **Subtle Borders (`border-border-leaf`):** Light grey/teal-tinted borders that structure information panels cleanly.
   * **Emerald Green Onboarding Accents:** Custom styling for client/partner onboarding modals and status labels.
   * **Warning Red Deletion Accents:** Design accents highlighting deletion confirm prompts and user removal actions.
 * **Currency Indicators:** The base currency throughout the system (especially for Service User billing records and payment logs) is set to **Indian Rupees (₹)**.

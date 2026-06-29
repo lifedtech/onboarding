@@ -3,7 +3,7 @@ const { authenticate, requireAdmin } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload');
 
 const { login, logout }                          = require('../controllers/auth.controller');
-const { authLimiter }                              = require('../middleware/rateLimit.middleware');
+const { authLimiter, globalLimiter, strictLimiter, webhookLimiter } = require('../middleware/rateLimit.middleware');
 const { validate }                                 = require('../middleware/validate.middleware');
 const { loginSchema }              = require('../utils/auth.schema');
 const {
@@ -47,12 +47,13 @@ const router = Router();
 router.post('/auth/login',    authLimiter, validate(loginSchema), login);
 
 // Webhooks (Signature Protected)
-router.post('/webhooks/registration-submitted', verifyRdSignature, handleRegistrationSubmission);
-router.post('/webhooks/verification-completed', verifyRdSignature, handleVerificationCompletion);
-router.post('/webhooks/program-submitted',      verifyRdSignature, handleProgramSubmission);
-router.post('/webhooks/program-status',         verifyRdSignature, handleProgramStatus);
+router.post('/webhooks/registration-submitted', webhookLimiter, verifyRdSignature, handleRegistrationSubmission);
+router.post('/webhooks/verification-completed', webhookLimiter, verifyRdSignature, handleVerificationCompletion);
+router.post('/webhooks/program-submitted',      webhookLimiter, verifyRdSignature, handleProgramSubmission);
+router.post('/webhooks/program-status',         webhookLimiter, verifyRdSignature, handleProgramStatus);
 
 router.use(authenticate);
+router.use(globalLimiter);
 
 router.post('/rnd/verify-credentials', rndVerifyCredentials);
 
@@ -96,7 +97,7 @@ router.get('/analytics/summary',            getDashboardSummary);
 // Healthmates
 router.get('/healthmates',                  getAllHealthmates);
 router.post('/healthmates',                 createHealthmate);
-router.post('/healthmates/:id/upload',      upload.single('document'), uploadRegistrationDocument);
+router.post('/healthmates/:id/upload',      strictLimiter, upload.single('document'), uploadRegistrationDocument);
 router.delete('/healthmates/:id/upload',    deleteRegistrationDocument);
 router.put('/healthmates/:id',              updateHealthmateDetails);
 router.patch('/healthmates/:id',            updateHealthmate);
@@ -113,7 +114,7 @@ router.get('/tasks/pending',                getPendingTasks);
 const { requestTakeover, getPendingTakeovers, decideTakeover } = require('../controllers/takeover.controller');
 
 // Messaging
-router.post('/healthmates/:id/messages',    triggerMessage);
+router.post('/healthmates/:id/messages',    strictLimiter, triggerMessage);
 
 // Takeover Requests
 router.post('/takeover/request',            requestTakeover);
@@ -124,7 +125,7 @@ router.post('/takeover/decision',           decideTakeover);
 router.post('/users/heartbeat',             heartbeat);
 router.get('/users/me',                     getMe);
 router.patch('/users/me',                   updateProfile);
-router.post('/users/me/avatar',             upload.single('avatar'), uploadAvatar);
+router.post('/users/me/avatar',             strictLimiter, upload.single('avatar'), uploadAvatar);
 router.get('/users',                        getTeamMembers);
 router.post('/users',                       requireAdmin, createTeamMember);
 router.patch('/users/:id',                  requireAdmin, updateTeamMember);

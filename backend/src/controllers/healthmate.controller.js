@@ -8,22 +8,34 @@ const prisma = require('../lib/prisma');
 const getAllHealthmates = async (req, res) => {
   try {
     const isAdmin = req.user.role?.toLowerCase() === 'admin';
-    const healthmates = await prisma.healthmate.findMany({
-      where: isAdmin ? {} : { opsUserId: req.user.id },
-      include: {
-        tasks: {
-          orderBy: { createdAt: 'asc' },
-        },
-        opsUser: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const rawLimit = parseInt(req.query.limit) || 100;
+    const limit = Math.min(rawLimit, 500); // hard cap at 500
+    const skip = (page - 1) * limit;
+
+    const where = isAdmin ? {} : { opsUserId: req.user.id };
+
+    const [total, healthmates] = await prisma.$transaction([
+      prisma.healthmate.count({ where }),
+      prisma.healthmate.findMany({
+        where,
+        take: limit,
+        skip,
+        include: {
+          tasks: {
+            orderBy: { createdAt: 'asc' },
+          },
+          opsUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+      })
+    ]);
 
     const { isUserOnline } = require('../services/presence.service');
     const healthmatesWithPresence = healthmates.map(hm => ({
@@ -34,7 +46,15 @@ const getAllHealthmates = async (req, res) => {
       } : null
     }));
 
-    return res.status(200).json(healthmatesWithPresence);
+    return res.status(200).json({
+      data: healthmatesWithPresence,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error('[getAllHealthmates]', error);
     return res.status(500).json({ message: 'Internal server error.' });

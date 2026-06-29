@@ -80,12 +80,13 @@ const useOpsStore = create((set, get) => ({
 
   // ── Enquiry Actions ────────────────────────────────────────────────────────
 
-  fetchEnquiries: async () => {
+  fetchEnquiries: async (page = 1, limit = 100) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await api.get('/enquiries');
-      set({ enquiries: data, isLoading: false });
-      return { success: true, data };
+      const { data: response } = await api.get('/enquiries', { params: { page, limit } });
+      const items = Array.isArray(response) ? response : response.data;
+      set({ enquiries: items, isLoading: false });
+      return { success: true, data: response };
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to fetch enquiries.';
       set({ isLoading: false, error: message });
@@ -157,11 +158,12 @@ const useOpsStore = create((set, get) => ({
 
   // ── Healthmate Actions ─────────────────────────────────────────────────────
 
-  fetchHealthmates: async () => {
+  fetchHealthmates: async (page = 1, limit = 100) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await api.get('/healthmates');
-      set({ healthmates: data, isLoading: false });
+      const { data: response } = await api.get('/healthmates', { params: { page, limit } });
+      const items = Array.isArray(response) ? response : response.data;
+      set({ healthmates: items, isLoading: false });
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to fetch healthmates.';
       set({ isLoading: false, error: message });

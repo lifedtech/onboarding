@@ -112,6 +112,7 @@ const updateTeamMember = async (req, res) => {
     
     if (password) {
       data.passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+      data.tokenVersion = { increment: 1 };
     }
 
     const updatedUser = await prisma.opsUser.update({

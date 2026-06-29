@@ -8,19 +8,38 @@ const ServiceUserService = require('../services/serviceUser.service');
  */
 const getAllEnquiries = async (req, res) => {
   try {
-    const enquiries = await prisma.enquiry.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        opsUser: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const rawLimit = parseInt(req.query.limit) || 100;
+    const limit = Math.min(rawLimit, 500); // hard cap at 500
+    const skip = (page - 1) * limit;
+
+    const [total, enquiries] = await prisma.$transaction([
+      prisma.enquiry.count(),
+      prisma.enquiry.findMany({
+        take: limit,
+        skip,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          opsUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            }
           }
         }
+      })
+    ]);
+
+    return res.status(200).json({
+      data: enquiries,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
       }
     });
-    return res.status(200).json(enquiries);
   } catch (error) {
     console.error('[getAllEnquiries]', error);
     return res.status(500).json({ message: 'Internal server error.' });

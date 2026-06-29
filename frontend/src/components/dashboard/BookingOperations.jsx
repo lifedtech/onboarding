@@ -1,44 +1,7 @@
 import React from 'react';
 
 export default function BookingOperations() {
-  const operationsData = [
-    {
-      program: 'Inner Reset host',
-      response: '45 min',
-      availability: 'High',
-      reviews: '4.8',
-      content: 'Medium',
-      opsScore: 86,
-      action: 'Record testimonial reels'
-    },
-    {
-      program: 'Ojas Renewal centre',
-      response: '3.5 h',
-      availability: 'Medium',
-      reviews: '4.6',
-      content: 'High',
-      opsScore: 73,
-      action: 'Improve response SLA'
-    },
-    {
-      program: "Women's program host",
-      response: '2.2 h',
-      availability: 'High',
-      reviews: '4.7',
-      content: 'Medium',
-      opsScore: 78,
-      action: 'Add safety FAQ video'
-    },
-    {
-      program: 'Forest Community',
-      response: '6 h',
-      availability: 'Low',
-      reviews: '—',
-      content: 'High',
-      opsScore: 49,
-      action: 'Do not run paid ads yet'
-    }
-  ];
+  const operationsData = [];
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'bg-[#e7f0e3] text-brand-teal'; // Green
@@ -62,7 +25,7 @@ export default function BookingOperations() {
         <div className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col justify-center min-h-[145px] hover:shadow-md transition-shadow">
           <p className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider mb-2">Payment success</p>
           <div className="flex items-end gap-3 mt-auto">
-            <h3 className="text-[26px] font-black text-text-main tracking-tight">94%</h3>
+            <h3 className="text-[26px] font-black text-text-main tracking-tight">-</h3>
           </div>
           <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green" />
@@ -73,7 +36,7 @@ export default function BookingOperations() {
         <div className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col justify-center min-h-[145px] hover:shadow-md transition-shadow">
           <p className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider mb-2">Host response avg</p>
           <div className="flex items-end gap-3 mt-auto">
-            <h3 className="text-[26px] font-black text-text-main tracking-tight">2.4h</h3>
+            <h3 className="text-[26px] font-black text-text-main tracking-tight">-</h3>
           </div>
           <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
@@ -84,7 +47,7 @@ export default function BookingOperations() {
         <div className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col justify-center min-h-[145px] hover:shadow-md transition-shadow">
           <p className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider mb-2">Cancellation rate</p>
           <div className="flex items-end gap-3 mt-auto">
-            <h3 className="text-[26px] font-black text-text-main tracking-tight">6%</h3>
+            <h3 className="text-[26px] font-black text-text-main tracking-tight">-</h3>
           </div>
           <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
@@ -113,6 +76,13 @@ export default function BookingOperations() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-leaf/50">
+              {operationsData.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="py-12 text-center text-text-muted text-sm font-semibold">
+                    No operations data available.
+                  </td>
+                </tr>
+              )}
               {operationsData.map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/80 transition-colors group">
                   <td className="py-5 px-7">

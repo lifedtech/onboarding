@@ -3,62 +3,7 @@ import React, { useState } from 'react';
 export default function ProgramPerformance() {
   const [expandedRow, setExpandedRow] = useState(null);
 
-  const programData = [
-    {
-      program: 'The Inner Reset',
-      category: 'Wellness / recovery',
-      format: 'Session',
-      leads: 38,
-      bookings: 9,
-      score: 88,
-      action: 'Scale local ads'
-    },
-    {
-      program: 'Ojas Renewal',
-      category: 'Digital-worker reset',
-      format: 'Residential',
-      leads: 41,
-      bookings: 5,
-      score: 79,
-      action: 'Fix travel + leave friction'
-    },
-    {
-      program: "Women's Well-Being",
-      category: "Women's reset",
-      format: 'Residential',
-      leads: 20,
-      bookings: 4,
-      score: 75,
-      action: 'Add safety/trust content'
-    },
-    {
-      program: 'Know Thyself',
-      category: 'Functional movement',
-      format: 'Session',
-      leads: 16,
-      bookings: 3,
-      score: 71,
-      action: 'Translate "embodied" language'
-    },
-    {
-      program: 'Restore Ayurveda',
-      category: 'Recovery',
-      format: 'Residential',
-      leads: 10,
-      bookings: 3,
-      score: 69,
-      action: 'Add schedule + host proof'
-    },
-    {
-      program: 'Forest Community',
-      category: 'Nature / lifestyle',
-      format: 'Residential',
-      leads: 9,
-      bookings: 0,
-      score: 48,
-      action: 'Organic storytelling only'
-    }
-  ];
+  const programData = [];
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'bg-[#e7f0e3] text-brand-teal'; // Green
@@ -97,6 +42,13 @@ export default function ProgramPerformance() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-leaf/50">
+              {programData.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="py-12 text-center text-text-muted text-sm font-semibold">
+                    No program performance data available.
+                  </td>
+                </tr>
+              )}
               {programData.map((row, idx) => (
                 <React.Fragment key={idx}>
                   <tr 
