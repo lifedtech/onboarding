@@ -18,7 +18,7 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-3xl w-full max-w-lg shadow-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-white rounded-3xl w-full max-w-2xl shadow-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -84,6 +84,44 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
               </p>
             </div>
           </div>
+
+
+
+          {enquiry.clientType === 'HEALTH_PARTNER' && (
+            <div className="bg-brand-teal/5 rounded-2xl p-4 border border-brand-teal/20 space-y-4">
+              <div className="flex items-center justify-between border-b border-brand-teal/20 pb-2">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-brand-teal" />
+                  <span className="text-xs font-extrabold uppercase text-brand-teal tracking-wider">Qualification Score</span>
+                </div>
+                <div className="bg-brand-teal/10 px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <span className="text-[10px] font-extrabold text-brand-teal uppercase">Total:</span>
+                  <span className="text-sm font-black text-brand-teal">
+                    {(enquiry.scoreRelevance || 0) + (enquiry.scoreSafety || 0) + (enquiry.scoreExperience || 0) + (enquiry.scoreCredibility || 0) + (enquiry.scoreLocation || 0) + (enquiry.scoreVisual || 0) + (enquiry.scoreBooking || 0) + (enquiry.scoreUniqueness || 0) + (enquiry.scoreCorporate || 0) + (enquiry.scoreRepeatability || 0)}
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Relevance', val: enquiry.scoreRelevance },
+                  { label: 'Safety', val: enquiry.scoreSafety },
+                  { label: 'Experience', val: enquiry.scoreExperience },
+                  { label: 'Credibility', val: enquiry.scoreCredibility },
+                  { label: 'Location', val: enquiry.scoreLocation },
+                  { label: 'Visual', val: enquiry.scoreVisual },
+                  { label: 'Booking', val: enquiry.scoreBooking },
+                  { label: 'Uniqueness', val: enquiry.scoreUniqueness },
+                  { label: 'Corporate', val: enquiry.scoreCorporate },
+                  { label: 'Repeatability', val: enquiry.scoreRepeatability },
+                ].map((s, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-white border border-slate-100 rounded-lg p-2">
+                    <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">{s.label}</span>
+                    <span className="text-sm font-black text-brand-teal">{s.val || 0}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Remarks */}
           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">

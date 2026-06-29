@@ -4,29 +4,40 @@ const { provisionClientCredentials } = require('../services/credential.service')
 // ─── Default Tasks Seeding Helper (Independent Copy/Adaptation) ──────────────
 const defaultTasks = {
   PRE_QUALIFY: [
-    "Verify primary contact email and phone number",
-    "Complete screening call and business analysis"
-  ],
-  PREPARE: [
-    "Upload certified professional qualifications",
-    "Sign partnership framework agreement"
+    "Schedule a call to explain Lifed",
+    "Score the healthmate",
+    "Schedule the follow ups",
+    "Identify the program that Lifed can co-create"
   ],
   REGISTER: [
-    "Submit valid business registration registry copy",
-    "Configure bank payout and tax collection variables"
+    "Do a call on the registration process",
+    "Validate the credentials",
+    "Validate bank account",
+    "Approve the healthmate account",
+    "Send a video explaining the program builder and the program management dashboard"
+  ],
+  PREPARE: [
+    "Schedule a call to explain the Healthmate dashboard and program builder",
+    "Collect the details about the program",
+    "Categorize them into a) ready to be live, b) have to co - create and curate",
+    "If ready to be live, have a follow-up and make them submit the program",
+    "If co-create, then R/D curate and take suggestions from healthmate, then submit for review"
   ],
   REVIEW: [
-    "Perform background verification and credit review",
-    "Conduct live platform video walkthrough"
+    "Review the program with complete validation",
+    "If rectification needed, schedule a call and sit with them and complete the process",
+    "If program is ready to be Live, Send a SOP for program conduction."
   ],
   LIVE: [
-    "Configure booking schedule and live slots",
-    "Send welcome package and micro-habits toolkit"
+    "Once the program is live, schedule follow up to make them share in their accounts",
+    "Send a welcome kit (digital, first 100 send a physical one)",
+    "Review the program in 10 days",
+    "If no booking in 10 days, trigger the sales and marketing team."
   ]
 };
 
 const seedAllDefaultTasks = async (healthmateId, initialPhase) => {
-  const phaseOrder = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
+  const phaseOrder = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
   const currentIndex = phaseOrder.indexOf(initialPhase);
 
   for (const phase of phaseOrder) {

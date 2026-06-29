@@ -66,7 +66,7 @@ const getAllHealthmates = async (req, res) => {
  * Creates a new healthmate and assigns it to the authenticated OpsUser.
  */
 const createHealthmate = async (req, res) => {
-  const { name, type, category, contactName, contactEmail, contactPhone, alternatePhone, city, state, country } = req.body;
+  const { name, type, category, contactName, contactEmail, contactPhone, alternatePhone, city, state, country, subcategory, platformFound, programPossibility, format, priceRange, capacity } = req.body;
 
   if (!name || !type || !category) {
     return res.status(400).json({ message: 'name, type, and category are required.' });
@@ -93,6 +93,12 @@ const createHealthmate = async (req, res) => {
         city: city || null,
         state: state || null,
         country: country || null,
+        subcategory: subcategory || null,
+        platformFound: platformFound || null,
+        programPossibility: programPossibility || null,
+        format: format || null,
+        priceRange: priceRange || null,
+        capacity: capacity || null,
         opsUserId: req.user.id,
         // phase defaults to PRE_QUALIFY, daysInPhase defaults to 0 per schema
       },
@@ -150,8 +156,8 @@ const updateHealthmatePhase = async (req, res) => {
       });
     }
 
-    // Backend Gatekeeper Lock: REGISTER -> REVIEW phase transition requires VERIFIED registration status
-    if (existing.phase === 'REGISTER' && phase === 'REVIEW') {
+    // Backend Gatekeeper Lock: Moving to REVIEW phase requires VERIFIED registration status
+    if (phase === 'REVIEW') {
       if (existing.registrationStatus !== 'VERIFIED') {
         return res.status(400).json({
           message: 'Cannot move to Review phase until R&D has verified registration credentials.'
@@ -364,7 +370,11 @@ const updateNotes = async (req, res) => {
  */
 const updateHealthmateDetails = async (req, res) => {
   const { id } = req.params;
-  const { name, type, category, contactName, contactEmail, contactPhone, city, state: partnerState, notes } = req.body;
+  const { 
+    name, type, category, contactName, contactEmail, contactPhone, alternatePhone,
+    city, state: partnerState, country, notes,
+    subcategory, platformFound, programPossibility, format, priceRange, capacity
+  } = req.body;
 
   if (!name || !type || !category) {
     return res.status(400).json({ message: 'name, type, and category are required.' });
@@ -402,8 +412,16 @@ const updateHealthmateDetails = async (req, res) => {
         contactName: contactName !== undefined ? contactName : null,
         contactEmail: contactEmail !== undefined ? contactEmail : null,
         contactPhone: contactPhone !== undefined ? contactPhone : null,
+        alternatePhone: alternatePhone !== undefined ? alternatePhone : null,
         city: city !== undefined ? city : null,
         state: partnerState !== undefined ? partnerState : null,
+        country: country !== undefined ? country : null,
+        subcategory: subcategory !== undefined ? subcategory : null,
+        platformFound: platformFound !== undefined ? platformFound : null,
+        programPossibility: programPossibility !== undefined ? programPossibility : null,
+        format: format !== undefined ? format : null,
+        priceRange: priceRange !== undefined ? priceRange : null,
+        capacity: capacity !== undefined ? capacity : null,
         notes: notes !== undefined ? notes : null,
       },
       include: { tasks: true },
@@ -416,33 +434,112 @@ const updateHealthmateDetails = async (req, res) => {
   }
 };
 
+/**
+ * PATCH /api/healthmates/:id/qualification
+ * Upserts the qualification score for a healthmate.
+ */
+const updateHealthmateQualification = async (req, res) => {
+  const { id } = req.params;
+  const {
+    scoreRelevance,
+    scoreSafety,
+    scoreExperience,
+    scoreCredibility,
+    scoreLocation,
+    scoreVisual,
+    scoreBooking,
+    scoreUniqueness,
+    scoreCorporate,
+    scoreRepeatability
+  } = req.body;
+
+  try {
+    const existing = await prisma.healthmate.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ message: 'Healthmate not found.' });
+    }
+
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
+    if (!isAdmin && existing.opsUserId !== req.user.id) {
+      return res.status(403).json({
+        message: 'Access Denied: Only the assigned Operations coordinator or an Administrator can modify this partner.'
+      });
+    }
+
+    const qualification = await prisma.healthmateQualification.upsert({
+      where: { healthmateId: id },
+      update: {
+        ...(scoreRelevance !== undefined && { scoreRelevance }),
+        ...(scoreSafety !== undefined && { scoreSafety }),
+        ...(scoreExperience !== undefined && { scoreExperience }),
+        ...(scoreCredibility !== undefined && { scoreCredibility }),
+        ...(scoreLocation !== undefined && { scoreLocation }),
+        ...(scoreVisual !== undefined && { scoreVisual }),
+        ...(scoreBooking !== undefined && { scoreBooking }),
+        ...(scoreUniqueness !== undefined && { scoreUniqueness }),
+        ...(scoreCorporate !== undefined && { scoreCorporate }),
+        ...(scoreRepeatability !== undefined && { scoreRepeatability }),
+      },
+      create: {
+        healthmateId: id,
+        scoreRelevance: scoreRelevance || 0,
+        scoreSafety: scoreSafety || 0,
+        scoreExperience: scoreExperience || 0,
+        scoreCredibility: scoreCredibility || 0,
+        scoreLocation: scoreLocation || 0,
+        scoreVisual: scoreVisual || 0,
+        scoreBooking: scoreBooking || 0,
+        scoreUniqueness: scoreUniqueness || 0,
+        scoreCorporate: scoreCorporate || 0,
+        scoreRepeatability: scoreRepeatability || 0,
+      }
+    });
+
+    return res.status(200).json(qualification);
+  } catch (error) {
+    console.error('[updateHealthmateQualification]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
 // ─── Default Tasks Seeding Config ────────────────────────────────────────────
 
 const defaultTasks = {
   PRE_QUALIFY: [
-    "Verify primary contact email and phone number",
-    "Complete screening call and business analysis"
-  ],
-  PREPARE: [
-    "Upload certified professional qualifications",
-    "Sign partnership framework agreement"
+    "Schedule a call to explain Lifed",
+    "Score the healthmate",
+    "Schedule the follow ups",
+    "Identify the program that Lifed can co-create"
   ],
   REGISTER: [
-    "Submit valid business registration registry copy",
-    "Configure bank payout and tax collection variables"
+    "Do a call on the registration process",
+    "Validate the credentials",
+    "Validate bank account",
+    "Approve the healthmate account",
+    "Send a video explaining the program builder and the program management dashboard"
+  ],
+  PREPARE: [
+    "Schedule a call to explain the Healthmate dashboard and program builder",
+    "Collect the details about the program",
+    "Categorize them into a) ready to be live, b) have to co - create and curate",
+    "If ready to be live, have a follow-up and make them submit the program",
+    "If co-create, then R/D curate and take suggestions from healthmate, then submit for review"
   ],
   REVIEW: [
-    "Perform background verification and credit review",
-    "Conduct live platform video walkthrough"
+    "Review the program with complete validation",
+    "If rectification needed, schedule a call and sit with them and complete the process",
+    "If program is ready to be Live, Send a SOP for program conduction."
   ],
   LIVE: [
-    "Configure booking schedule and live slots",
-    "Send welcome package and micro-habits toolkit"
+    "Once the program is live, schedule follow up to make them share in their accounts",
+    "Send a welcome kit (digital, first 100 send a physical one)",
+    "Review the program in 10 days",
+    "If no booking in 10 days, trigger the sales and marketing team."
   ]
 };
 
 const seedAllDefaultTasks = async (healthmateId, initialPhase) => {
-  const phaseOrder = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
+  const phaseOrder = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
   const currentIndex = phaseOrder.indexOf(initialPhase);
 
   for (const phase of phaseOrder) {
@@ -522,7 +619,7 @@ const uploadRegistrationDocument = async (req, res) => {
       where: {
         healthmateId: id,
         title: {
-          contains: 'business registration registry copy',
+          contains: 'credentials',
           mode: 'insensitive'
         }
       }
@@ -707,5 +804,6 @@ module.exports = {
   updateHealthmateDetails,
   uploadRegistrationDocument,
   deleteRegistrationDocument,
+  updateHealthmateQualification,
   rndVerifyCredentials,
 };

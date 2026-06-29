@@ -72,6 +72,13 @@ export default function EnquiriesSheet({ enquiryType }) {
   const [editCallbackLater, setEditCallbackLater] = useState(false);
   const [editReminderDate, setEditReminderDate] = useState('');
 
+  const [editSubcategory, setEditSubcategory] = useState('');
+  const [editPlatformFound, setEditPlatformFound] = useState('');
+  const [editProgramPossibility, setEditProgramPossibility] = useState('');
+  const [editFormat, setEditFormat] = useState('');
+  const [editPriceRange, setEditPriceRange] = useState('');
+  const [editCapacity, setEditCapacity] = useState('');
+
   useEffect(() => {
     fetchEnquiries();
   }, [fetchEnquiries]);
@@ -180,6 +187,12 @@ export default function EnquiriesSheet({ enquiryType }) {
     setEditRemarks(enq.remarks || '');
     setEditClientType(enq.clientType);
     setEditCallbackLater(enq.callbackLater);
+    setEditSubcategory(enq.subcategory || '');
+    setEditPlatformFound(enq.platformFound || '');
+    setEditProgramPossibility(enq.programPossibility || '');
+    setEditFormat(enq.format || '');
+    setEditPriceRange(enq.priceRange || '');
+    setEditCapacity(enq.capacity || '');
     if (enq.reminderDate) {
       // Input datetime-local format requires YYYY-MM-DDTHH:MM
       const date = new Date(enq.reminderDate);
@@ -210,6 +223,12 @@ export default function EnquiriesSheet({ enquiryType }) {
       country: editCountry.trim() || null,
       remarks: editRemarks.trim() || null,
       clientType: editClientType,
+      subcategory: editSubcategory.trim() || null,
+      platformFound: editPlatformFound.trim() || null,
+      programPossibility: editProgramPossibility.trim() || null,
+      format: editFormat.trim() || null,
+      priceRange: editPriceRange.trim() || null,
+      capacity: editCapacity.trim() || null,
       callbackLater: editClientType === 'HEALTH_PARTNER' ? editCallbackLater : false,
       reminderDate: (editClientType === 'HEALTH_PARTNER' && editCallbackLater && editReminderDate)
         ? new Date(editReminderDate).toISOString()
@@ -395,20 +414,21 @@ export default function EnquiriesSheet({ enquiryType }) {
             </p>
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden min-w-[800px]">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden min-w-[1000px]">
             <table className="w-full text-left border-collapse table-fixed">
               {/* Table Headers */}
               <thead>
                 <tr className="bg-slate-100/70 border-b border-slate-200 text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
-                  <th className="py-3 px-4 w-[15%]">Name</th>
-                  <th className="py-3 px-4 w-[15%]">Contact Info</th>
-                  <th className="py-3 px-4 w-[15%]">Location</th>
-                  <th className="py-3 px-4 w-[12%]">Client Type</th>
-                  <th className="py-3 px-4 w-[10%] text-center">Status</th>
-                  <th className="py-3 px-4 w-[18%]">Remarks</th>
-                  <th className="py-3 px-4 w-[15%]">Reminder Callback</th>
-                  <th className="py-3 px-4 w-[15%]">Entered At (IST)</th>
-                  <th className="py-3 px-4 w-[120px] text-center">Actions</th>
+                  <th className="py-3 px-4 w-[12%]">Name</th>
+                  <th className="py-3 px-4 w-[14%]">Contact Info</th>
+                  <th className="py-3 px-4 w-[12%]">Location</th>
+                  <th className="py-3 px-4 w-[8%] text-center">Score</th>
+                  <th className="py-3 px-4 w-[10%]">Client Type</th>
+                  <th className="py-3 px-4 w-[12%] text-center">Status</th>
+                  <th className="py-3 px-4 w-[14%]">Remarks</th>
+                  <th className="py-3 px-4 w-[9%]">Reminder Callback</th>
+                  <th className="py-3 px-4 w-[9%]">Entered At (IST)</th>
+                  <th className="py-3 px-4 w-[160px] text-center">Actions</th>
                 </tr>
               </thead>
 
@@ -427,7 +447,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                       }`}
                     >
                       {/* Name */}
-                      <td className="py-3 px-4 truncate font-extrabold">
+                      <td className="py-3 px-4 font-extrabold">
                         {isEditing ? (
                           <input
                             type="text"
@@ -436,7 +456,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                             className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
                           />
                         ) : (
-                          enq.name
+                          <div className="truncate">{enq.name}</div>
                         )}
                       </td>
 
@@ -457,27 +477,27 @@ export default function EnquiriesSheet({ enquiryType }) {
                       {/* Location */}
                       <td className="py-3 px-4">
                         {isEditing ? (
-                          <div className="flex flex-col gap-1.5">
+                          <div className="flex flex-col gap-1">
                             <input
                               type="text"
                               value={editCity}
                               onChange={(e) => setEditCity(e.target.value)}
                               placeholder="City"
-                              className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
                             />
                             <input
                               type="text"
                               value={editState}
                               onChange={(e) => setEditState(e.target.value)}
                               placeholder="State"
-                              className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
                             />
                             <input
                               type="text"
                               value={editCountry}
                               onChange={(e) => setEditCountry(e.target.value)}
                               placeholder="Country"
-                              className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
                             />
                           </div>
                         ) : (
@@ -487,13 +507,26 @@ export default function EnquiriesSheet({ enquiryType }) {
                         )}
                       </td>
 
+
+
+                      {/* Score */}
+                      <td className="py-3 px-4 text-center">
+                        {enq.clientType === 'HEALTH_PARTNER' ? (
+                          <span className="inline-flex items-center justify-center min-w-[32px] h-6 bg-brand-teal/10 text-brand-teal font-extrabold text-xs rounded-lg">
+                            {(enq.scoreRelevance || 0) + (enq.scoreSafety || 0) + (enq.scoreExperience || 0) + (enq.scoreCredibility || 0) + (enq.scoreLocation || 0) + (enq.scoreVisual || 0) + (enq.scoreBooking || 0) + (enq.scoreUniqueness || 0) + (enq.scoreCorporate || 0) + (enq.scoreRepeatability || 0)}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+
                       {/* Client Type */}
                       <td className="py-3 px-4">
                         {isEditing ? (
                           <select
                             value={editClientType}
                             onChange={(e) => setEditClientType(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs focus:outline-none"
+                            className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none cursor-pointer"
                           >
                             <option value="HEALTH_PARTNER">Health Partner</option>
                             <option value="SERVICE_USER">Service User</option>
@@ -537,7 +570,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                       </td>
 
                       {/* Remarks */}
-                      <td className="py-3 px-4 truncate italic font-medium text-slate-500">
+                      <td className="py-3 px-4 italic font-medium text-slate-500">
                         {isEditing ? (
                           <input
                             type="text"
@@ -546,7 +579,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                             className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
                           />
                         ) : (
-                          enq.remarks || '—'
+                          <div className="truncate">{enq.remarks || '—'}</div>
                         )}
                       </td>
 
@@ -560,7 +593,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                                   type="checkbox"
                                   checked={editCallbackLater}
                                   onChange={(e) => setEditCallbackLater(e.target.checked)}
-                                  className="w-3.5 h-3.5 text-brand-teal"
+                                  className="w-3.5 h-3.5 text-brand-teal rounded border-slate-300 focus:ring-brand-teal cursor-pointer"
                                 />
                                 Callback later
                               </label>
@@ -635,10 +668,10 @@ export default function EnquiriesSheet({ enquiryType }) {
                             <>
                               {enq.clientType === 'HEALTH_PARTNER' && (
                                 enq.movedToPipeline ? (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100">
-                                    <Check className="w-3 h-3 text-indigo-600" />
-                                    Moved to Pipeline
-                                  </span>
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100 whitespace-nowrap">
+                                      <Check className="w-3 h-3 text-indigo-600" />
+                                      In Pipeline
+                                    </span>
                                 ) : (
                                   <button
                                     onClick={(e) => { e.stopPropagation(); handlePromote(enq.id, enq.name); }}
@@ -652,7 +685,7 @@ export default function EnquiriesSheet({ enquiryType }) {
                               )}
                               {enq.clientType === 'SERVICE_USER' && (
                                 enq.movedToPipeline ? (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100 whitespace-nowrap">
                                     <Check className="w-3 h-3 text-indigo-600" />
                                     Onboarded User
                                   </span>

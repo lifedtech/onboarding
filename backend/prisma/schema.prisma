@@ -66,6 +66,25 @@ model Enquiry {
   city          String?
   state         String?
   country       String?
+
+  subcategory        String?
+  platformFound      String?
+  programPossibility String?
+  format             String?
+  priceRange         String?
+  capacity           String?
+
+  scoreRelevance     Int @default(0)
+  scoreSafety        Int @default(0)
+  scoreExperience    Int @default(0)
+  scoreCredibility   Int @default(0)
+  scoreLocation      Int @default(0)
+  scoreVisual        Int @default(0)
+  scoreBooking       Int @default(0)
+  scoreUniqueness    Int @default(0)
+  scoreCorporate     Int @default(0)
+  scoreRepeatability Int @default(0)
+
   movedToPipeline Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -90,6 +109,13 @@ model Healthmate {
   city           String?
   state          String?
   country        String?
+
+  subcategory        String?
+  platformFound      String?
+  programPossibility String?
+  format             String?
+  priceRange         String?
+  capacity           String?
 
   // Internal notes for ops team
   notes        String?
@@ -118,9 +144,30 @@ model Healthmate {
   updatedAt   DateTime @updatedAt
 
   // Relationships
-  opsUserId   String
-  opsUser     OpsUser  @relation(fields: [opsUserId], references: [id])
-  tasks       Task[]
+  opsUserId     String
+  opsUser       OpsUser  @relation(fields: [opsUserId], references: [id])
+  tasks         Task[]
+  qualification HealthmateQualification?
+}
+
+model HealthmateQualification {
+  id           String @id @default(uuid())
+  healthmateId String @unique
+  healthmate   Healthmate @relation(fields: [healthmateId], references: [id], onDelete: Cascade)
+
+  scoreRelevance     Int @default(0)
+  scoreSafety        Int @default(0)
+  scoreExperience    Int @default(0)
+  scoreCredibility   Int @default(0)
+  scoreLocation      Int @default(0)
+  scoreVisual        Int @default(0)
+  scoreBooking       Int @default(0)
+  scoreUniqueness    Int @default(0)
+  scoreCorporate     Int @default(0)
+  scoreRepeatability Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Task {

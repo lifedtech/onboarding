@@ -14,8 +14,7 @@ import AddHealthmateModal from './AddHealthmateModal';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import { GitBranch, RefreshCw, Plus, Clock } from 'lucide-react';
-
-const PHASES = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
+const PHASES = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
 
 export default function PipelineBoard() {
   const healthmates           = useOpsStore((s) => s.healthmates);

@@ -14,17 +14,17 @@ const PHASE_CONFIG = {
   },
   PREPARE: {
     label:    'Prepare',
-    number:   '02',
-    accent:   'border-brand-teal/30',
-    dot:      'bg-brand-teal',
-    countBg:  'bg-brand-teal/10 text-brand-teal border border-brand-teal/20',
-  },
-  REGISTER: {
-    label:    'Register',
     number:   '03',
     accent:   'border-amber-200',
     dot:      'bg-amber-500',
     countBg:  'bg-amber-50 text-amber-600 border border-amber-200',
+  },
+  REGISTER: {
+    label:    'Register',
+    number:   '02',
+    accent:   'border-brand-teal/30',
+    dot:      'bg-brand-teal',
+    countBg:  'bg-brand-teal/10 text-brand-teal border border-brand-teal/20',
   },
   REVIEW: {
     label:    'Review',

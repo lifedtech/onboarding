@@ -10,7 +10,7 @@ import CategorySelector from './CategorySelector';
 
 // ─── Phase config ─────────────────────────────────────────────────────────────
 
-const PHASES = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
+const PHASES = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
 
 const PHASE_LABELS = {
   PRE_QUALIFY: 'Pre-Qualify',
@@ -36,24 +36,35 @@ const TYPE_LABELS = {
 
 const DEFAULT_TASKS = {
   PRE_QUALIFY: [
-    "Verify primary contact email and phone number",
-    "Complete screening call and business analysis"
-  ],
-  PREPARE: [
-    "Upload certified professional qualifications",
-    "Sign partnership framework agreement"
+    "Schedule a call to explain Lifed",
+    "Score the healthmate",
+    "Schedule the follow ups",
+    "Identify the program that Lifed can co-create"
   ],
   REGISTER: [
-    "Submit valid business registration registry copy",
-    "Configure bank payout and tax collection variables"
+    "Do a call on the registration process",
+    "Validate the credentials",
+    "Validate bank account",
+    "Approve the healthmate account",
+    "Send a video explaining the program builder and the program management dashboard"
+  ],
+  PREPARE: [
+    "Schedule a call to explain the Healthmate dashboard and program builder",
+    "Collect the details about the program",
+    "Categorize them into a) ready to be live, b) have to co - create and curate",
+    "If ready to be live, have a follow-up and make them submit the program",
+    "If co-create, then R/D curate and take suggestions from healthmate, then submit for review"
   ],
   REVIEW: [
-    "Perform background verification and credit review",
-    "Conduct live platform video walkthrough"
+    "Review the program with complete validation",
+    "If rectification needed, schedule a call and sit with them and complete the process",
+    "If program is ready to be Live, Send a SOP for program conduction."
   ],
   LIVE: [
-    "Configure booking schedule and live slots",
-    "Send welcome package and micro-habits toolkit"
+    "Once the program is live, schedule follow up to make them share in their accounts",
+    "Send a welcome kit (digital, first 100 send a physical one)",
+    "Review the program in 10 days",
+    "If no booking in 10 days, trigger the sales and marketing team."
   ]
 };
 
@@ -68,6 +79,7 @@ export default function HealthmateModal() {
   const updateHealthmatePhase = useOpsStore((s) => s.updateHealthmatePhase);
   const triggerMessage        = useOpsStore((s) => s.triggerMessage);
   const editHealthmateDetails = useOpsStore((s) => s.editHealthmateDetails);
+  const updateHealthmateQualification = useOpsStore((s) => s.updateHealthmateQualification);
   const createTask            = useOpsStore((s) => s.createTask);
   const uploadRegistrationDocument = useOpsStore((s) => s.uploadRegistrationDocument);
   const deleteRegistrationDocument = useOpsStore((s) => s.deleteRegistrationDocument);
@@ -120,6 +132,28 @@ export default function HealthmateModal() {
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
   const [editCountry, setEditCountry] = useState('');
+  const [editSubcategory, setEditSubcategory] = useState('');
+  const [editPlatformFound, setEditPlatformFound] = useState('');
+  const [editProgramPossibility, setEditProgramPossibility] = useState('');
+  const [editFormat, setEditFormat] = useState('');
+  const [editPriceRange, setEditPriceRange] = useState('');
+  const [editCapacity, setEditCapacity] = useState('');
+
+  // Qualification states
+  const [qScores, setQScores] = useState({
+    scoreRelevance: 0,
+    scoreSafety: 0,
+    scoreExperience: 0,
+    scoreCredibility: 0,
+    scoreLocation: 0,
+    scoreVisual: 0,
+    scoreBooking: 0,
+    scoreUniqueness: 0,
+    scoreCorporate: 0,
+    scoreRepeatability: 0
+  });
+  const [qSaving, setQSaving] = useState(false);
+  const [qSaved, setQSaved] = useState(false);
 
   // Add-task form states
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -157,6 +191,23 @@ export default function HealthmateModal() {
       setEditCity(selectedHealthmate.city || '');
       setEditState(selectedHealthmate.state || '');
       setEditCountry(selectedHealthmate.country || '');
+      setEditSubcategory(selectedHealthmate.subcategory || '');
+      setEditPlatformFound(selectedHealthmate.platformFound || '');
+      setEditProgramPossibility(selectedHealthmate.programPossibility || '');
+      setEditFormat(selectedHealthmate.format || '');
+      setEditPriceRange(selectedHealthmate.priceRange || '');
+      setEditCapacity(selectedHealthmate.capacity || '');
+
+      if (selectedHealthmate.qualification) {
+        setQScores(selectedHealthmate.qualification);
+      } else {
+        setQScores({
+          scoreRelevance: 0, scoreSafety: 0, scoreExperience: 0, scoreCredibility: 0,
+          scoreLocation: 0, scoreVisual: 0, scoreBooking: 0, scoreUniqueness: 0,
+          scoreCorporate: 0, scoreRepeatability: 0
+        });
+      }
+      setQSaved(false);
 
       setScreeningRemarks(selectedHealthmate.screeningRemarks ?? '');
       setScreeningRemarksSaved(false);
@@ -387,6 +438,12 @@ export default function HealthmateModal() {
       city: editCity.trim() || null,
       state: editState.trim() || null,
       country: editCountry.trim() || null,
+      subcategory: editSubcategory.trim() || null,
+      platformFound: editPlatformFound.trim() || null,
+      programPossibility: editProgramPossibility.trim() || null,
+      format: editFormat.trim() || null,
+      priceRange: editPriceRange.trim() || null,
+      capacity: editCapacity.trim() || null,
       notes: notes.trim() || null,
     });
     if (result && result.success) {
@@ -394,6 +451,17 @@ export default function HealthmateModal() {
       setIsEditing(false);
     } else {
       toast.error(result.message || 'Failed to update partner details.');
+    }
+  };
+
+  const handleSaveQualification = async () => {
+    setQSaving(true);
+    const result = await updateHealthmateQualification(hm.id, qScores);
+    setQSaving(false);
+    if (result && result.success) {
+      setQSaved(true);
+      setTimeout(() => setQSaved(false), 2000);
+      toast.success('Qualification scores updated!');
     }
   };
 
@@ -639,6 +707,16 @@ export default function HealthmateModal() {
                       R&D Review
                     </button>
                   )}
+                  <button
+                    onClick={() => setActiveTab('qualification')}
+                    className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                      activeTab === 'qualification'
+                        ? 'border-brand-teal text-brand-teal'
+                        : 'border-transparent text-text-muted/60 hover:text-text-main'
+                    }`}
+                  >
+                    Qualification
+                  </button>
                 </div>
 
                 {activeTab === 'details' && (
@@ -753,6 +831,60 @@ export default function HealthmateModal() {
                             />
                           </div>
                           <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Subcategory</label>
+                            <input
+                              type="text"
+                              value={editSubcategory}
+                              onChange={(e) => setEditSubcategory(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Platform Found</label>
+                            <input
+                              type="text"
+                              value={editPlatformFound}
+                              onChange={(e) => setEditPlatformFound(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Program Possibility</label>
+                            <input
+                              type="text"
+                              value={editProgramPossibility}
+                              onChange={(e) => setEditProgramPossibility(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Format</label>
+                            <input
+                              type="text"
+                              value={editFormat}
+                              onChange={(e) => setEditFormat(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Price Range</label>
+                            <input
+                              type="text"
+                              value={editPriceRange}
+                              onChange={(e) => setEditPriceRange(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Capacity</label>
+                            <input
+                              type="text"
+                              value={editCapacity}
+                              onChange={(e) => setEditCapacity(e.target.value)}
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            />
+                          </div>
+                          <div>
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
                             <CategorySelector
                               value={editCategory}
@@ -780,24 +912,44 @@ export default function HealthmateModal() {
                           {hm.contactName && (
                             <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Name" value={hm.contactName} />
                           )}
-                          <InfoRow
-                            icon={<Mail className="w-4 h-4 text-brand-teal" />}
-                            label="Email"
-                            value={isMarketingOnly ? '***@***.***' : (hm.contactEmail || '—')}
-                            muted={!hm.contactEmail && !isMarketingOnly}
-                          />
-                          <InfoRow
-                            icon={<Phone className="w-4 h-4 text-brand-teal" />}
-                            label="Phone"
-                            value={isMarketingOnly ? '+** **** ****' : (hm.contactPhone || '—')}
-                            muted={!hm.contactPhone && !isMarketingOnly}
-                          />
-                          {(hm.alternatePhone || isMarketingOnly) && (
+                          {hm.contactEmail && (
+                            <InfoRow
+                              icon={<Mail className="w-4 h-4 text-brand-teal" />}
+                              label="Email"
+                              value={isMarketingOnly ? '***@***.***' : hm.contactEmail}
+                            />
+                          )}
+                          {hm.contactPhone && (
                             <InfoRow
                               icon={<Phone className="w-4 h-4 text-brand-teal" />}
-                              label="Alt Phone"
+                              label="Phone"
+                              value={isMarketingOnly ? '+** **** ****' : hm.contactPhone}
+                            />
+                          )}
+                          {hm.alternatePhone && (
+                            <InfoRow
+                              icon={<Phone className="w-4 h-4 text-brand-teal" />}
+                              label="Alternate Phone"
                               value={isMarketingOnly ? '+** **** ****' : hm.alternatePhone}
                             />
+                          )}
+                          {hm.subcategory && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Subcategory" value={hm.subcategory} />
+                          )}
+                          {hm.platformFound && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Platform Found" value={hm.platformFound} />
+                          )}
+                          {hm.programPossibility && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Program Possibility" value={hm.programPossibility} />
+                          )}
+                          {hm.format && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Format" value={hm.format} />
+                          )}
+                          {hm.priceRange && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Price Range" value={hm.priceRange} />
+                          )}
+                          {hm.capacity && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Capacity" value={hm.capacity} />
                           )}
                           {(hm.city || hm.state || hm.country) && (
                             <InfoRow 
@@ -1156,6 +1308,89 @@ export default function HealthmateModal() {
                         </button>
                       )}
                     </div>
+                  </div>
+                )}
+
+                {activeTab === 'qualification' && (
+                  <div className="space-y-4 pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider">
+                          Healthmate Qualification
+                        </h3>
+                        <p className="text-[10px] text-text-muted/80 font-semibold mt-1">
+                          Score every potential Healthmate (1-5). Ideal first Healthmates: 35+ out of 50.
+                        </p>
+                      </div>
+                      <div className="bg-brand-teal/10 border border-brand-teal/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                        <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider">Total Score:</span>
+                        <span className="text-sm font-black text-brand-teal">
+                          {Object.values(qScores).reduce((sum, val) => sum + (Number(val) || 0), 0)} / 50
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-50/50 rounded-2xl border border-border-leaf/35 overflow-hidden">
+                      <table className="w-full text-left border-collapse table-fixed">
+                        <thead>
+                          <tr className="bg-slate-100/70 border-b border-border-leaf/35 text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
+                            <th className="py-2.5 px-4 w-[25%]">Criteria</th>
+                            <th className="py-2.5 px-4 w-[55%]">What to Check</th>
+                            <th className="py-2.5 px-4 w-[20%] text-center">Score (1-5)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border-leaf/35 text-[11px] text-text-main font-bold">
+                          {[
+                            { key: 'scoreRelevance', label: 'Program relevance', desc: 'Does it fit wellness, functional movement, or recovery?' },
+                            { key: 'scoreSafety', label: 'Safety', desc: 'Is it non-clinical, non-invasive, and suitable for general users?' },
+                            { key: 'scoreExperience', label: 'Experience quality', desc: 'Does the program feel meaningful, structured, and memorable?' },
+                            { key: 'scoreCredibility', label: 'Facilitator credibility', desc: 'Do they have training, experience, reviews, or visible work?' },
+                            { key: 'scoreLocation', label: 'Location quality', desc: 'Is the venue safe, accessible, calm, and suitable?' },
+                            { key: 'scoreVisual', label: 'Visual appeal', desc: 'Can it be marketed well through photos and videos?' },
+                            { key: 'scoreBooking', label: 'Booking readiness', desc: 'Can they give date, duration, price, inclusions, capacity?' },
+                            { key: 'scoreUniqueness', label: 'Uniqueness', desc: 'Does it add something different to Lifed?' },
+                            { key: 'scoreCorporate', label: 'Corporate potential', desc: 'Can this be adapted for employee wellbeing?' },
+                            { key: 'scoreRepeatability', label: 'Repeatability', desc: 'Can this program run monthly or quarterly?' },
+                          ].map((item) => (
+                            <tr key={item.key} className="hover:bg-white transition-colors">
+                              <td className="py-2.5 px-4 truncate">{item.label}</td>
+                              <td className="py-2.5 px-4 text-text-muted/80 font-medium truncate" title={item.desc}>{item.desc}</td>
+                              <td className="py-2 px-4">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="5"
+                                  disabled={!canModify}
+                                  value={qScores[item.key] || ''}
+                                  onChange={(e) => {
+                                    const val = Math.min(5, Math.max(0, parseInt(e.target.value) || 0));
+                                    setQScores(prev => ({ ...prev, [item.key]: val }));
+                                    setQSaved(false);
+                                  }}
+                                  className="w-full text-center bg-white border border-border-leaf/80 rounded-lg py-1 focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {canModify && (
+                      <div className="flex items-center justify-between pt-2">
+                        <span className={`text-xs font-bold transition-all ${qSaved ? 'text-brand-green' : 'text-transparent'}`}>
+                          ✓ Saved
+                        </span>
+                        <button
+                          onClick={handleSaveQualification}
+                          disabled={qSaving}
+                          className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm"
+                        >
+                          {qSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                          {qSaving ? 'Saving…' : 'Save Scores'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

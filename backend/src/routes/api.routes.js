@@ -9,7 +9,7 @@ const { loginSchema }              = require('../utils/auth.schema');
 const {
   getAllHealthmates, createHealthmate,
   updateHealthmate, updateHealthmatePhase,
-  updateNotes, deleteHealthmate, updateHealthmateDetails,
+  updateNotes, deleteHealthmate, updateHealthmateDetails, updateHealthmateQualification,
   uploadRegistrationDocument, deleteRegistrationDocument,
   rndVerifyCredentials
 } = require('../controllers/healthmate.controller');
@@ -101,6 +101,7 @@ router.post('/healthmates',                 createHealthmate);
 router.post('/healthmates/:id/upload',      strictLimiter, upload.single('document'), uploadRegistrationDocument);
 router.delete('/healthmates/:id/upload',    deleteRegistrationDocument);
 router.put('/healthmates/:id',              updateHealthmateDetails);
+router.patch('/healthmates/:id/qualification', updateHealthmateQualification);
 router.patch('/healthmates/:id',            updateHealthmate);
 router.patch('/healthmates/:id/phase',      updateHealthmatePhase);
 router.patch('/healthmates/:id/notes',      updateNotes);

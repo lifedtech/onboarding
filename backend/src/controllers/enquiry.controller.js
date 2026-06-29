@@ -51,7 +51,12 @@ const getAllEnquiries = async (req, res) => {
  * Creates a new enquiry.
  */
 const createEnquiry = async (req, res) => {
-  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country } = req.body;
+  const { 
+    name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
+    subcategory, platformFound, programPossibility, format, priceRange, capacity,
+    scoreRelevance, scoreSafety, scoreExperience, scoreCredibility, scoreLocation,
+    scoreVisual, scoreBooking, scoreUniqueness, scoreCorporate, scoreRepeatability
+  } = req.body;
 
   if (!name || !contact || !clientType) {
     return res.status(400).json({ message: 'name, contact, and clientType are required.' });
@@ -75,6 +80,22 @@ const createEnquiry = async (req, res) => {
         city: city || null,
         state: state || null,
         country: country || null,
+        subcategory: subcategory || null,
+        platformFound: platformFound || null,
+        programPossibility: programPossibility || null,
+        format: format || null,
+        priceRange: priceRange || null,
+        capacity: capacity || null,
+        scoreRelevance: parseInt(scoreRelevance) || 0,
+        scoreSafety: parseInt(scoreSafety) || 0,
+        scoreExperience: parseInt(scoreExperience) || 0,
+        scoreCredibility: parseInt(scoreCredibility) || 0,
+        scoreLocation: parseInt(scoreLocation) || 0,
+        scoreVisual: parseInt(scoreVisual) || 0,
+        scoreBooking: parseInt(scoreBooking) || 0,
+        scoreUniqueness: parseInt(scoreUniqueness) || 0,
+        scoreCorporate: parseInt(scoreCorporate) || 0,
+        scoreRepeatability: parseInt(scoreRepeatability) || 0,
         opsUserId: req.user.id,
       },
       include: {
@@ -101,7 +122,12 @@ const createEnquiry = async (req, res) => {
  */
 const updateEnquiry = async (req, res) => {
   const { id } = req.params;
-  const { name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country } = req.body;
+  const { 
+    name, contact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
+    subcategory, platformFound, programPossibility, format, priceRange, capacity,
+    scoreRelevance, scoreSafety, scoreExperience, scoreCredibility, scoreLocation,
+    scoreVisual, scoreBooking, scoreUniqueness, scoreCorporate, scoreRepeatability 
+  } = req.body;
 
   try {
     const existing = await prisma.enquiry.findUnique({ where: { id } });
@@ -130,6 +156,22 @@ const updateEnquiry = async (req, res) => {
         ...(city !== undefined && { city: city || null }),
         ...(state !== undefined && { state: state || null }),
         ...(country !== undefined && { country: country || null }),
+        ...(subcategory !== undefined && { subcategory: subcategory || null }),
+        ...(platformFound !== undefined && { platformFound: platformFound || null }),
+        ...(programPossibility !== undefined && { programPossibility: programPossibility || null }),
+        ...(format !== undefined && { format: format || null }),
+        ...(priceRange !== undefined && { priceRange: priceRange || null }),
+        ...(capacity !== undefined && { capacity: capacity || null }),
+        ...(scoreRelevance !== undefined && { scoreRelevance: parseInt(scoreRelevance) || 0 }),
+        ...(scoreSafety !== undefined && { scoreSafety: parseInt(scoreSafety) || 0 }),
+        ...(scoreExperience !== undefined && { scoreExperience: parseInt(scoreExperience) || 0 }),
+        ...(scoreCredibility !== undefined && { scoreCredibility: parseInt(scoreCredibility) || 0 }),
+        ...(scoreLocation !== undefined && { scoreLocation: parseInt(scoreLocation) || 0 }),
+        ...(scoreVisual !== undefined && { scoreVisual: parseInt(scoreVisual) || 0 }),
+        ...(scoreBooking !== undefined && { scoreBooking: parseInt(scoreBooking) || 0 }),
+        ...(scoreUniqueness !== undefined && { scoreUniqueness: parseInt(scoreUniqueness) || 0 }),
+        ...(scoreCorporate !== undefined && { scoreCorporate: parseInt(scoreCorporate) || 0 }),
+        ...(scoreRepeatability !== undefined && { scoreRepeatability: parseInt(scoreRepeatability) || 0 }),
       },
       include: {
         opsUser: {
@@ -205,6 +247,13 @@ const promoteToPartner = async (req, res) => {
         contactPhone: !isEmail ? enquiry.contact : null,
         city: enquiry.city,
         state: enquiry.state,
+        country: enquiry.country,
+        subcategory: enquiry.subcategory,
+        platformFound: enquiry.platformFound,
+        programPossibility: enquiry.programPossibility,
+        format: enquiry.format,
+        priceRange: enquiry.priceRange,
+        capacity: enquiry.capacity,
         notes: enquiry.remarks || 'Promoted from Enquiry.',
         opsUserId: req.user.id,
         phase: 'PRE_QUALIFY',
@@ -213,27 +262,38 @@ const promoteToPartner = async (req, res) => {
 
     // Seed default tasks
     // Let's create the default tasks for this partner
-    const phaseOrder = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
+    const phaseOrder = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
     const defaultTasks = {
       PRE_QUALIFY: [
-        "Verify primary contact email and phone number",
-        "Complete screening call and business analysis"
-      ],
-      PREPARE: [
-        "Upload certified professional qualifications",
-        "Sign partnership framework agreement"
+        "Schedule a call to explain Lifed",
+        "Score the healthmate",
+        "Schedule the follow ups",
+        "Identify the program that Lifed can co-create"
       ],
       REGISTER: [
-        "Submit valid business registration registry copy",
-        "Configure bank payout and tax collection variables"
+        "Do a call on the registration process",
+        "Validate the credentials",
+        "Validate bank account",
+        "Approve the healthmate account",
+        "Send a video explaining the program builder and the program management dashboard"
+      ],
+      PREPARE: [
+        "Schedule a call to explain the Healthmate dashboard and program builder",
+        "Collect the details about the program",
+        "Categorize them into a) ready to be live, b) have to co - create and curate",
+        "If ready to be live, have a follow-up and make them submit the program",
+        "If co-create, then R/D curate and take suggestions from healthmate, then submit for review"
       ],
       REVIEW: [
-        "Perform background verification and credit review",
-        "Conduct live platform video walkthrough"
+        "Review the program with complete validation",
+        "If rectification needed, schedule a call and sit with them and complete the process",
+        "If program is ready to be Live, Send a SOP for program conduction."
       ],
       LIVE: [
-        "Configure booking schedule and live slots",
-        "Send welcome package and micro-habits toolkit"
+        "Once the program is live, schedule follow up to make them share in their accounts",
+        "Send a welcome kit (digital, first 100 send a physical one)",
+        "Review the program in 10 days",
+        "If no booking in 10 days, trigger the sales and marketing team."
       ]
     };
 

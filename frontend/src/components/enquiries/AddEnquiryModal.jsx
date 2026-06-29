@@ -11,12 +11,19 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
+  const [subcategory, setSubcategory] = useState('');
+  const [platformFound, setPlatformFound] = useState('');
+  const [programPossibility, setProgramPossibility] = useState('');
+  const [format, setFormat] = useState('');
+  const [priceRange, setPriceRange] = useState('');
+  const [capacity, setCapacity] = useState('');
   const [clientType, setClientType] = useState(defaultType || 'HEALTH_PARTNER'); // 'HEALTH_PARTNER' or 'SERVICE_USER'
   const [contacted, setContacted] = useState(false);
   const [remarks, setRemarks] = useState('');
   const [callbackLater, setCallbackLater] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
   const [saving, setSaving] = useState(false);
+  const [qScores, setQScores] = useState({});
 
   if (!isOpen) return null;
 
@@ -43,6 +50,12 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       city: city.trim() || null,
       state: state.trim() || null,
       country: country.trim() || null,
+      subcategory: subcategory.trim() || null,
+      platformFound: platformFound.trim() || null,
+      programPossibility: programPossibility.trim() || null,
+      format: format.trim() || null,
+      priceRange: priceRange.trim() || null,
+      capacity: capacity.trim() || null,
       clientType,
       contacted,
       remarks: remarks.trim() || null,
@@ -50,6 +63,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       reminderDate: (clientType === 'HEALTH_PARTNER' && callbackLater && reminderDate)
         ? new Date(reminderDate).toISOString()
         : null,
+      ...qScores
     };
 
     const result = await createEnquiry(payload);
@@ -63,11 +77,18 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       setCity('');
       setState('');
       setCountry('');
+      setSubcategory('');
+      setPlatformFound('');
+      setProgramPossibility('');
+      setFormat('');
+      setPriceRange('');
+      setCapacity('');
       setClientType(defaultType || 'HEALTH_PARTNER');
       setContacted(false);
       setRemarks('');
       setCallbackLater(false);
       setReminderDate('');
+      setQScores({});
       onClose();
     } else {
       toast.error(result.message || 'Failed to record enquiry.');
@@ -90,7 +111,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
         aria-label="Add New Enquiry"
       >
         <div
-          className="relative w-full max-w-md bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-2xl bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -247,6 +268,65 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
 
             {/* Call back & Reminder Section (Conditional on clientType === HEALTH_PARTNER) */}
             {clientType === 'HEALTH_PARTNER' && (
+              <div className="space-y-5">
+
+
+                {/* Qualification Table */}
+                <div className="p-4 bg-slate-50/50 rounded-2xl border border-border-leaf/35 overflow-hidden">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h4 className="text-text-main text-xs font-extrabold uppercase">Qualification Score</h4>
+                      <p className="text-[10px] text-text-muted mt-0.5">Score 1-5. Ideal: 35+ / 50.</p>
+                    </div>
+                    <div className="bg-brand-teal/10 border border-brand-teal/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                      <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider">Total:</span>
+                      <span className="text-sm font-black text-brand-teal">
+                        {Object.values(qScores).reduce((sum, val) => sum + (Number(val) || 0), 0)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="max-h-[300px] overflow-y-auto border border-border-leaf/40 rounded-xl">
+                    <table className="w-full text-left border-collapse table-fixed bg-white">
+                      <tbody className="divide-y divide-border-leaf/35 text-[10px] text-text-main font-bold">
+                        {[
+                          { key: 'scoreRelevance', label: 'Program relevance', desc: 'Does it fit wellness, functional movement, or recovery?' },
+                          { key: 'scoreSafety', label: 'Safety', desc: 'Is it non-clinical, non-invasive, and suitable for general users?' },
+                          { key: 'scoreExperience', label: 'Experience quality', desc: 'Does the program feel meaningful, structured, and memorable?' },
+                          { key: 'scoreCredibility', label: 'Facilitator credibility', desc: 'Do they have training, experience, reviews, or visible work?' },
+                          { key: 'scoreLocation', label: 'Location quality', desc: 'Is the venue safe, accessible, calm, and suitable?' },
+                          { key: 'scoreVisual', label: 'Visual appeal', desc: 'Can it be marketed well through photos and videos?' },
+                          { key: 'scoreBooking', label: 'Booking readiness', desc: 'Can they give date, duration, price, inclusions, capacity?' },
+                          { key: 'scoreUniqueness', label: 'Uniqueness', desc: 'Does it add something different to Lifed?' },
+                          { key: 'scoreCorporate', label: 'Corporate potential', desc: 'Can this be adapted for employee wellbeing?' },
+                          { key: 'scoreRepeatability', label: 'Repeatability', desc: 'Can this program run monthly or quarterly?' },
+                        ].map((item) => (
+                          <tr key={item.key} className="hover:bg-slate-50 transition-colors">
+                            <td className="py-2 px-3 w-[70%]">
+                              <div className="text-[11px]">{item.label}</div>
+                              <div className="text-[9px] text-text-muted font-semibold truncate" title={item.desc}>{item.desc}</div>
+                            </td>
+                            <td className="py-2 px-3 w-[30%]">
+                              <input
+                                type="number"
+                                min="0"
+                                max="5"
+                                value={qScores[item.key] || ''}
+                                onChange={(e) => {
+                                  const val = Math.min(5, Math.max(0, parseInt(e.target.value) || 0));
+                                  setQScores(prev => ({ ...prev, [item.key]: val }));
+                                }}
+                                className="w-full text-center bg-white border border-border-leaf/80 rounded-lg py-1 focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                                placeholder="0"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/50 space-y-3">
                 <div className="flex items-center gap-2.5">
                   <input
@@ -283,6 +363,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
                   </div>
                 )}
               </div>
+            </div>
             )}
 
             {/* Action Buttons */}

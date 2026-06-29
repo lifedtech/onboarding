@@ -17,6 +17,12 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
+  const [subcategory, setSubcategory] = useState('');
+  const [platformFound, setPlatformFound] = useState('');
+  const [programPossibility, setProgramPossibility] = useState('');
+  const [format, setFormat] = useState('');
+  const [priceRange, setPriceRange] = useState('');
+  const [capacity, setCapacity] = useState('');
   const [saving, setSaving] = useState(false);
 
   if (!isOpen) return null;
@@ -45,6 +51,12 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
       city: city.trim() || null,
       state: state.trim() || null,
       country: country.trim() || null,
+      subcategory: subcategory.trim() || null,
+      platformFound: platformFound.trim() || null,
+      programPossibility: programPossibility.trim() || null,
+      format: format.trim() || null,
+      priceRange: priceRange.trim() || null,
+      capacity: capacity.trim() || null,
     });
     setSaving(false);
 
@@ -61,6 +73,12 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
       setCity('');
       setState('');
       setCountry('');
+      setSubcategory('');
+      setPlatformFound('');
+      setProgramPossibility('');
+      setFormat('');
+      setPriceRange('');
+      setCapacity('');
       onClose();
     } else {
       toast.error(result.message || 'Failed to add partner.');
@@ -241,6 +259,86 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
                   placeholder="e.g. India"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Additional Info */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Subcategory
+                </label>
+                <input
+                  type="text"
+                  value={subcategory}
+                  onChange={(e) => setSubcategory(e.target.value)}
+                  placeholder="e.g. Kalaripayattu"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Platform Found
+                </label>
+                <input
+                  type="text"
+                  value={platformFound}
+                  onChange={(e) => setPlatformFound(e.target.value)}
+                  placeholder="e.g. Instagram"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                Program Possibility
+              </label>
+              <input
+                type="text"
+                value={programPossibility}
+                onChange={(e) => setProgramPossibility(e.target.value)}
+                placeholder="e.g. Weekend Kalari Movement Workshop"
+                className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Format
+                </label>
+                <input
+                  type="text"
+                  value={format}
+                  onChange={(e) => setFormat(e.target.value)}
+                  placeholder="e.g. Workshop"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Price Range
+                </label>
+                <input
+                  type="text"
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                  placeholder="e.g. ₹1500–₹25000"
+                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Capacity
+                </label>
+                <input
+                  type="text"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                  placeholder="e.g. 10-30"
                   className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
                 />
               </div>

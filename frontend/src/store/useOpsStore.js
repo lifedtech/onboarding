@@ -192,6 +192,22 @@ const useOpsStore = create((set, get) => ({
     }
   },
 
+  updateHealthmateQualification: async (id, payload) => {
+    try {
+      const { data } = await api.patch(`/healthmates/${id}/qualification`, payload);
+      set((state) => ({
+        healthmates: state.healthmates.map(hm => hm.id === id ? { ...hm, qualification: data } : hm),
+        selectedHealthmate:
+          state.selectedHealthmate?.id === id ? { ...state.selectedHealthmate, qualification: data } : state.selectedHealthmate,
+      }));
+      return { success: true, data };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update qualification score.';
+      toast.error(message);
+      return { success: false, message };
+    }
+  },
+
   createHealthmate: async (payload) => {
     set({ isLoading: true, error: null });
     try {
