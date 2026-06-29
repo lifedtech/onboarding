@@ -422,11 +422,11 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
       const { ball, playerPaddle, aiPaddle, particles } = state;
 
       // Clear
-      ctx.fillStyle = '#081311';
+      ctx.fillStyle = '#f8fafc';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Dash line
-      ctx.strokeStyle = 'rgba(45, 212, 191, 0.08)';
+      ctx.strokeStyle = 'rgba(45, 212, 191, 0.15)';
       ctx.lineWidth = 4;
       ctx.setLineDash([15, 10]);
       ctx.beginPath();
@@ -436,7 +436,7 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
       ctx.setLineDash([]);
 
       // Draw background arcade score
-      ctx.fillStyle = 'rgba(45, 212, 191, 0.03)';
+      ctx.fillStyle = 'rgba(45, 212, 191, 0.1)';
       ctx.font = 'black 120px Montserrat, Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -582,17 +582,17 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
   };
 
   return (
-    <div className={standalone ? "flex-1 flex flex-col items-center justify-center p-6 md:p-8 bg-[#0b1413] text-[#e2e8f0] h-full overflow-y-auto" : "w-full flex flex-col items-center"}>
+    <div className={standalone ? "flex-1 flex flex-col items-center justify-center p-6 md:p-8 bg-slate-50/50 text-text-main h-full overflow-y-auto font-sans" : "w-full flex flex-col items-center font-sans"}>
       {/* Title */}
       {standalone && (
-        <div className="w-full max-w-2xl flex items-center justify-between mb-4 border-b border-white/10 pb-4">
+        <div className="w-full max-w-2xl flex items-center justify-between mb-4 border-b border-border-leaf pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal shadow-inner">
-              <Shield className="w-4.5 h-4.5 animate-pulse" />
+            <div className="w-10 h-10 rounded-[12px] bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal shadow-sm">
+              <Shield className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <h1 className="text-white font-black text-2xl tracking-tight leading-none">Ticket Deflector</h1>
-              <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-wider mt-1">Stress-Buster SLA Deflector Game</p>
+              <h1 className="text-text-main font-black text-2xl tracking-tight leading-none">Ticket Deflector</h1>
+              <p className="text-slate-500 text-[10px] font-extrabold uppercase tracking-wider mt-1.5">Stress-Buster SLA Deflector Game</p>
             </div>
           </div>
           <button 
@@ -600,7 +600,7 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
               exitGame();
               onClose();
             }}
-            className="text-[#64748b] hover:text-white hover:bg-white/5 p-2 rounded-xl transition-all"
+            className="text-slate-400 hover:text-text-main hover:bg-slate-100 p-2 rounded-[12px] transition-all"
             title="Back to Dashboard"
           >
             <X className="w-5 h-5" />
@@ -610,15 +610,15 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
 
       {mode === 'lobby' ? (
         /* --- MULTIPLAYER & SOLO LOBBY --- */
-        <div className="w-full max-w-2xl bg-[#0f2421] border border-white/10 rounded-3xl p-6 flex flex-col md:flex-row gap-6 shadow-2xl">
+        <div className="w-full max-w-2xl bg-white border border-border-leaf rounded-[24px] p-6 flex flex-col md:flex-row gap-6 shadow-sm">
           {/* Left panel: Solo Play */}
-          <div className="flex-1 bg-[#0b1311] border border-white/5 p-6 rounded-2xl flex flex-col justify-between items-center text-center">
+          <div className="flex-1 bg-slate-50 border border-border-leaf p-6 rounded-[20px] flex flex-col justify-between items-center text-center shadow-sm">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 flex items-center justify-center text-[#2dd4bf] mx-auto shadow-inner">
-                <Shield className="w-6 h-6" />
+              <div className="w-14 h-14 rounded-[16px] bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal mx-auto shadow-sm">
+                <Shield className="w-7 h-7" />
               </div>
-              <h2 className="text-white text-lg font-extrabold tracking-tight">Single Player SLA</h2>
-              <p className="text-slate-400 text-xs leading-relaxed max-w-xs font-semibold">
+              <h2 className="text-text-main text-xl font-black tracking-tight">Single Player SLA</h2>
+              <p className="text-slate-500 text-[13px] leading-relaxed max-w-xs font-semibold">
                 Deflect incoming P1 tickets against a simulated system controller. Reaction speed builds up dynamically.
               </p>
             </div>
@@ -627,35 +627,35 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
                 setMode('single');
                 startGame();
               }}
-              className="mt-6 w-full bg-[#2dd4bf]/15 hover:bg-[#2dd4bf]/25 border border-[#2dd4bf]/30 text-[#2dd4bf] font-extrabold text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-inner"
+              className="mt-6 w-full bg-brand-teal hover:bg-brand-teal-hover border border-transparent text-white font-black text-sm py-3.5 rounded-[16px] flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md"
             >
               Play Solo SLA Mission
-              <Play className="w-3.5 h-3.5 fill-[#2dd4bf]" />
+              <Play className="w-4 h-4 fill-white" />
             </button>
           </div>
 
           {/* Right panel: Invite Teammates */}
-          <div className="flex-1 bg-[#0b1311] border border-white/5 p-6 rounded-2xl flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-white font-extrabold text-sm border-b border-white/5 pb-2">
+          <div className="flex-1 bg-slate-50 border border-border-leaf p-6 rounded-[20px] flex flex-col justify-between shadow-sm">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-text-main font-black text-sm border-b border-border-leaf pb-3">
                 <Users className="w-4 h-4 text-brand-teal" />
                 <span>Online Teammates</span>
               </div>
               
-              <div className="max-h-36 overflow-y-auto space-y-2 pr-1">
+              <div className="max-h-[160px] overflow-y-auto space-y-2 pr-2">
                 {teammates.length === 0 ? (
-                  <p className="text-slate-500 text-xs italic py-4 text-center">No other active teammates online.</p>
+                  <p className="text-slate-400 text-xs italic py-6 text-center font-medium">No other active teammates online.</p>
                 ) : (
                   teammates.map((user) => (
-                    <div key={user.id} className="flex items-center justify-between bg-white/5 border border-white/5 p-2 rounded-xl">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${user.isOnline ? 'bg-brand-green animate-pulse' : 'bg-slate-500'}`} />
-                        <span className="text-xs font-bold text-slate-300 truncate max-w-[120px]">{user.name}</span>
+                    <div key={user.id} className="flex items-center justify-between bg-white border border-border-leaf p-2.5 rounded-[16px] shadow-sm hover:border-brand-teal/30 transition-colors group">
+                      <div className="flex items-center gap-2.5">
+                        <span className={`w-2 h-2 rounded-full border border-white shadow-sm ${user.isOnline ? 'bg-brand-green animate-pulse' : 'bg-slate-300'}`} />
+                        <span className="text-xs font-black text-text-main truncate max-w-[120px] group-hover:text-brand-teal transition-colors">{user.name}</span>
                       </div>
                       <button
                         onClick={() => handleInvitePlayer(user.id)}
                         disabled={invitingPlayerId !== null}
-                        className="bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-40 text-white font-extrabold text-[9px] px-2.5 py-1 rounded-lg transition-all"
+                        className="bg-brand-teal/10 hover:bg-brand-teal/20 disabled:opacity-40 text-brand-teal font-extrabold text-[10px] px-3 py-1.5 rounded-[10px] transition-all"
                       >
                         {invitingPlayerId === user.id ? 'Invited' : 'Invite'}
                       </button>
@@ -665,56 +665,56 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
               </div>
             </div>
             
-            <div className="border-t border-white/5 pt-3 mt-4 text-[10px] text-slate-500 font-semibold leading-relaxed">
+            <div className="border-t border-border-leaf pt-4 mt-5 text-[11px] text-slate-500 font-semibold leading-relaxed bg-brand-teal/5 p-3 rounded-[12px]">
               🎮 Multi-player sends game invites via team SSE connection. P1 hosts ball physics and coordinates coordinates to guest.
             </div>
           </div>
         </div>
       ) : mode === 'multiplayer_waiting' || (invitingPlayerId && !gameSession?.guestName) ? (
         /* --- INVITE WAITING SPINNER --- */
-        <div className="w-full max-w-2xl bg-[#0f2421] border border-white/10 rounded-3xl p-12 flex flex-col items-center justify-center text-center shadow-2xl">
-          <Loader2 className="w-12 h-12 text-[#2dd4bf] animate-spin mb-4" />
-          <h2 className="text-white text-lg font-black tracking-tight">SLA Invitation Dispatched</h2>
-          <p className="text-slate-400 text-xs max-w-xs mt-1 leading-relaxed font-semibold">
+        <div className="w-full max-w-2xl bg-white border border-border-leaf rounded-[24px] p-12 flex flex-col items-center justify-center text-center shadow-sm">
+          <Loader2 className="w-12 h-12 text-brand-teal animate-spin mb-4" />
+          <h2 className="text-text-main text-xl font-black tracking-tight">SLA Invitation Dispatched</h2>
+          <p className="text-slate-500 text-sm max-w-xs mt-2 leading-relaxed font-semibold">
             Waiting for your teammate to accept the invitation...
           </p>
           <button
             onClick={exitGame}
-            className="mt-8 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all"
+            className="mt-8 bg-red-50 hover:bg-red-100 border border-red-200 text-red-500 font-extrabold text-xs px-6 py-3 rounded-[16px] transition-all shadow-sm"
           >
             Cancel Invitation
           </button>
         </div>
       ) : (
         /* --- MAIN CANVAS BOARD --- */
-        <div className="relative w-full max-w-2xl bg-[#0f2421] border border-white/10 rounded-3xl p-6 flex flex-col items-center shadow-2xl shadow-black/80">
+        <div className="relative w-full max-w-2xl bg-white border border-border-leaf rounded-[24px] p-6 flex flex-col items-center shadow-sm">
           {/* Game Stats & Timer */}
-          <div className="w-full flex items-center justify-between mb-5 bg-[#0b1311] px-5 py-3 rounded-2xl border border-white/5">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-400">Score</span>
-              <div className="flex items-center gap-3 text-sm font-extrabold bg-[#0f2421] border border-white/5 px-3 py-1 rounded-xl">
+          <div className="w-full flex items-center justify-between mb-5 bg-slate-50 px-5 py-4 rounded-[16px] border border-border-leaf shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Score</span>
+              <div className="flex items-center gap-3 text-sm font-black bg-white border border-border-leaf px-3.5 py-1.5 rounded-[12px] shadow-sm">
                 {mode === 'multiplayer_active' ? (
                   <>
-                    <span className="text-[#2dd4bf]">{gameSession?.hostName}: {playerScore}</span>
-                    <span className="text-[#64748b]">|</span>
-                    <span className="text-[#f43f5e]">{gameSession?.guestName}: {systemScore}</span>
+                    <span className="text-brand-teal">{gameSession?.hostName}: {playerScore}</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-rose-500">{gameSession?.guestName}: {systemScore}</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-[#2dd4bf]">You: {playerScore}</span>
-                    <span className="text-[#64748b]">|</span>
-                    <span className="text-[#f43f5e]">CPU: {systemScore}</span>
+                    <span className="text-brand-teal">You: {playerScore}</span>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-rose-500">CPU: {systemScore}</span>
                   </>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-400">SLA Timer</span>
-              <div className={`px-4 py-1 rounded-xl text-sm font-black border tracking-wider shadow-inner ${
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">SLA Timer</span>
+              <div className={`px-4 py-1.5 rounded-[12px] text-sm font-black border shadow-sm ${
                 timeLeft <= 10 
-                  ? 'bg-red-500/10 border-red-500/30 text-red-400 animate-pulse' 
-                  : 'bg-brand-teal/10 border-brand-teal/20 text-[#2dd4bf]'
+                  ? 'bg-red-50 border-red-200 text-red-500 animate-pulse' 
+                  : 'bg-brand-teal/10 border-brand-teal/20 text-brand-teal'
               }`}>
                 {formatTime(timeLeft)}
               </div>
@@ -722,29 +722,29 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
           </div>
 
           {/* Canvas */}
-          <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl border border-white/10 bg-[#081311] shadow-inner flex items-center justify-center">
+          <div className="relative w-full aspect-[3/2] overflow-hidden rounded-[20px] border border-border-leaf bg-slate-50 shadow-inner flex items-center justify-center">
             <canvas
               ref={canvasRef}
               width={600}
               height={400}
               onMouseMove={handleMouseMove}
-              className={`w-full h-full cursor-none block ${!isPlaying && 'opacity-40'}`}
+              className={`w-full h-full cursor-none block ${!isPlaying && 'opacity-50'}`}
             />
 
             {/* Welcome/Start single player */}
             {!isPlaying && !isGameOver && mode === 'single' && (
-              <div className="absolute inset-0 bg-[#081311]/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-brand-teal/20 border border-brand-teal/40 flex items-center justify-center text-brand-teal mb-4 animate-bounce">
-                  <Shield className="w-7 h-7" />
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-16 h-16 rounded-[20px] bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal mb-4 animate-bounce shadow-sm">
+                  <Shield className="w-8 h-8" />
                 </div>
-                <h2 className="text-white text-xl font-extrabold mb-1.5 tracking-tight">Deflect the P1 Tickets</h2>
-                <p className="text-[#64748b] text-xs font-medium max-w-sm mb-6 leading-relaxed">
-                  Move your mouse to control the <span className="text-[#2dd4bf] font-bold">Left Paddle</span>. 
+                <h2 className="text-text-main text-2xl font-black mb-2 tracking-tight">Deflect the P1 Tickets</h2>
+                <p className="text-slate-500 text-[13px] font-semibold max-w-sm mb-8 leading-relaxed">
+                  Move your mouse to control the <span className="text-brand-teal font-black">Left Paddle</span>. 
                   Deflect tickets back to the CPU. Speed increases with each deflection.
                 </p>
                 <button
                   onClick={startGame}
-                  className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-6 py-3 rounded-xl text-sm font-extrabold shadow-lg shadow-brand-teal/20 transition-all hover:-translate-y-0.5"
+                  className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-8 py-4 rounded-[16px] text-sm font-black shadow-sm transition-all hover:shadow-md hover:scale-105"
                 >
                   <Play className="w-4 h-4 fill-white" />
                   Start SLA Mission
@@ -754,31 +754,43 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
 
             {/* Game Over overlay */}
             {isGameOver && (
-              <div className="absolute inset-0 bg-[#081311]/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 ${
+              <div className="absolute inset-0 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+                <div className={`w-16 h-16 rounded-[20px] flex items-center justify-center mb-5 shadow-sm ${
                   playerScore > systemScore 
-                    ? 'bg-[#2dd4bf]/20 border border-[#2dd4bf]/40 text-[#2dd4bf]' 
-                    : 'bg-red-500/20 border border-red-500/40 text-red-500'
+                    ? 'bg-brand-teal/10 border border-brand-teal/20 text-brand-teal' 
+                    : 'bg-red-50 border border-red-200 text-red-500'
                 }`}>
-                  <Trophy className="w-7 h-7" />
+                  <Trophy className="w-8 h-8" />
                 </div>
-                <h2 className="text-white text-2xl font-black mb-1.5 tracking-tight uppercase">SLA Cycle Over</h2>
-                <p className="text-[#2dd4bf] text-base font-extrabold mb-2 px-6">
+                <h2 className="text-text-main text-2xl font-black mb-2 tracking-tight uppercase">SLA Cycle Over</h2>
+                <p className="text-brand-teal text-lg font-black mb-6 px-6">
                   {winnerMessage}
                 </p>
                 
-                <div className="bg-[#0b1311] border border-white/5 px-6 py-2.5 rounded-xl text-xs font-bold text-slate-400 mb-6 flex items-center gap-4">
+                <div className="bg-slate-50 border border-border-leaf px-8 py-4 rounded-[16px] text-[13px] font-bold text-slate-500 mb-8 flex items-center gap-6 shadow-sm">
                   {mode === 'multiplayer_active' ? (
                     <>
-                      <span>{gameSession?.hostName}: <strong className="text-white">{playerScore}</strong></span>
-                      <span className="text-white/20">|</span>
-                      <span>{gameSession?.guestName}: <strong className="text-white">{systemScore}</strong></span>
+                      <span className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] uppercase tracking-wider">{gameSession?.hostName}</span>
+                        <strong className="text-text-main text-xl font-black">{playerScore}</strong>
+                      </span>
+                      <span className="text-border-leaf text-2xl">|</span>
+                      <span className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] uppercase tracking-wider">{gameSession?.guestName}</span>
+                        <strong className="text-text-main text-xl font-black">{systemScore}</strong>
+                      </span>
                     </>
                   ) : (
                     <>
-                      <span>Your Resolves: <strong className="text-white">{playerScore}</strong></span>
-                      <span className="text-white/20">|</span>
-                      <span>CPU Breaches: <strong className="text-white">{systemScore}</strong></span>
+                      <span className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] uppercase tracking-wider">Your Resolves</span>
+                        <strong className="text-text-main text-xl font-black">{playerScore}</strong>
+                      </span>
+                      <span className="text-border-leaf text-2xl">|</span>
+                      <span className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] uppercase tracking-wider">CPU Breaches</span>
+                        <strong className="text-text-main text-xl font-black">{systemScore}</strong>
+                      </span>
                     </>
                   )}
                 </div>
@@ -786,7 +798,7 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
                 {mode === 'single' ? (
                   <button
                     onClick={startGame}
-                    className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-6 py-3 rounded-xl text-sm font-extrabold shadow-lg shadow-brand-teal/20 transition-all hover:-translate-y-0.5"
+                    className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-8 py-3.5 rounded-[16px] text-sm font-black shadow-sm transition-all hover:shadow-md hover:scale-105"
                   >
                     <RotateCcw className="w-4 h-4" />
                     Deflect Again
@@ -794,7 +806,7 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
                 ) : (
                   <button
                     onClick={exitGame}
-                    className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-6 py-3 rounded-xl text-sm font-extrabold shadow-lg shadow-brand-teal/20 transition-all hover:-translate-y-0.5"
+                    className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-text-main px-8 py-3.5 rounded-[16px] text-sm font-black shadow-sm transition-all hover:shadow-md hover:scale-105"
                   >
                     <X className="w-4 h-4" />
                     Exit Match
@@ -805,7 +817,7 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
           </div>
 
           {/* Action controls */}
-          <div className="w-full mt-5 flex items-center justify-between text-xs text-[#64748b] font-bold">
+          <div className="w-full mt-6 flex items-center justify-between text-[11px] text-slate-500 font-extrabold tracking-wide uppercase">
             {mode === 'multiplayer_active' ? (
               <span>
                 {isHost 
@@ -818,7 +830,7 @@ export default function TicketDeflector({ onClose, gameSession, setGameSession, 
             
             <button
               onClick={exitGame}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3.5 py-1.5 rounded-lg border border-red-500/20 transition-all"
+              className="text-red-500 hover:text-white hover:bg-red-500 px-4 py-2 rounded-[12px] border border-red-200 hover:border-red-500 transition-all shadow-sm"
             >
               Abort Mission
             </button>

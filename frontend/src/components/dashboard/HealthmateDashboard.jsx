@@ -54,7 +54,7 @@ export default function HealthmateDashboard() {
 
   if (isLoading && !summaryMetrics) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] gap-3 bg-bg-base">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] gap-3 bg-slate-50/50">
         <div className="w-8 h-8 border-4 border-brand-teal border-t-transparent rounded-full animate-spin" />
         <p className="text-text-muted text-xs font-bold uppercase tracking-wider">Hydrating metrics log…</p>
       </div>
@@ -85,20 +85,20 @@ export default function HealthmateDashboard() {
   const activeRecallsCount = sortedRecalls.length;
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full overflow-auto flex-1">
+    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto flex-1">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-text-main font-extrabold text-2xl tracking-tight">Onboarding Dashboard</h1>
+          <h1 className="text-text-main font-black text-2xl tracking-tight">Onboarding Dashboard</h1>
           <p className="text-text-muted/80 text-sm font-semibold mt-0.5">Real-time operational health and partner pipeline metrics.</p>
         </div>
         {error ? (
-          <div className="flex items-center gap-2 text-xs font-extrabold bg-red-500/10 border border-red-500/20 text-red-500 px-3.5 py-2 rounded-full shrink-0 shadow-sm animate-pulse">
+          <div className="flex items-center gap-2 text-xs font-extrabold bg-red-50 border border-red-200 text-red-500 px-3.5 py-2 rounded-full shrink-0 shadow-sm animate-pulse">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 animate-ping" />
             SERVER DOWN
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-xs font-extrabold bg-red-500/10 border border-red-500/20 text-red-500 px-3.5 py-2 rounded-full shrink-0 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-extrabold bg-red-50 border border-red-200 text-red-500 px-3.5 py-2 rounded-full shrink-0 shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
             LIVE
           </div>
@@ -109,13 +109,13 @@ export default function HealthmateDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Card 1: Total Onboarding Partners */}
-        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Total Onboarding Partners</span>
-              <p className="text-3xl font-extrabold tracking-tight">{stats.totalHealthmates}</p>
+              <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Total Onboarding Partners</span>
+              <p className="text-[26px] font-black text-text-main tracking-tight">{stats.totalHealthmates}</p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+            <div className="w-10 h-10 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0">
               <Users className="w-5 h-5" />
             </div>
           </div>
@@ -126,36 +126,36 @@ export default function HealthmateDashboard() {
         </div>
 
         {/* Card 2: Bottleneck Alert */}
-        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <span className="text-amber-500/80 text-[10px] font-extrabold uppercase tracking-wider">Onboarding Bottleneck</span>
-              <p className="text-xl font-extrabold tracking-tight truncate max-w-[160px]">
+              <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Onboarding Bottleneck</span>
+              <p className="text-[26px] font-black text-text-main tracking-tight truncate max-w-[160px]">
                 {PHASE_LABELS[stats.bottleneck.phase] ?? stats.bottleneck.phase}
               </p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform shrink-0">
               <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
           <div className="text-[10px] font-bold text-slate-400 mt-4">
-            <span className="text-amber-400 font-extrabold">{stats.bottleneck.avgDays}d</span> avg age in phase
+            <span className="text-amber-500 font-extrabold">{stats.bottleneck.avgDays}d</span> avg age in phase
           </div>
         </div>
 
         {/* Card 3: Task Completion Progress */}
-        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">Overall Task Progress</span>
-              <p className="text-3xl font-extrabold tracking-tight">{stats.taskCompletionRate}%</p>
+              <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Overall Task Progress</span>
+              <p className="text-[26px] font-black text-text-main tracking-tight">{stats.taskCompletionRate}%</p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+            <div className="w-10 h-10 rounded-2xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green group-hover:scale-105 transition-transform shrink-0">
               <CheckCircle className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 space-y-1.5">
-            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden border border-white/5">
+            <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-brand-green rounded-full transition-all duration-500"
                 style={{ width: `${stats.taskCompletionRate}%` }}
@@ -166,18 +166,18 @@ export default function HealthmateDashboard() {
         </div>
 
         {/* Card 4: Action Required */}
-        <div className="bg-[#22313F] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+        <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <span className="text-red-400/80 text-[10px] font-extrabold uppercase tracking-wider">Action Required</span>
-              <p className="text-3xl font-extrabold tracking-tight text-red-400">{stats.actionRequiredCount}</p>
+              <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Action Required</span>
+              <p className="text-[26px] font-black text-red-500 tracking-tight">{stats.actionRequiredCount}</p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+            <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-105 transition-transform shrink-0">
               <Calendar className="w-5 h-5" />
             </div>
           </div>
           <div className="text-[10px] font-bold text-slate-400 mt-4 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
             <span>Partners with overdue tasks</span>
           </div>
         </div>
@@ -188,8 +188,8 @@ export default function HealthmateDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left: Recent Activity Feed (2 Cols) */}
-        <div className="lg:col-span-2 bg-white border border-border-leaf/30 rounded-3xl shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-5 border-b border-border-leaf/25 flex items-center justify-between shrink-0 bg-white">
+        <div className="lg:col-span-2 bg-white border border-border-leaf rounded-[24px] shadow-sm overflow-hidden flex flex-col">
+          <div className="px-6 py-5 border-b border-border-leaf flex items-center justify-between shrink-0 bg-white">
             <div className="flex items-center gap-6">
               <button
                 onClick={() => setDashboardTab('activity')}
@@ -235,15 +235,15 @@ export default function HealthmateDashboard() {
               ) : (
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50/50 border-b border-border-leaf/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
-                      <th className="px-6 py-3.5">Partner Name</th>
-                      <th className="px-6 py-3.5">Phase</th>
-                      <th className="px-6 py-3.5">Type</th>
-                      <th className="px-6 py-3.5">Category</th>
-                      <th className="px-6 py-3.5">Last Updated</th>
+                    <tr className="bg-slate-50/50 border-b border-border-leaf/50 text-text-muted text-[10px] font-bold uppercase tracking-wider">
+                      <th className="px-6 py-4">Partner Name</th>
+                      <th className="px-6 py-4">Phase</th>
+                      <th className="px-6 py-4">Type</th>
+                      <th className="px-6 py-4">Category</th>
+                      <th className="px-6 py-4">Last Updated</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border-leaf/25">
+                  <tbody className="divide-y divide-border-leaf/50">
                     {recentActivity.map((hm) => {
                       const localDate = new Date(hm.updatedAt).toLocaleDateString(undefined, {
                         month: 'short',
@@ -260,7 +260,7 @@ export default function HealthmateDashboard() {
                         >
                           {/* Name */}
                           <td className="px-6 py-4">
-                            <span className="text-text-main font-extrabold text-xs group-hover:text-brand-teal transition-colors">
+                            <span className="text-text-main font-bold text-xs group-hover:text-brand-teal transition-colors">
                               {hm.name}
                             </span>
                           </td>
@@ -306,15 +306,15 @@ export default function HealthmateDashboard() {
               ) : (
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50/50 border-b border-border-leaf/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
-                      <th className="px-6 py-3.5">Partner Name</th>
-                      <th className="px-6 py-3.5">Recall Date & Time</th>
-                      <th className="px-6 py-3.5">Remarks / Notes Preview</th>
-                      <th className="px-6 py-3.5">Onboarding Phase</th>
-                      {isUserAdmin && <th className="px-6 py-3.5">Assignee</th>}
+                    <tr className="bg-slate-50/50 border-b border-border-leaf/50 text-text-muted text-[10px] font-bold uppercase tracking-wider">
+                      <th className="px-6 py-4">Partner Name</th>
+                      <th className="px-6 py-4">Recall Date & Time</th>
+                      <th className="px-6 py-4">Remarks / Notes Preview</th>
+                      <th className="px-6 py-4">Onboarding Phase</th>
+                      {isUserAdmin && <th className="px-6 py-4">Assignee</th>}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border-leaf/25">
+                  <tbody className="divide-y divide-border-leaf/50">
                     {sortedRecalls.map((hm) => {
                       const isOverdue = new Date(hm.recallReminder) < new Date();
                       const localDate = new Date(hm.recallReminder).toLocaleString(undefined, {
@@ -334,7 +334,7 @@ export default function HealthmateDashboard() {
                         >
                           {/* Name */}
                           <td className="px-6 py-4">
-                            <span className="text-text-main font-extrabold text-xs group-hover:text-brand-teal transition-colors">
+                            <span className="text-text-main font-bold text-xs group-hover:text-brand-teal transition-colors">
                               {hm.name}
                             </span>
                           </td>
@@ -360,7 +360,7 @@ export default function HealthmateDashboard() {
                           </td>
                           {/* Assignee if Admin */}
                           {isUserAdmin && (
-                            <td className="px-6 py-4">
+                           <td className="px-6 py-4">
                               <span className="text-text-muted text-xs font-semibold">
                                 {hm.opsUser?.name || 'Unassigned'}
                               </span>
@@ -379,13 +379,13 @@ export default function HealthmateDashboard() {
         {/* Right Column: Pipeline Breakdown & Stress Buster (1 Col) */}
         <div className="space-y-6 flex flex-col justify-start">
           {/* Operational Pipeline Status breakdown */}
-          <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6 space-y-5 flex flex-col justify-between">
-            <div className="space-y-4">
+          <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7 space-y-5 flex flex-col justify-between">
+            <div className="space-y-5">
               <div className="flex items-center gap-2">
-                <h3 className="text-text-main font-extrabold text-sm tracking-wide">Pipeline Breakdown</h3>
+                <h3 className="text-text-main font-black text-sm tracking-wide">Pipeline Breakdown</h3>
               </div>
               
-              <div className="space-y-3.5">
+              <div className="space-y-4">
                 {Object.keys(PHASE_LABELS).map((phase) => {
                   const count = stats.phaseBreakdown[phase] || 0;
                   const percentage = stats.totalHealthmates > 0
@@ -401,15 +401,15 @@ export default function HealthmateDashboard() {
                   }[phase];
 
                   return (
-                    <div key={phase} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs font-bold text-text-main">
+                    <div key={phase} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-text-main">
                         <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${indicatorColor}`} />
+                          <span className={`w-2.5 h-2.5 rounded-full ${indicatorColor}`} />
                           <span>{PHASE_LABELS[phase]}</span>
                         </div>
-                        <span className="text-text-muted">{count} partner{count !== 1 ? 's' : ''} ({percentage}%)</span>
+                        <span className="text-slate-400 font-semibold">{count} partner{count !== 1 ? 's' : ''} ({percentage}%)</span>
                       </div>
-                      <div className="w-full h-1 bg-slate-50 border border-slate-200/30 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className={`h-full ${indicatorColor} rounded-full transition-all duration-500`}
                           style={{ width: `${percentage}%` }}
@@ -421,8 +421,8 @@ export default function HealthmateDashboard() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-border-leaf/30 shrink-0">
-              <span className="text-[10px] font-bold text-text-muted block">
+            <div className="pt-5 border-t border-border-leaf shrink-0">
+              <span className="text-[10px] font-bold text-text-muted block mb-2">
                 Want to manage listings?
               </span>
               <button
@@ -431,68 +431,68 @@ export default function HealthmateDashboard() {
                   const layout = document.querySelector('nav button:nth-child(2)');
                   if (layout) layout.click();
                 }}
-                className="mt-2 w-full bg-slate-50 border border-border-leaf/80 hover:bg-slate-100 hover:border-brand-teal text-text-main font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-border-leaf hover:bg-slate-100 text-text-main font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all"
               >
                 Open Pipeline Board
-                <ArrowRight className="w-3.5 h-3.5 text-brand-teal" />
+                <ArrowRight className="w-4 h-4 text-brand-teal" />
               </button>
             </div>
           </div>
 
           {/* Stress Buster Mini-game widget */}
-          <div className="bg-[#22313F] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+          <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
-                <h3 className="text-white font-extrabold text-sm tracking-wide mt-1">Ticket Deflector</h3>
+                <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
+                <h3 className="text-text-main font-black text-sm tracking-wide mt-1">Ticket Deflector</h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+              <div className="w-10 h-10 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0">
                 <TrendingUp className="w-5 h-5 animate-pulse" />
               </div>
             </div>
-            <p className="text-[10px] font-bold text-slate-400 mt-2 leading-relaxed">
+            <p className="text-[11px] font-semibold text-slate-500 mt-3 leading-relaxed">
               Feeling overwhelmed by onboarding checkouts? Take a quick 60-second deflector run to clear your head!
             </p>
-            <div className="pt-4 border-t border-white/5 shrink-0 mt-4">
+            <div className="pt-4 border-t border-border-leaf shrink-0 mt-4">
               <button
                 onClick={() => {
                   window.__initialStressBusterTab = 'deflector';
                   const btn = Array.from(document.querySelectorAll('nav button')).find(el => el.textContent.includes('Stress Buster'));
                   if (btn) btn.click();
                 }}
-                className="w-full bg-brand-teal hover:bg-brand-teal-hover text-white font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-brand-teal/10 hover:shadow-lg"
+                className="w-full bg-brand-teal hover:bg-teal-600 text-white font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
               >
                 Launch Ticket Deflector
-                <ArrowRight className="w-3.5 h-3.5 text-white" />
+                <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
           </div>
 
           {/* Tug of War Mini-game widget */}
-          <div className="bg-[#22313F] border border-white/5 shadow-xl text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+          <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
-                <h3 className="text-white font-extrabold text-sm tracking-wide mt-1">Server Tug of War</h3>
+                <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Stress-Buster Break</span>
+                <h3 className="text-text-main font-black text-sm tracking-wide mt-1">Server Tug of War</h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+              <div className="w-10 h-10 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0">
                 <Zap className="w-5 h-5 animate-pulse" />
               </div>
             </div>
-            <p className="text-[10px] font-bold text-slate-400 mt-2 leading-relaxed">
+            <p className="text-[11px] font-semibold text-slate-500 mt-3 leading-relaxed">
               Relentless traffic is crashing server health! Mash spacebar or click rapidly to stabilize the SLA.
             </p>
-            <div className="pt-4 border-t border-white/5 shrink-0 mt-4">
+            <div className="pt-4 border-t border-border-leaf shrink-0 mt-4">
               <button
                 onClick={() => {
                   window.__initialStressBusterTab = 'tug_of_war';
                   const btn = Array.from(document.querySelectorAll('nav button')).find(el => el.textContent.includes('Stress Buster'));
                   if (btn) btn.click();
                 }}
-                className="w-full bg-brand-teal hover:bg-brand-teal-hover text-white font-extrabold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md shadow-brand-teal/10 hover:shadow-lg"
+                className="w-full bg-brand-teal hover:bg-teal-600 text-white font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
               >
                 Launch Tug of War
-                <ArrowRight className="w-3.5 h-3.5 text-white" />
+                <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
           </div>

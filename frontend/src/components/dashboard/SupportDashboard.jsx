@@ -50,19 +50,19 @@ export default function SupportDashboard() {
 
   if (!isAdmin) {
     return (
-      <div className="p-8 text-center text-white">
-        <p className="font-bold text-lg text-red-400">Access Denied</p>
-        <p className="text-sm text-slate-400 mt-2">Only administrators can access the Task Manager.</p>
+      <div className="p-8 text-center text-text-main">
+        <p className="font-bold text-lg text-red-500">Access Denied</p>
+        <p className="text-sm text-slate-500 mt-2">Only administrators can access the Task Manager.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full h-full flex flex-col">
+    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full flex flex-col">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-text-main font-extrabold text-2xl tracking-tight">Task Manager</h1>
+          <h1 className="text-text-main font-black text-2xl tracking-tight">Task Manager</h1>
           <p className="text-text-muted/80 text-sm font-semibold mt-0.5">
             Manually route and assign newly added partner enquiries to active, online operational staff.
           </p>
@@ -70,24 +70,24 @@ export default function SupportDashboard() {
       </div>
 
       {/* Manual Partner Assignment Workspace */}
-      <div className="flex-1 min-h-0 bg-[#22313F] text-white border border-white/5 rounded-3xl shadow-xl overflow-hidden flex flex-col min-h-[300px]">
-        <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#1A252F]">
+      <div className="flex-1 min-h-0 bg-white text-text-main border border-border-leaf rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[300px]">
+        <div className="px-6 py-5 border-b border-border-leaf flex items-center justify-between shrink-0 bg-white">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
+            <div className="w-8 h-8 rounded-[12px] bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal">
               <Wrench className="w-4 h-4" />
             </div>
-            <h3 className="text-white font-extrabold text-sm tracking-wide">Manual Partner Assignment</h3>
+            <h3 className="text-text-main font-black text-sm tracking-wide ml-1">Manual Partner Assignment</h3>
           </div>
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
             <button
               onClick={handleManualRefresh}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all focus:outline-none"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-text-main hover:bg-slate-50 transition-all focus:outline-none"
               title="Refresh Registry"
               disabled={refreshing}
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-brand-teal' : ''}`} />
             </button>
-            <span className="text-[10px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-bold text-text-muted bg-slate-50 border border-border-leaf px-2.5 py-0.5 rounded-full">
               {healthmates.length} partner(s)
             </span>
           </div>
@@ -102,7 +102,7 @@ export default function SupportDashboard() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#1A252F]/50 border-b border-white/5 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">
+                <tr className="bg-slate-50/50 border-b border-border-leaf/50 text-text-muted text-[10px] font-bold uppercase tracking-wider">
                   <th className="px-6 py-4">Partner Name</th>
                   <th className="px-6 py-4">Type & Category</th>
                   <th className="px-6 py-4">Current Assignee</th>
@@ -110,7 +110,7 @@ export default function SupportDashboard() {
                   <th className="px-6 py-4">Date Added</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border-leaf/50">
                 {healthmates.map((hm) => {
                   const initials = hm.name
                     ? hm.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -129,11 +129,11 @@ export default function SupportDashboard() {
                   );
 
                   return (
-                    <tr key={hm.id} className="hover:bg-white/5 transition-colors group">
+                    <tr key={hm.id} className="hover:bg-slate-50/80 transition-colors group">
                       {/* Name */}
                       <td className="px-6 py-4">
-                        <span className="text-white font-extrabold text-xs flex items-center gap-2.5">
-                          <span className="w-6 h-6 rounded-full bg-brand-teal/20 flex items-center justify-center text-brand-teal text-[9px] font-extrabold border border-brand-teal/30 shrink-0 shadow-sm">
+                        <span className="text-text-main font-bold text-xs flex items-center gap-3">
+                          <span className="w-7 h-7 rounded-full bg-brand-teal/10 flex items-center justify-center text-brand-teal text-[9px] font-black border border-brand-teal/20 shrink-0 shadow-sm">
                             {initials}
                           </span>
                           {hm.name}
@@ -142,18 +142,18 @@ export default function SupportDashboard() {
                       {/* Type & Category */}
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-1">
-                          <span className="text-slate-300 text-xs font-semibold">
+                          <span className="text-slate-500 text-xs font-semibold">
                             {hm.category}
                           </span>
-                          <span className="text-[8px] text-slate-500 font-extrabold tracking-wide uppercase">
+                          <span className="text-[9px] text-text-muted font-bold tracking-wide uppercase">
                             {hm.type}
                           </span>
                         </div>
                       </td>
                       {/* Current Assignee */}
                       <td className="px-6 py-4">
-                        <span className="text-slate-300 text-xs font-semibold flex items-center gap-1.5 flex-wrap">
-                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${hm.opsUser?.isOnline ? 'bg-brand-green' : 'bg-red-500'}`} />
+                        <span className="text-slate-500 text-xs font-semibold flex items-center gap-2 flex-wrap">
+                          <span className={`w-2 h-2 rounded-full shrink-0 shadow-sm ${hm.opsUser?.isOnline ? 'bg-brand-green' : 'bg-red-500'}`} />
                           {hm.opsUser?.name || 'Unassigned'}
                         </span>
                       </td>
@@ -163,7 +163,7 @@ export default function SupportDashboard() {
                           value={hm.opsUserId}
                           disabled={assigningId === hm.id}
                           onChange={(e) => handleAssign(hm.id, e.target.value)}
-                          className="bg-[#121A21] border border-white/10 focus:border-brand-teal/80 text-white rounded-xl py-1.5 px-3 text-xs font-bold transition-all focus:outline-none cursor-pointer max-w-[180px] truncate"
+                          className="bg-slate-50 border border-border-leaf hover:bg-slate-100 hover:border-slate-300 focus:border-brand-teal text-text-main rounded-[12px] py-1.5 px-3 text-xs font-bold transition-all focus:outline-none cursor-pointer max-w-[180px] truncate"
                         >
                           <option value={hm.opsUserId} disabled>
                             Change Assignment...
@@ -182,8 +182,8 @@ export default function SupportDashboard() {
                       </td>
                       {/* Date Added */}
                       <td className="px-6 py-4">
-                        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <span className="text-[10px] font-bold text-text-muted flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           {localDate}
                         </span>
                       </td>

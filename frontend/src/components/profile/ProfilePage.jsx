@@ -140,48 +140,47 @@ export default function ProfilePage({ onClose }) {
   const [c1, c2] = getAvatarGradient(profile?.name);
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: '#0d1117', color: '#e2e8f0', fontFamily: 'inherit' }}>
+    <div className="flex-1 overflow-y-auto bg-slate-50/50 text-text-main font-sans min-h-full">
       {/* Header bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 24px', background: '#0f1419', borderBottom: '1px solid rgba(255,255,255,0.06)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div className="flex items-center gap-3 px-6 py-4 bg-white border-b border-border-leaf sticky top-0 z-10 shadow-sm">
         <button
           onClick={onClose}
           title="Back (Esc)"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', display: 'flex', padding: 6, borderRadius: 8 }}
-          onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-          onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+          className="text-slate-400 hover:text-text-main bg-slate-50 hover:bg-slate-100 p-2 rounded-[12px] transition-all border border-border-leaf shadow-sm"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft className="w-5 h-5" />
         </button>
-        <h1 style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', margin: 0, letterSpacing: '-0.3px' }}>My Profile</h1>
+        <h1 className="text-base font-black text-text-main tracking-tight m-0">My Profile</h1>
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 520, margin: '0 auto', padding: '40px 24px' }}>
+      <div className="max-w-[520px] mx-auto py-10 px-6">
 
         {/* Avatar */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 40 }}>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div className="flex flex-col items-center mb-10">
+          <div className="relative inline-block">
             {/* Status ring */}
-            <div style={{
-              position: 'absolute', inset: -4, borderRadius: '50%',
-              boxShadow: `0 0 0 3px ${currentStatus.color}, 0 0 20px ${currentStatus.ring}`,
-              pointerEvents: 'none', transition: 'box-shadow 0.3s',
-            }} />
+            <div 
+              className="absolute -inset-1.5 rounded-full transition-shadow duration-300 pointer-events-none"
+              style={{
+                boxShadow: `0 0 0 3px ${currentStatus.color}, 0 0 20px ${currentStatus.ring}`,
+              }} 
+            />
 
             {/* Avatar image or initials */}
             {avatarPreview ? (
               <img
                 src={avatarPreview}
                 alt="avatar"
-                style={{ width: 108, height: 108, borderRadius: '50%', objectFit: 'cover', display: 'block', border: '3px solid #0d1117' }}
+                className="w-[108px] h-[108px] rounded-full object-cover block border-4 border-white shadow-sm"
               />
             ) : (
-              <div style={{
-                width: 108, height: 108, borderRadius: '50%',
-                background: `linear-gradient(135deg, ${c1}, ${c2})`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 38, fontWeight: 700, color: 'white', border: '3px solid #0d1117',
-              }}>
+              <div 
+                className="w-[108px] h-[108px] rounded-full flex items-center justify-center text-[38px] font-black text-white border-4 border-white shadow-sm"
+                style={{
+                  background: `linear-gradient(135deg, ${c1}, ${c2})`,
+                }}
+              >
                 {getInitials(name || profile?.name)}
               </div>
             )}
@@ -190,83 +189,89 @@ export default function ProfilePage({ onClose }) {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              style={{
-                position: 'absolute', bottom: 2, right: 2,
-                width: 32, height: 32, borderRadius: '50%',
-                background: uploading ? '#334155' : '#0d9488',
-                border: '2px solid #0d1117',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: uploading ? 'not-allowed' : 'pointer',
-                transition: 'background 0.2s',
-              }}
+              className={`absolute bottom-0.5 right-0.5 w-8 h-8 rounded-full border-2 border-white flex items-center justify-center transition-all shadow-sm ${
+                uploading ? 'bg-slate-400 cursor-not-allowed' : 'bg-brand-teal hover:bg-brand-teal-hover cursor-pointer'
+              }`}
               title="Change profile picture"
             >
               {uploading
-                ? <span style={{ width: 12, height: 12, border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
-                : <Camera size={14} color="white" />
+                ? <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full inline-block animate-spin" />
+                : <Camera className="w-3.5 h-3.5 text-white" />
               }
             </button>
-            <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
           </div>
 
-          <p style={{ marginTop: 16, fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>{profile?.name}</p>
-          <p style={{ fontSize: 12, color: currentStatus.color, fontWeight: 600, marginTop: 3, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: currentStatus.color, display: 'inline-block' }} />
+          <p className="mt-5 text-xl font-black text-text-main tracking-tight">{profile?.name}</p>
+          <p className="text-xs font-bold mt-1 flex items-center gap-1.5" style={{ color: currentStatus.color }}>
+            <span className="w-1.5 h-1.5 rounded-full inline-block shadow-sm" style={{ background: currentStatus.color }} />
             {currentStatus.label}
           </p>
         </div>
 
         {/* Name — read-only */}
-        <div style={{ marginBottom: 28 }}>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+        <div className="mb-7">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">
             Display Name
           </label>
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#475569' }}>
+          <div className="bg-white border border-border-leaf rounded-[16px] px-4 py-3 text-sm font-bold text-slate-600 shadow-sm">
             {profile?.name || '—'}
           </div>
         </div>
 
         {/* Role (read-only) */}
-        <div style={{ marginBottom: 32 }}>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+        <div className="mb-9">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">
             Job Role
           </label>
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '11px 14px', fontSize: 14, color: '#475569' }}>
+          <div className="bg-white border border-border-leaf rounded-[16px] px-4 py-3 text-sm font-bold text-slate-600 shadow-sm">
             {profile?.role ? profile.role.charAt(0).toUpperCase() + profile.role.slice(1) : '—'}
           </div>
         </div>
 
         {/* Status selector */}
-        <div style={{ marginBottom: 36 }}>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
+        <div className="mb-10">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3">
             Status
           </label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div className="grid grid-cols-2 gap-3">
             {STATUS_OPTIONS.map((opt) => {
               const isSelected = status === opt.key;
               return (
                 <button
                   key={opt.key}
                   onClick={() => setStatus(opt.key)}
+                  className={`flex items-center gap-3 p-3 rounded-[16px] text-left cursor-pointer transition-all ${
+                    isSelected 
+                      ? 'bg-white shadow-sm border border-transparent ring-1 ring-brand-teal/30' 
+                      : 'bg-white border border-border-leaf shadow-sm hover:border-slate-300'
+                  }`}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '12px 14px', borderRadius: 12, textAlign: 'left', cursor: 'pointer',
-                    background: isSelected ? `${opt.color}15` : 'rgba(255,255,255,0.04)',
-                    border: isSelected ? `1px solid ${opt.color}50` : '1px solid rgba(255,255,255,0.07)',
-                    transition: 'all 0.15s',
+                    backgroundColor: isSelected ? `${opt.color}10` : '#ffffff',
+                    borderColor: isSelected ? `${opt.color}40` : '',
                   }}
                 >
-                  <div style={{ position: 'relative', flexShrink: 0 }}>
-                    <span style={{ width: 12, height: 12, borderRadius: '50%', background: opt.color, display: 'block', boxShadow: isSelected ? `0 0 8px ${opt.color}` : 'none' }} />
+                  <div className="relative shrink-0">
+                    <span 
+                      className="w-3 h-3 rounded-full block"
+                      style={{ 
+                        background: opt.color,
+                        boxShadow: isSelected ? `0 0 8px ${opt.color}` : 'none'
+                      }} 
+                    />
                     {opt.key === 'dnd' && (
-                      <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 6, height: 1.5, background: 'white', borderRadius: 1, display: 'block' }} />
+                      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-[2px] bg-white rounded-sm block" />
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: isSelected ? opt.color : '#94a3b8', margin: 0 }}>{opt.label}</p>
-                    <p style={{ fontSize: 10, color: '#475569', margin: '1px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{opt.desc}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-xs font-black m-0 ${isSelected ? 'text-text-main' : 'text-slate-500'}`} style={{ color: isSelected ? opt.color : '' }}>
+                      {opt.label}
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {opt.desc}
+                    </p>
                   </div>
-                  {isSelected && <Check size={14} color={opt.color} style={{ flexShrink: 0 }} />}
+                  {isSelected && <Check className="w-4 h-4 shrink-0" color={opt.color} />}
                 </button>
               );
             })}
@@ -276,18 +281,18 @@ export default function ProfilePage({ onClose }) {
         <button
           onClick={handleSave}
           disabled={saving}
-          style={{
-            width: '100%', padding: '13px', borderRadius: 12, border: 'none',
-            background: saving ? '#0f766e' : 'linear-gradient(135deg, #0f766e, #0d9488)',
-            color: 'white', fontSize: 14, fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer',
-            opacity: saving ? 0.7 : 1, transition: 'all 0.2s', letterSpacing: '0.02em',
-          }}
+          className={`w-full p-3.5 rounded-[16px] border-none text-sm font-black text-white shadow-sm transition-all tracking-wide flex items-center justify-center gap-2 ${
+            saving ? 'bg-brand-teal/70 cursor-not-allowed' : 'bg-brand-teal hover:bg-brand-teal-hover cursor-pointer hover:shadow-md'
+          }`}
         >
-          {saving ? 'Saving…' : 'Set Status'}
+          {saving ? (
+            <>
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full inline-block animate-spin" />
+              Saving…
+            </>
+          ) : 'Set Status'}
         </button>
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

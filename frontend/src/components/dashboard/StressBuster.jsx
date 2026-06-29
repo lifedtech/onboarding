@@ -22,21 +22,21 @@ export default function StressBuster({ onClose, gameSession, setGameSession }) {
   }, [gameSession]);
 
   return (
-    <div className="flex-1 flex flex-col items-center p-6 md:p-8 bg-[#0b1413] text-[#e2e8f0] h-full overflow-y-auto">
+    <div className="flex-1 flex flex-col items-center p-6 md:p-8 bg-slate-50/50 text-text-main h-full overflow-y-auto font-sans">
       {/* Page Header Title Card */}
-      <div className="w-full max-w-2xl flex items-center justify-between mb-6 border-b border-white/10 pb-4 shrink-0">
+      <div className="w-full max-w-2xl flex items-center justify-between mb-6 border-b border-border-leaf pb-4 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal shadow-inner">
+          <div className="w-10 h-10 rounded-[12px] bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal shadow-sm">
             <Gamepad2 className="w-5 h-5 animate-pulse text-brand-teal" />
           </div>
           <div>
-            <h1 className="text-white font-black text-2xl tracking-tight leading-none">Stress-Buster Lounge</h1>
-            <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-wider mt-1">Take a break and clear your head with mini-games</p>
+            <h1 className="text-text-main font-black text-2xl tracking-tight leading-none">Stress-Buster Lounge</h1>
+            <p className="text-slate-500 text-[10px] font-extrabold uppercase tracking-wider mt-1.5">Take a break and clear your head with mini-games</p>
           </div>
         </div>
         <button 
           onClick={onClose}
-          className="text-[#64748b] hover:text-white hover:bg-white/5 p-2 rounded-xl transition-all"
+          className="text-slate-400 hover:text-text-main hover:bg-slate-100 p-2 rounded-[12px] transition-all"
           title="Back to Dashboard"
         >
           <X className="w-5 h-5" />
@@ -44,14 +44,14 @@ export default function StressBuster({ onClose, gameSession, setGameSession }) {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="w-full max-w-2xl flex border-b border-white/10 mb-6 shrink-0">
+      <div className="w-full max-w-2xl flex border-b border-border-leaf mb-6 shrink-0 gap-2">
         <button
           onClick={() => !gameSession && setActiveTab('deflector')}
           disabled={gameSession}
-          className={`px-5 py-3 text-xs font-extrabold uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-5 py-3 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 rounded-t-[12px] ${
             activeTab === 'deflector'
-              ? 'border-brand-teal text-brand-teal bg-white/5'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'border-brand-teal text-brand-teal bg-brand-teal/5'
+              : 'border-transparent text-slate-500 hover:text-text-main hover:bg-slate-50'
           } ${gameSession ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         >
           <Shield className="w-4 h-4" />
@@ -60,10 +60,10 @@ export default function StressBuster({ onClose, gameSession, setGameSession }) {
         <button
           onClick={() => !gameSession && setActiveTab('tug_of_war')}
           disabled={gameSession}
-          className={`px-5 py-3 text-xs font-extrabold uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-5 py-3 text-xs font-black uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 rounded-t-[12px] ${
             activeTab === 'tug_of_war'
-              ? 'border-brand-teal text-brand-teal bg-white/5'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'border-brand-teal text-brand-teal bg-brand-teal/5'
+              : 'border-transparent text-slate-500 hover:text-text-main hover:bg-slate-50'
           } ${gameSession ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         >
           <Zap className="w-4 h-4" />

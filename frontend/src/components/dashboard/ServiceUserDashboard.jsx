@@ -15,7 +15,7 @@ export default function ServiceUserDashboard() {
 
   if (isLoading && serviceUsers.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] gap-3 bg-bg-base">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-140px)] gap-3 bg-slate-50/50">
         <div className="w-8 h-8 border-4 border-brand-teal border-t-transparent rounded-full animate-spin" />
         <p className="text-text-muted text-xs font-bold uppercase tracking-wider">Loading Service Users...</p>
       </div>
@@ -28,17 +28,17 @@ export default function ServiceUserDashboard() {
   const newThisWeek = Math.floor(totalUsers * 0.1) || 0;
 
   return (
-    <div className="p-6 md:p-8 space-y-6 bg-bg-base w-full overflow-auto flex-1">
+    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto flex-1">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-text-main font-extrabold text-2xl tracking-tight">Service Users Dashboard</h1>
+          <h1 className="text-text-main font-black text-2xl tracking-tight">Service Users Dashboard</h1>
           <p className="text-text-muted/80 text-sm font-semibold mt-0.5">Analytics and overview for registered clients.</p>
         </div>
       </div>
 
       {/* Analytics Tabs */}
-      <div className="flex items-center gap-6 border-b border-border-leaf/30 pt-2">
+      <div className="flex items-center gap-6 border-b border-border-leaf/50 pt-2">
         {['overview', 'activity', 'demographics'].map((tab) => (
           <button
             key={tab}
@@ -63,13 +63,13 @@ export default function ServiceUserDashboard() {
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Total Users */}
-              <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+              <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <span className="text-brand-teal/80 text-[10px] font-extrabold uppercase tracking-wider">Total Registered Users</span>
-                    <p className="text-3xl font-extrabold tracking-tight">{totalUsers}</p>
+                    <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Total Registered Users</span>
+                    <p className="text-[26px] font-black text-text-main tracking-tight">{totalUsers}</p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-brand-teal/15 border border-brand-teal/30 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center text-brand-teal group-hover:scale-105 transition-transform shrink-0">
                     <Users className="w-5 h-5" />
                   </div>
                 </div>
@@ -80,13 +80,13 @@ export default function ServiceUserDashboard() {
               </div>
 
               {/* Active Enquiries */}
-              <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+              <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <span className="text-amber-500/80 text-[10px] font-extrabold uppercase tracking-wider">Active Enquiries</span>
-                    <p className="text-xl font-extrabold tracking-tight">{activeEnquiries}</p>
+                    <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">Active Enquiries</span>
+                    <p className="text-[26px] font-black text-text-main tracking-tight">{activeEnquiries}</p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform shrink-0">
                     <AlertTriangle className="w-5 h-5" />
                   </div>
                 </div>
@@ -96,13 +96,13 @@ export default function ServiceUserDashboard() {
               </div>
 
               {/* New Signups */}
-              <div className="bg-[#1a2332] border border-white/5 shadow-xl shadow-brand-teal/5 text-white rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px]">
+              <div className="bg-white border border-border-leaf shadow-sm rounded-[24px] p-6 relative overflow-hidden flex flex-col justify-between group min-h-[145px] hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <span className="text-brand-green/80 text-[10px] font-extrabold uppercase tracking-wider">New This Week</span>
-                    <p className="text-3xl font-extrabold tracking-tight">{newThisWeek}</p>
+                    <span className="text-text-muted text-[10px] font-extrabold uppercase tracking-wider">New This Week</span>
+                    <p className="text-[26px] font-black text-text-main tracking-tight">{newThisWeek}</p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-brand-green/10 border border-brand-green/30 flex items-center justify-center text-brand-green group-hover:scale-105 transition-transform shrink-0 shadow-inner">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-green/10 border border-brand-green/20 flex items-center justify-center text-brand-green group-hover:scale-105 transition-transform shrink-0">
                     <TrendingUp className="w-5 h-5" />
                   </div>
                 </div>
@@ -112,20 +112,20 @@ export default function ServiceUserDashboard() {
               </div>
             </div>
 
-            <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-              <h2 className="text-lg font-bold text-text-main mb-4">Recent Service Users</h2>
+            <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7">
+              <h2 className="text-lg font-black text-text-main mb-6">Recent Service Users</h2>
               {serviceUsers.length === 0 ? (
-                <p className="text-text-muted text-sm">No service users found.</p>
+                <p className="text-text-muted text-sm font-medium">No service users found.</p>
               ) : (
                 <div className="space-y-2">
                   {serviceUsers.slice(0, 5).map(user => (
-                    <div key={user.id} className="flex justify-between items-center p-3 hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all rounded-xl">
+                    <div key={user.id} className="flex justify-between items-center p-4 hover:bg-slate-50 border border-transparent hover:border-border-leaf/50 transition-all rounded-[16px]">
                       <div>
                         <p className="font-bold text-sm text-text-main">{user.name}</p>
-                        <p className="text-xs text-text-muted">{user.email}</p>
+                        <p className="text-xs text-text-muted mt-0.5">{user.email}</p>
                       </div>
                       <div className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
+                        <Calendar className="w-4 h-4" />
                         {new Date(user.createdAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -139,13 +139,13 @@ export default function ServiceUserDashboard() {
         {/* ACTIVITY TAB */}
         {activeTab === 'activity' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6 min-h-[300px] flex flex-col">
-               <div className="flex items-center justify-between mb-6">
-                 <h2 className="text-lg font-bold text-text-main flex items-center gap-2">
+            <div className="lg:col-span-2 bg-white border border-border-leaf rounded-[24px] shadow-sm p-7 min-h-[300px] flex flex-col">
+               <div className="flex items-center justify-between mb-8">
+                 <h2 className="text-lg font-black text-text-main flex items-center gap-2">
                    <Activity className="w-5 h-5 text-brand-teal" />
                    Login Frequency (Last 7 Days)
                  </h2>
-                 <span className="text-xs font-bold text-brand-green bg-brand-green/10 px-2 py-1 rounded-lg">+14% vs last week</span>
+                 <span className="text-xs font-black text-brand-green bg-brand-green/10 border border-brand-green/20 px-2.5 py-1 rounded-lg">+14% vs last week</span>
                </div>
                
                {/* Mock Bar Chart */}
@@ -154,41 +154,41 @@ export default function ServiceUserDashboard() {
                    const height = 30 + Math.random() * 60; // Random height between 30% and 90%
                    return (
                      <div key={day} className="flex flex-col items-center gap-3 flex-1 group">
-                       <div className="w-full bg-slate-100 rounded-t-xl relative flex items-end justify-center" style={{ height: '200px' }}>
+                       <div className="w-full bg-slate-100 rounded-t-[12px] relative flex items-end justify-center" style={{ height: '200px' }}>
                           <div 
-                            className="w-full bg-brand-teal/80 group-hover:bg-brand-teal transition-all rounded-t-xl" 
+                            className="w-full bg-brand-teal/80 group-hover:bg-brand-teal transition-all rounded-t-[12px]" 
                             style={{ height: `${height}%` }}
                           />
                           {/* Tooltip */}
-                          <div className="absolute -top-8 bg-[#1a2332] text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute -top-10 bg-text-main text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
                             {Math.floor(height * 2.5)} Logins
                           </div>
                        </div>
-                       <span className="text-xs font-bold text-slate-400 group-hover:text-text-main">{day}</span>
+                       <span className="text-[11px] font-bold text-slate-400 group-hover:text-text-main uppercase tracking-wider">{day}</span>
                      </div>
                    );
                  })}
                </div>
             </div>
 
-            <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6 space-y-6">
-              <h2 className="text-lg font-bold text-text-main flex items-center gap-2">
+            <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7 space-y-8">
+              <h2 className="text-lg font-black text-text-main flex items-center gap-2">
                 <MonitorPlay className="w-5 h-5 text-purple-500" />
                 Feature Usage
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {[
                   { label: 'Booking System', percent: 85, color: 'bg-brand-teal' },
                   { label: 'Chat Support', percent: 62, color: 'bg-amber-500' },
                   { label: 'Profile Updates', percent: 34, color: 'bg-purple-500' },
                   { label: 'Article Reads', percent: 91, color: 'bg-brand-green' }
                 ].map(stat => (
-                  <div key={stat.label} className="space-y-1.5">
+                  <div key={stat.label} className="space-y-2">
                     <div className="flex justify-between text-xs font-bold text-text-main">
                       <span>{stat.label}</span>
                       <span>{stat.percent}%</span>
                     </div>
-                    <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                       <div className={`h-full ${stat.color} rounded-full transition-all duration-1000`} style={{ width: `${stat.percent}%` }} />
                     </div>
                   </div>
@@ -202,8 +202,8 @@ export default function ServiceUserDashboard() {
         {activeTab === 'demographics' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Age Distribution */}
-            <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6 flex flex-col">
-              <h2 className="text-lg font-bold text-text-main flex items-center gap-2 mb-6">
+            <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7 flex flex-col">
+              <h2 className="text-lg font-black text-text-main flex items-center gap-2 mb-8">
                 <Target className="w-5 h-5 text-amber-500" />
                 Age Distribution
               </h2>
@@ -217,22 +217,22 @@ export default function ServiceUserDashboard() {
                 ].map(age => (
                   <div key={age.range} className="flex items-center gap-4 group">
                     <span className="w-16 text-xs font-bold text-slate-500 group-hover:text-text-main">{age.range}</span>
-                    <div className="flex-1 bg-slate-100 h-3 rounded-full overflow-hidden shadow-inner">
+                    <div className="flex-1 bg-slate-100 h-2.5 rounded-full overflow-hidden">
                       <div className="bg-brand-teal/80 group-hover:bg-brand-teal h-full transition-all duration-700" style={{ width: `${age.pct}%` }} />
                     </div>
-                    <span className="w-8 text-right text-xs font-extrabold text-text-main">{age.pct}%</span>
+                    <span className="w-10 text-right text-xs font-black text-text-main">{age.pct}%</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Top Countries */}
-            <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-              <h2 className="text-lg font-bold text-text-main flex items-center gap-2 mb-6">
+            <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7">
+              <h2 className="text-lg font-black text-text-main flex items-center gap-2 mb-6">
                 <MapPin className="w-5 h-5 text-brand-green" />
                 Top Countries
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {[
                   { name: 'United Kingdom', users: 12400 },
                   { name: 'United States', users: 8430 },
@@ -241,24 +241,24 @@ export default function ServiceUserDashboard() {
                   { name: 'Japan', users: 2900 },
                   { name: 'Brazil', users: 2100 }
                 ].map((loc, idx) => (
-                  <div key={loc.name} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
+                  <div key={loc.name} className="flex items-center justify-between p-3 rounded-[16px] hover:bg-slate-50 border border-transparent hover:border-border-leaf/50 transition-all">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 bg-slate-100 text-slate-500 rounded flex items-center justify-center text-xs font-bold">{idx + 1}</span>
+                      <span className="w-7 h-7 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center text-xs font-bold">{idx + 1}</span>
                       <span className="text-sm font-bold text-text-main">{loc.name}</span>
                     </div>
-                    <span className="text-sm font-extrabold text-brand-teal">{loc.users.toLocaleString()}</span>
+                    <span className="text-sm font-black text-brand-teal">{loc.users.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Top Cities */}
-            <div className="bg-white border border-border-leaf/30 rounded-3xl shadow-sm p-6">
-              <h2 className="text-lg font-bold text-text-main flex items-center gap-2 mb-6">
+            <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7">
+              <h2 className="text-lg font-black text-text-main flex items-center gap-2 mb-6">
                 <MapPin className="w-5 h-5 text-brand-teal" />
                 Top Cities
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {[
                   { name: 'London', users: 5240 },
                   { name: 'New York', users: 3843 },
@@ -267,12 +267,12 @@ export default function ServiceUserDashboard() {
                   { name: 'Manchester', users: 1290 },
                   { name: 'Tokyo', users: 1210 }
                 ].map((loc, idx) => (
-                  <div key={loc.name} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all">
+                  <div key={loc.name} className="flex items-center justify-between p-3 rounded-[16px] hover:bg-slate-50 border border-transparent hover:border-border-leaf/50 transition-all">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 bg-slate-100 text-slate-500 rounded flex items-center justify-center text-xs font-bold">{idx + 1}</span>
+                      <span className="w-7 h-7 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center text-xs font-bold">{idx + 1}</span>
                       <span className="text-sm font-bold text-text-main">{loc.name}</span>
                     </div>
-                    <span className="text-sm font-extrabold text-brand-teal">{loc.users.toLocaleString()}</span>
+                    <span className="text-sm font-black text-brand-teal">{loc.users.toLocaleString()}</span>
                   </div>
                 ))}
               </div>

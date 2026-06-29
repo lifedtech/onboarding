@@ -384,51 +384,49 @@ export default function ChatBoxTab({ onClose }) {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────────
   return (
-    <div style={{ display: 'flex', height: '100%', background: '#0d1117', color: '#e2e8f0', fontFamily: 'inherit', overflow: 'hidden' }}>
+    <div className="flex h-full bg-slate-50/50 text-text-main font-sans overflow-hidden">
 
       {/* ── LEFT PANEL ── */}
-      <div style={{ width: 300, display: 'flex', flexDirection: 'column', background: '#0f1117', borderRight: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+      <div className="w-[300px] flex flex-col bg-white border-r border-border-leaf shrink-0">
 
         {/* Header */}
-        <div style={{ padding: '20px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div className="p-5 border-b border-border-leaf/50">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <p style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.3px', margin: 0 }}>Messages</p>
-              <p style={{ fontSize: 11, color: '#475569', margin: '2px 0 0', fontWeight: 500 }}>
-                {contactList.length} contacts{totalUnread > 0 && <span style={{ color: '#f87171', marginLeft: 6 }}>· {totalUnread} unread</span>}
+              <p className="text-[15px] font-black text-text-main tracking-tight m-0">Messages</p>
+              <p className="text-[11px] text-text-muted mt-0.5 font-semibold">
+                {contactList.length} contacts{totalUnread > 0 && <span className="text-red-500 ml-1.5">· {totalUnread} unread</span>}
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', background: 'rgba(255,255,255,0.04)', padding: '4px 8px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center gap-1.5 text-[9px] text-brand-teal font-extrabold uppercase tracking-wider bg-brand-teal/10 px-2 py-1 rounded-full border border-brand-teal/20">
               <Lock size={10} />
               E2EE
             </div>
           </div>
 
           {/* Search */}
-          <div style={{ position: 'relative' }}>
-            <Search size={13} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#475569', pointerEvents: 'none' }} />
+          <div className="relative">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search teammates…"
-              style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '8px 10px 8px 30px', fontSize: 12, color: '#e2e8f0', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              className="w-full bg-slate-50 border border-border-leaf rounded-[12px] py-2 pl-8 pr-3 text-xs font-semibold text-text-main outline-none focus:border-brand-teal/50 transition-colors"
             />
           </div>
 
           {/* Filter pills */}
-          <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+          <div className="flex gap-1.5 mt-3">
             {[['all', 'All'], ['unread', 'Unread'], ['groups', 'Groups']].map(([key, label]) => (
               <button
                 key={key}
                 onClick={() => setSelectedFilter(key)}
-                style={{
-                  padding: '4px 10px', borderRadius: 20, fontSize: 10, fontWeight: 700,
-                  cursor: 'pointer', border: 'none', transition: 'all 0.15s',
-                  background: selectedFilter === key ? 'rgba(20,184,166,0.15)' : 'rgba(255,255,255,0.05)',
-                  color: selectedFilter === key ? '#2dd4bf' : '#64748b',
-                  outline: selectedFilter === key ? '1px solid rgba(20,184,166,0.3)' : '1px solid rgba(255,255,255,0.05)',
-                }}
+                className={`px-3 py-1 rounded-full text-[10px] font-extrabold cursor-pointer transition-all border ${
+                  selectedFilter === key 
+                    ? 'bg-brand-teal text-white border-brand-teal shadow-sm' 
+                    : 'bg-slate-50 text-slate-500 border-border-leaf hover:bg-slate-100 hover:text-text-main'
+                }`}
               >
                 {label}
               </button>
@@ -437,11 +435,11 @@ export default function ChatBoxTab({ onClose }) {
         </div>
 
         {/* Contacts scroll */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '6px 8px' }}>
+        <div className="flex-1 overflow-y-auto p-2">
           {contactList.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 160, gap: 8, color: '#334155' }}>
-              <Search size={24} style={{ opacity: 0.3 }} />
-              <p style={{ fontSize: 12, fontWeight: 600, margin: 0 }}>No contacts found</p>
+            <div className="flex flex-col items-center justify-center h-40 gap-2 text-slate-400">
+              <Search size={24} className="opacity-30" />
+              <p className="text-xs font-semibold m-0">No contacts found</p>
             </div>
           ) : contactList.map((item) => {
             const isSelected = activeChat && (
@@ -453,48 +451,47 @@ export default function ChatBoxTab({ onClose }) {
               <button
                 key={item.id}
                 onClick={() => item.type === 'contact' ? openOrCreateChat(item) : (() => { setActiveChat(item.conversation); setMessages(item.conversation.messages || []); setUnreadCounts(p => ({ ...p, [item.id]: 0 })); })()}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '9px 10px', borderRadius: 12, textAlign: 'left',
-                  border: isSelected ? '1px solid rgba(20,184,166,0.25)' : '1px solid transparent',
-                  background: isSelected ? 'rgba(20,184,166,0.08)' : 'transparent',
-                  cursor: 'pointer', transition: 'all 0.15s', marginBottom: 1,
-                }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                className={`w-full flex items-center gap-3 p-2.5 rounded-[16px] text-left border cursor-pointer transition-all mb-0.5 group ${
+                  isSelected 
+                    ? 'border-brand-teal/30 bg-brand-teal/5 shadow-sm' 
+                    : 'border-transparent bg-transparent hover:bg-slate-50 hover:border-border-leaf/50'
+                }`}
               >
                 {/* Avatar */}
-                <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div className="relative shrink-0">
                   {item.type === 'group' ? (
-                    <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #0d9488, #0891b2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Users size={17} color="white" />
+                    <div className="w-10 h-10 rounded-[12px] bg-gradient-to-br from-teal-600 to-cyan-600 flex items-center justify-center">
+                      <Users size={17} className="text-white" />
                     </div>
                   ) : (
-                    <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg, ${c1}, ${c2})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: 'white' }}>
+                    <div 
+                      className="w-10 h-10 rounded-[12px] flex items-center justify-center text-[13px] font-extrabold text-white shadow-sm"
+                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                    >
                       {getInitials(item.name)}
                     </div>
                   )}
                   {item.type === 'contact' && (
-                    <span style={{ position: 'absolute', bottom: -1, right: -1, width: 11, height: 11, borderRadius: '50%', background: item.isOnline ? '#10b981' : '#475569', border: '2px solid #0f1117' }} />
+                    <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${item.isOnline ? 'bg-brand-green' : 'bg-slate-400'}`} />
                   )}
                 </div>
 
                 {/* Text */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 4 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: isSelected ? '#5eead4' : '#e2e8f0', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-baseline gap-1">
+                    <p className={`text-[13px] font-black m-0 truncate ${isSelected ? 'text-brand-teal' : 'text-text-main group-hover:text-brand-teal transition-colors'}`}>
                       {item.name}
                     </p>
                     {item.lastTime && (
-                      <span style={{ fontSize: 9, color: '#475569', flexShrink: 0 }}>{formatPreviewTime(item.lastTime)}</span>
+                      <span className="text-[9px] font-bold text-slate-400 shrink-0">{formatPreviewTime(item.lastTime)}</span>
                     )}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
-                    <p style={{ fontSize: 11, color: '#475569', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 170 }}>
-                      {item.preview || <span style={{ fontStyle: 'italic', color: '#334155' }}>{item.role?.toLowerCase() || 'Group'}</span>}
+                  <div className="flex justify-between items-center mt-0.5">
+                    <p className="text-[11px] font-semibold text-slate-500 m-0 truncate max-w-[170px]">
+                      {item.preview || <span className="italic text-slate-400">{item.role?.toLowerCase() || 'Group'}</span>}
                     </p>
                     {item.unread > 0 && (
-                      <span style={{ flexShrink: 0, minWidth: 18, height: 18, background: '#14b8a6', color: '#0f1117', fontSize: 9, fontWeight: 800, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 5px' }}>
+                      <span className="shrink-0 min-w-[18px] h-[18px] bg-brand-teal text-white text-[9px] font-black rounded-full flex items-center justify-center px-1 shadow-sm">
                         {item.unread}
                       </span>
                     )}
@@ -507,17 +504,15 @@ export default function ChatBoxTab({ onClose }) {
       </div>
 
       {/* ── RIGHT PANEL ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50">
         {activeChat ? (
           <>
             {/* Chat Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px', background: '#0f1117', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+            <div className="flex items-center gap-3 px-5 py-3.5 bg-white border-b border-border-leaf shrink-0 shadow-sm z-10">
               <button
                 onClick={() => { setActiveChat(null); setMessages([]); }}
                 title="Back (Esc)"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', display: 'flex', padding: 4, borderRadius: 8, transition: 'color 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-                onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+                className="p-1 rounded-lg text-slate-400 hover:text-text-main hover:bg-slate-50 transition-colors"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -527,20 +522,20 @@ export default function ChatBoxTab({ onClose }) {
                 const [c1, c2] = getAvatarGradient(partner?.name);
                 return (
                   <>
-                    <div style={{ position: 'relative', flexShrink: 0 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${c1}, ${c2})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'white' }}>
+                    <div className="relative shrink-0">
+                      <div 
+                        className="w-9 h-9 rounded-[10px] flex items-center justify-center text-xs font-black text-white shadow-sm"
+                        style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                      >
                         {getInitials(partner?.name)}
                       </div>
-                      <span style={{ position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%', background: partner?.isOnline ? '#10b981' : '#475569', border: '2px solid #0f1117' }} />
+                      <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${partner?.isOnline ? 'bg-brand-green' : 'bg-slate-400'}`} />
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: '#f1f5f9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{partner?.name}</p>
-                      <p style={{ fontSize: 11, color: '#475569', margin: '1px 0 0', fontWeight: 500 }}>
-                        {partner?.isOnline
-                          ? <span style={{ color: '#34d399' }}>Online</span>
-                          : 'Offline'
-                        }
-                        <span style={{ margin: '0 6px', color: '#1e293b' }}>·</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-black text-text-main m-0 truncate">{partner?.name}</p>
+                      <p className="text-[11px] font-semibold text-slate-500 m-0 mt-0.5">
+                        {partner?.isOnline ? <span className="text-brand-green">Online</span> : 'Offline'}
+                        <span className="mx-1.5 text-slate-300">·</span>
                         {partner?.role}
                       </p>
                     </div>
@@ -548,66 +543,62 @@ export default function ChatBoxTab({ onClose }) {
                 );
               })() : (
                 <>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #0d9488, #0891b2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Users size={16} color="white" />
+                  <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-teal-600 to-cyan-600 flex items-center justify-center shrink-0 shadow-sm">
+                    <Users size={16} className="text-white" />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#f1f5f9', margin: 0 }}>{activeChat.name}</p>
-                    <p style={{ fontSize: 11, color: '#475569', margin: '1px 0 0' }}>Group · {activeChat.participants?.length} members</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-text-main m-0 truncate">{activeChat.name}</p>
+                    <p className="text-[11px] font-semibold text-slate-500 m-0 mt-0.5">Group · {activeChat.participants?.length} members</p>
                   </div>
                 </>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: '#2dd4bf', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', background: 'rgba(20,184,166,0.08)', padding: '4px 10px', borderRadius: 20, border: '1px solid rgba(20,184,166,0.2)', flexShrink: 0 }}>
+              <div className="flex items-center gap-1.5 text-[9px] font-extrabold text-brand-teal uppercase tracking-wider bg-brand-teal/10 px-2.5 py-1 rounded-full border border-brand-teal/20 shrink-0">
                 <Shield size={10} />
                 Encrypted
               </div>
             </div>
 
             {/* Messages */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#0d1117' }}>
+            <div className="flex-1 overflow-y-auto p-5 bg-slate-50/50">
               {messages.length === 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, textAlign: 'center' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(20,184,166,0.08)', border: '1px solid rgba(20,184,166,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Shield size={26} color="rgba(20,184,166,0.5)" />
+                <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
+                  <div className="w-14 h-14 rounded-[16px] bg-brand-teal/10 border border-brand-teal/20 flex items-center justify-center">
+                    <Shield size={26} className="text-brand-teal/50" />
                   </div>
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#94a3b8', margin: '0 0 4px' }}>Start a secure conversation</p>
-                    <p style={{ fontSize: 12, color: '#334155', margin: 0 }}>Messages are end-to-end encrypted</p>
+                    <p className="text-sm font-black text-slate-400 m-0 mb-1">Start a secure conversation</p>
+                    <p className="text-xs font-semibold text-slate-500 m-0">Messages are end-to-end encrypted</p>
                   </div>
                 </div>
               ) : (
                 Object.entries(groupedMessages).map(([dateStr, msgs]) => (
                   <div key={dateStr}>
                     {/* Date divider */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0 12px' }}>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
-                      <span style={{ fontSize: 10, color: '#334155', fontWeight: 600, letterSpacing: '0.04em' }}>
+                    <div className="flex items-center gap-3 my-4">
+                      <div className="flex-1 h-px bg-border-leaf/50" />
+                      <span className="text-[10px] font-extrabold text-slate-400 tracking-wide uppercase">
                         {formatDateDivider(dateStr)}
                       </span>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+                      <div className="flex-1 h-px bg-border-leaf/50" />
                     </div>
 
                     {/* Message bubbles */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div className="flex flex-col gap-1.5">
                       {msgs.map((msg) => {
                         const isMe = msg.senderId === currentUser.id;
                         const text = decryptedMessages[msg.id];
                         return (
-                          <div key={msg.id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
-                            <div style={{
-                              maxWidth: '66%',
-                              padding: '9px 13px',
-                              borderRadius: isMe ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                              background: isMe ? 'linear-gradient(135deg, #0f766e, #0d9488)' : 'rgba(255,255,255,0.06)',
-                              border: isMe ? 'none' : '1px solid rgba(255,255,255,0.06)',
-                              fontSize: 13,
-                              lineHeight: 1.5,
-                              color: isMe ? '#f0fdfa' : '#cbd5e1',
-                              wordBreak: 'break-word',
-                            }}>
-                              {text || <span style={{ opacity: 0.4, fontSize: 11, fontStyle: 'italic' }}>Decrypting…</span>}
-                              <div style={{ fontSize: 9, color: isMe ? 'rgba(240,253,250,0.5)' : '#334155', marginTop: 4, textAlign: 'right' }}>
+                          <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`
+                              max-w-[66%] px-3.5 py-2.5 text-[13px] font-semibold leading-relaxed break-words shadow-sm
+                              ${isMe 
+                                ? 'bg-gradient-to-br from-teal-600 to-teal-500 text-white rounded-[16px] rounded-br-[4px]' 
+                                : 'bg-white border border-border-leaf text-text-main rounded-[16px] rounded-bl-[4px]'
+                              }
+                            `}>
+                              {text || <span className="opacity-50 text-[11px] italic">Decrypting…</span>}
+                              <div className={`text-[9px] font-extrabold mt-1 text-right ${isMe ? 'text-teal-100' : 'text-slate-400'}`}>
                                 {formatTime(msg.createdAt)}
                               </div>
                             </div>
@@ -624,7 +615,7 @@ export default function ChatBoxTab({ onClose }) {
             {/* Input bar */}
             <form
               onSubmit={handleSendMessage}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: '#0f1117', borderTop: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}
+              className="flex items-center gap-3 px-5 py-3.5 bg-white border-t border-border-leaf shrink-0 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.02)]"
             >
               <input
                 ref={inputRef}
@@ -632,41 +623,42 @@ export default function ChatBoxTab({ onClose }) {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message…"
-                style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '10px 14px', fontSize: 13, color: '#e2e8f0', outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' }}
-                onFocus={e => e.target.style.borderColor = 'rgba(20,184,166,0.4)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                className="flex-1 bg-slate-50 border border-border-leaf rounded-[16px] px-4 py-2.5 text-[13px] font-semibold text-text-main outline-none focus:border-brand-teal/50 transition-colors"
               />
               <button
                 type="submit"
                 disabled={!newMessage.trim()}
-                style={{
-                  width: 40, height: 40, borderRadius: 12, border: 'none', cursor: newMessage.trim() ? 'pointer' : 'not-allowed',
-                  background: newMessage.trim() ? 'linear-gradient(135deg, #0f766e, #0d9488)' : 'rgba(255,255,255,0.06)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s',
-                  opacity: newMessage.trim() ? 1 : 0.4,
-                }}
+                className={`
+                  w-10 h-10 rounded-[14px] flex items-center justify-center shrink-0 transition-all shadow-sm
+                  ${newMessage.trim() 
+                    ? 'bg-gradient-to-br from-teal-600 to-teal-500 text-white cursor-pointer hover:shadow-md hover:scale-105' 
+                    : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-border-leaf'
+                  }
+                `}
               >
-                <Send size={16} color="white" />
+                <Send size={16} />
               </button>
             </form>
           </>
         ) : (
           /* Empty / welcome state */
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: '#0d1117', textAlign: 'center', padding: 32 }}>
-            <div style={{ width: 64, height: 64, borderRadius: 20, background: 'rgba(20,184,166,0.08)', border: '1px solid rgba(20,184,166,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Shield size={30} color="rgba(20,184,166,0.45)" />
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-slate-50/50 text-center p-8">
+            <div className="w-16 h-16 rounded-[20px] bg-brand-teal/5 border border-brand-teal/20 flex items-center justify-center shadow-sm">
+              <Shield size={30} className="text-brand-teal/40" />
             </div>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#94a3b8', margin: '0 0 6px', letterSpacing: '-0.3px' }}>Select a conversation</p>
-              <p style={{ fontSize: 13, color: '#334155', margin: 0, maxWidth: 280, lineHeight: 1.6 }}>
+              <p className="text-base font-black text-slate-400 m-0 mb-1.5 tracking-tight">Select a conversation</p>
+              <p className="text-[13px] font-semibold text-slate-500 m-0 max-w-[280px] leading-relaxed">
                 Choose a teammate from the left to start an end-to-end encrypted conversation.
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#1e293b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: 8 }}>
+            <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mt-2">
               <Lock size={11} />
               RSA-OAEP · AES-GCM encrypted
             </div>
-            <p style={{ fontSize: 10, color: '#1e293b', margin: 0 }}>Press <kbd style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px', fontSize: 10, fontFamily: 'monospace' }}>Esc</kbd> to close</p>
+            <p className="text-[10px] font-semibold text-slate-400 m-0 mt-4">
+              Press <kbd className="bg-white border border-border-leaf rounded-[6px] px-1.5 py-0.5 font-bold shadow-sm">Esc</kbd> to close
+            </p>
           </div>
         )}
       </div>
