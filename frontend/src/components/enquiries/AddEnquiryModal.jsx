@@ -3,14 +3,14 @@ import { X, Loader2, UserPlus, Calendar, PhoneCall } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 
-export default function AddEnquiryModal({ isOpen, onClose }) {
+export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
   const createEnquiry = useOpsStore((s) => s.createEnquiry);
 
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
-  const [clientType, setClientType] = useState('HEALTH_PARTNER'); // 'HEALTH_PARTNER' or 'SERVICE_USER'
+  const [clientType, setClientType] = useState(defaultType || 'HEALTH_PARTNER'); // 'HEALTH_PARTNER' or 'SERVICE_USER'
   const [contacted, setContacted] = useState(false);
   const [remarks, setRemarks] = useState('');
   const [callbackLater, setCallbackLater] = useState(false);
@@ -60,7 +60,7 @@ export default function AddEnquiryModal({ isOpen, onClose }) {
       setContact('');
       setCity('');
       setState('');
-      setClientType('HEALTH_PARTNER');
+      setClientType(defaultType || 'HEALTH_PARTNER');
       setContacted(false);
       setRemarks('');
       setCallbackLater(false);
@@ -170,38 +170,37 @@ export default function AddEnquiryModal({ isOpen, onClose }) {
             </div>
 
             {/* Client Type Toggle Button */}
-            <div>
-              <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
-                Client Type*
-              </label>
-              <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setClientType('SERVICE_USER');
-                    setCallbackLater(false);
-                  }}
-                  className={`py-2 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                    clientType === 'SERVICE_USER'
-                      ? 'bg-brand-teal text-white shadow-md'
-                      : 'text-text-muted hover:text-text-main hover:bg-white/40'
-                  }`}
-                >
-                  Service User
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setClientType('HEALTH_PARTNER')}
-                  className={`py-2 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
-                    clientType === 'HEALTH_PARTNER'
-                      ? 'bg-brand-teal text-white shadow-md'
-                      : 'text-text-muted hover:text-text-main hover:bg-white/40'
-                  }`}
-                >
-                  Health Partner
-                </button>
+            {!defaultType && (
+              <div>
+                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                  Client Type*
+                </label>
+                <div className="flex bg-slate-50 p-1 rounded-2xl border border-border-leaf/60">
+                  <button
+                    type="button"
+                    onClick={() => setClientType('SERVICE_USER')}
+                    className={`flex-1 text-sm font-extrabold py-2.5 rounded-xl transition-all ${
+                      clientType === 'SERVICE_USER'
+                        ? 'bg-brand-teal text-white shadow-sm'
+                        : 'text-text-muted hover:text-text-main'
+                    }`}
+                  >
+                    Service User
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClientType('HEALTH_PARTNER')}
+                    className={`flex-1 text-sm font-extrabold py-2.5 rounded-xl transition-all ${
+                      clientType === 'HEALTH_PARTNER'
+                        ? 'bg-brand-teal text-white shadow-sm'
+                        : 'text-text-muted hover:text-text-main'
+                    }`}
+                  >
+                    Health Partner
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Contacted Checkbox */}
             <div className="flex items-center gap-2.5 py-1">

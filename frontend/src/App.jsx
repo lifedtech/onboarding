@@ -36,8 +36,8 @@ const PAGES = {
   healthmate_dashboard: <HealthmateDashboard />,
   healthmates_list: <HealthmatesList />,
   service_user_dashboard: <ServiceUserDashboard />,
-  healthmate_enquiries: <EnquiriesSheet />, // Currently using same component, can extend to fetch specific ones
-  service_user_enquiries: <EnquiriesSheet />, // Or handle category inside
+  healthmate_enquiries: <EnquiriesSheet enquiryType="HEALTH_PARTNER" />, 
+  service_user_enquiries: <EnquiriesSheet enquiryType="SERVICE_USER" />,
   pipeline:  <PipelineBoard />,
   service_users: <ServiceUsersList />,
   tasks:     <MyTasks />,

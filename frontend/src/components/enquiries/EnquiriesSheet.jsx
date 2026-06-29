@@ -23,7 +23,7 @@ import OnboardUserModal from './OnboardUserModal';
 import toast from 'react-hot-toast';
 
 
-export default function EnquiriesSheet() {
+export default function EnquiriesSheet({ enquiryType }) {
   const enquiries = useOpsStore((s) => s.enquiries);
   const isLoading = useOpsStore((s) => s.isLoading);
   const fetchEnquiries = useOpsStore((s) => s.fetchEnquiries);
@@ -36,7 +36,7 @@ export default function EnquiriesSheet() {
   // States
   const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('ALL'); // 'ALL' | 'HEALTH_PARTNER' | 'SERVICE_USER'
+  const [typeFilter, setTypeFilter] = useState(enquiryType || 'ALL'); // 'ALL' | 'HEALTH_PARTNER' | 'SERVICE_USER'
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL' | 'CONTACTED' | 'PENDING'
   const [reminderFilter, setReminderFilter] = useState('ALL'); // 'ALL' | 'TODAY' | 'FUTURE'
 
@@ -325,18 +325,20 @@ export default function EnquiriesSheet() {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Client Type */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-extrabold uppercase text-text-muted tracking-wider">Type:</span>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="bg-white border border-border-leaf/75 text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
-            >
-              <option value="ALL">All Types</option>
-              <option value="HEALTH_PARTNER">Partners</option>
-              <option value="SERVICE_USER">Service Users</option>
-            </select>
-          </div>
+          {!enquiryType && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-extrabold uppercase text-text-muted tracking-wider">Type:</span>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="bg-white border border-border-leaf/75 text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
+              >
+                <option value="ALL">All Types</option>
+                <option value="HEALTH_PARTNER">Partners</option>
+                <option value="SERVICE_USER">Service Users</option>
+              </select>
+            </div>
+          )}
 
           {/* Contact Status */}
           <div className="flex items-center gap-1.5">
@@ -673,7 +675,7 @@ export default function EnquiriesSheet() {
       </div>
 
       {/* Add Enquiry Modal */}
-      <AddEnquiryModal isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} />
+      <AddEnquiryModal isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} defaultType={enquiryType} />
 
       {/* Promote Partner Modal */}
       <PromotePartnerModal
