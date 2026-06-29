@@ -52,7 +52,7 @@ const getAllEnquiries = async (req, res) => {
  */
 const createEnquiry = async (req, res) => {
   const { 
-    name, contact, alternateContact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
+    name, email, contact, alternateContact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
     subcategory, platformFound, programPossibility, format, priceRange, capacity,
     scoreRelevance, scoreSafety, scoreExperience, scoreCredibility, scoreLocation,
     scoreVisual, scoreBooking, scoreUniqueness, scoreCorporate, scoreRepeatability
@@ -71,6 +71,7 @@ const createEnquiry = async (req, res) => {
     const enquiry = await prisma.enquiry.create({
       data: {
         name,
+        email: email || null,
         contact,
         alternateContact: alternateContact || null,
         remarks: remarks || null,
@@ -124,7 +125,7 @@ const createEnquiry = async (req, res) => {
 const updateEnquiry = async (req, res) => {
   const { id } = req.params;
   const { 
-    name, contact, alternateContact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
+    name, email, contact, alternateContact, remarks, clientType, callbackLater, reminderDate, contacted, city, state, country, 
     subcategory, platformFound, programPossibility, format, priceRange, capacity,
     scoreRelevance, scoreSafety, scoreExperience, scoreCredibility, scoreLocation,
     scoreVisual, scoreBooking, scoreUniqueness, scoreCorporate, scoreRepeatability 
@@ -146,6 +147,7 @@ const updateEnquiry = async (req, res) => {
       where: { id },
       data: {
         ...(name !== undefined && { name }),
+        ...(email !== undefined && { email }),
         ...(contact !== undefined && { contact }),
         ...(alternateContact !== undefined && { alternateContact }),
         ...(remarks !== undefined && { remarks }),

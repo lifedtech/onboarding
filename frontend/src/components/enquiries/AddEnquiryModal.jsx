@@ -7,6 +7,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
   const createEnquiry = useOpsStore((s) => s.createEnquiry);
 
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [contactCode, setContactCode] = useState('+91');
   const [contactPhone, setContactPhone] = useState('');
   const [altContactCode, setAltContactCode] = useState('+91');
@@ -49,6 +50,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
     setSaving(true);
     const payload = {
       name: name.trim(),
+      email: email.trim() || null,
       contact: `${contactCode} ${contactPhone.trim()}`,
       alternateContact: altContactPhone.trim() ? `${altContactCode} ${altContactPhone.trim()}` : null,
       city: city.trim() || null,
@@ -77,6 +79,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       toast.success('New enquiry recorded successfully!');
       // Reset form
       setName('');
+      setEmail('');
       setContactCode('+91');
       setContactPhone('');
       setAltContactCode('+91');
@@ -154,6 +157,20 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
                 placeholder="e.g. Liam Parker"
                 className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
                 required
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="e.g. liam@example.com"
+                className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
               />
             </div>
 

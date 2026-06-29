@@ -57,6 +57,7 @@ model OpsUser {
 model Enquiry {
   id            String    @id @default(uuid())
   name          String
+  email         String?
   contact       String
   alternateContact String?
   contacted     Boolean   @default(false)

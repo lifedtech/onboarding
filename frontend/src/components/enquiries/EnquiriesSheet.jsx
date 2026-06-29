@@ -64,6 +64,8 @@ export default function EnquiriesSheet({ enquiryType }) {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
   const [editContact, setEditContact] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editAlternateContact, setEditAlternateContact] = useState('');
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
   const [editCountry, setEditCountry] = useState('');
@@ -181,6 +183,8 @@ export default function EnquiriesSheet({ enquiryType }) {
     setEditingId(enq.id);
     setEditName(enq.name);
     setEditContact(enq.contact);
+    setEditEmail(enq.email || '');
+    setEditAlternateContact(enq.alternateContact || '');
     setEditCity(enq.city || '');
     setEditState(enq.state || '');
     setEditCountry(enq.country || '');
@@ -218,6 +222,8 @@ export default function EnquiriesSheet({ enquiryType }) {
     const payload = {
       name: editName,
       contact: editContact,
+      email: editEmail.trim() || null,
+      alternateContact: editAlternateContact.trim() || null,
       city: editCity.trim() || null,
       state: editState.trim() || null,
       country: editCountry.trim() || null,
@@ -463,14 +469,39 @@ export default function EnquiriesSheet({ enquiryType }) {
                       {/* Contact Info */}
                       <td className="py-3 px-4 truncate">
                         {isEditing ? (
-                          <input
-                            type="text"
-                            value={editContact}
-                            onChange={(e) => setEditContact(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                          />
+                          <div className="flex flex-col gap-1">
+                            <input
+                              type="text"
+                              value={editContact}
+                              onChange={(e) => setEditContact(e.target.value)}
+                              placeholder="Phone Number"
+                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                            />
+                            <input
+                              type="email"
+                              value={editEmail}
+                              onChange={(e) => setEditEmail(e.target.value)}
+                              placeholder="Email Address"
+                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              value={editAlternateContact}
+                              onChange={(e) => setEditAlternateContact(e.target.value)}
+                              placeholder="Alternate Phone"
+                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
+                            />
+                          </div>
                         ) : (
-                          enq.contact
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-semibold text-text-main">{enq.contact}</span>
+                            {enq.email && (
+                              <span className="text-[10px] text-slate-500">{enq.email}</span>
+                            )}
+                            {enq.alternateContact && (
+                              <span className="text-[10px] text-slate-500">{enq.alternateContact} (Alt)</span>
+                            )}
+                          </div>
                         )}
                       </td>
 
