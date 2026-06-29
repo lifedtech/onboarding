@@ -221,10 +221,14 @@ export default function HealthmateModal() {
     (title) => !tasks.some((t) => t.title.toLowerCase() === title.toLowerCase())
   );
 
+  const currentPhaseTasksItems = groupedTasks[hm.phase] || [];
+  const allCurrentTasksCompleted = currentPhaseTasksItems.every((t) => t.completed);
+  const canAdvancePhase = canModify && missingPredefined.length === 0 && allCurrentTasksCompleted;
+
   const getPhaseHeaderClass = (phase, isCurrent, isPast) => {
-    if (isCurrent) return 'bg-brand-teal/10 border-brand-teal/20 text-brand-teal';
-    if (isPast) return 'bg-slate-100 border-slate-200 text-slate-500 opacity-70';
-    return 'bg-bg-mint border-brand-green/20 text-brand-green';
+    if (isCurrent) return 'bg-brand-teal text-white border-brand-teal shadow-sm ring-1 ring-brand-teal/50';
+    if (isPast) return 'bg-slate-100 border-slate-200 text-slate-500 opacity-80';
+    return 'bg-slate-50 border-slate-200 text-slate-500 opacity-60';
   };
 
   const handleSaveProgramDetails = async () => {
@@ -358,7 +362,10 @@ export default function HealthmateModal() {
 
   const handleAdvancePhase = async () => {
     if (!nextPhase) return;
-    await updateHealthmatePhase(hm.id, nextPhase);
+    const success = await updateHealthmatePhase(hm.id, nextPhase);
+    if (success) {
+      setSelectedHealthmate(null);
+    }
   };
 
   const handleSaveChanges = async () => {
@@ -1207,12 +1214,25 @@ export default function HealthmateModal() {
                         const isUpcoming = !isCurrent && !isPast;
 
                         return (
-                          <div key={phase} className="space-y-1.5 border border-border-leaf/25 bg-slate-50/20 p-3 rounded-2xl">
+                          <div
+                            key={phase}
+                            className={`space-y-1.5 border p-3 rounded-2xl transition-all duration-300 ${
+                              isCurrent
+                                ? 'border-brand-teal ring-4 ring-brand-teal/10 bg-white shadow-lg relative z-10 scale-[1.02]'
+                                : isPast
+                                ? 'border-slate-100 bg-slate-50/50 opacity-60'
+                                : 'border-slate-100 bg-slate-50/30'
+                            }`}
+                          >
                             {/* Phase Section Header */}
-                            <div className={`flex items-center justify-between px-3 py-1 rounded-lg border text-[10px] font-extrabold tracking-wide uppercase shrink-0 ${getPhaseHeaderClass(phase, isCurrent, isPast)}`}>
+                            <div className={`flex items-center justify-between px-3 py-1.5 rounded-lg border text-[10px] font-extrabold tracking-wide uppercase shrink-0 ${getPhaseHeaderClass(phase, isCurrent, isPast)}`}>
                               <span>{PHASE_LABELS[phase]} Tasks</span>
-                              <span className="text-[9px] font-bold px-1.5 py-0.25 rounded-md bg-white/60 border border-current/25">
-                                {isCurrent ? 'Current' : isPast ? 'Past' : 'Upcoming'}
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md border ${
+                                isCurrent 
+                                  ? 'bg-white/20 border-white/30 text-white' 
+                                  : 'bg-white/80 border-current/25'
+                              }`}>
+                                {isCurrent ? 'Current Phase' : isPast ? 'Completed' : 'Upcoming'}
                               </span>
                             </div>
 
@@ -1380,15 +1400,22 @@ export default function HealthmateModal() {
 
             {/* Advance phase */}
             {nextPhase ? (
-              <button
-                onClick={handleAdvancePhase}
-                disabled={!canModify}
-                className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 disabled:cursor-not-allowed
-                           text-white text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all"
-              >
-                Advance to {PHASE_LABELS[nextPhase]}
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              <div className="relative group">
+                <button
+                  onClick={handleAdvancePhase}
+                  disabled={!canAdvancePhase}
+                  className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed
+                             text-white text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all"
+                >
+                  Advance to {PHASE_LABELS[nextPhase]}
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                {!canAdvancePhase && (
+                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Complete all tasks to advance
+                  </div>
+                )}
+              </div>
             ) : (
               <span className="text-brand-green text-sm font-extrabold flex items-center gap-1.5 px-3 py-1 bg-brand-green/10 border border-brand-green/20 rounded-full">
                 ✓ Partner is Live
