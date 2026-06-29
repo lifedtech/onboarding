@@ -99,6 +99,7 @@ export default function EnquiriesSheet({ enquiryType }) {
   const todayReminders = enquiries.filter(
     (enq) =>
       enq.clientType === 'HEALTH_PARTNER' &&
+      (!enquiryType || enquiryType === 'HEALTH_PARTNER') &&
       enq.callbackLater &&
       enq.reminderDate &&
       isToday(enq.reminderDate) &&
@@ -229,7 +230,7 @@ export default function EnquiriesSheet({ enquiryType }) {
           <div>
             <h1 className="text-text-main font-extrabold text-xl leading-tight tracking-wide">Enquiries</h1>
             <p className="text-text-muted text-xs font-semibold mt-0.5">
-              {isLoading ? 'Loading…' : `${enquiries.length} intake enquiries registered`}
+              {isLoading ? 'Loading…' : `${enquiries.filter(e => enquiryType ? e.clientType === enquiryType : true).length} intake enquiries registered`}
             </p>
           </div>
         </div>
