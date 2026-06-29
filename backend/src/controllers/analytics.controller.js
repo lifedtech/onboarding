@@ -95,5 +95,46 @@ const getDashboardSummary = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error.' });
   }
 };
+/**
+ * GET /api/analytics/admin-summary
+ * Computes high-level aggregated operational metrics for the Admin Dashboard.
+ */
+const getAdminSummary = async (req, res) => {
+  try {
+    // 1. Qualified leads (Total enquiries)
+    const totalEnquiries = await prisma.enquiry.count();
 
-module.exports = { getDashboardSummary };
+    // 2. Bookings & Gross Booking Value (from ServiceUserService)
+    const ServiceUserService = require('../services/serviceUser.service');
+    const serviceUsers = ServiceUserService.getAll();
+    
+    let totalBookings = 0;
+    let grossBookingValue = 0;
+
+    serviceUsers.forEach(user => {
+      if (user.bookings && Array.isArray(user.bookings)) {
+        user.bookings.forEach(booking => {
+          totalBookings++;
+          grossBookingValue += booking.amount || 0;
+        });
+      }
+    });
+
+    // 3. Lifed Commission (Assuming 15%)
+    const lifedCommission = grossBookingValue * 0.15;
+
+    return res.status(200).json({
+      metrics: {
+        qualifiedLeads: totalEnquiries,
+        totalBookings,
+        grossBookingValue,
+        lifedCommission
+      }
+    });
+  } catch (error) {
+    console.error('[getAdminSummary]', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+module.exports = { getDashboardSummary, getAdminSummary };

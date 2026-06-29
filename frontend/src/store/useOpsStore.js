@@ -38,6 +38,7 @@ const useOpsStore = create((set, get) => ({
   selectedHealthmate: null,
   selectedServiceUser: null,
   summaryMetrics:     null,
+  adminMetrics:       null,
 
   recentActivity:     [],
   teamMembers:        [],
@@ -434,6 +435,19 @@ const useOpsStore = create((set, get) => ({
       return { success: true };
     } catch (err) {
       const message = err.response?.data?.message || 'Failed to fetch summary metrics.';
+      set({ isLoading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+  fetchAdminSummary: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { data } = await api.get('/analytics/admin-summary');
+      set({ adminMetrics: data.metrics, isLoading: false });
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to fetch admin metrics.';
       set({ isLoading: false, error: message });
       return { success: false, message };
     }
@@ -853,6 +867,7 @@ const useOpsStore = create((set, get) => ({
       state.fetchEnquiries(),
       state.fetchServiceUsers(),
       state.fetchSummaryMetrics(),
+      state.fetchAdminSummary(),
       state.fetchPendingTakeovers(),
       state.fetchPendingTasks(),
       state.fetchTeamMembers()

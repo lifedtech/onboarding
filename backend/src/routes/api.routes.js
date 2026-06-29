@@ -15,7 +15,7 @@ const {
 } = require('../controllers/healthmate.controller');
 const { toggleTask, createTask, getPendingTasks, updateTask }                   = require('../controllers/task.controller');
 const { triggerMessage }                           = require('../controllers/message.controller');
-const { getDashboardSummary }                      = require('../controllers/analytics.controller');
+const { getDashboardSummary, getAdminSummary } = require('../controllers/analytics.controller');
 const { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember, heartbeat, updatePublicKey, getMe, updateProfile, uploadAvatar } = require('../controllers/user.controller');
 const { stream, getConversations, createConversation, sendMessage } = require('../controllers/chat.controller');
 const { invitePlayer, acceptInvite, rejectInvite, cancelGame, syncGame } = require('../controllers/game.controller');
@@ -93,6 +93,7 @@ router.post('/auth/logout', logout);
 
 // Analytics
 router.get('/analytics/summary',            getDashboardSummary);
+router.get('/analytics/admin-summary',      getAdminSummary);
 
 // Healthmates
 router.get('/healthmates',                  getAllHealthmates);

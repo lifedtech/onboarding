@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useOpsStore from '../../store/useOpsStore';
 import { 
   Users, Target, CalendarCheck, Wallet, PieChart, 
@@ -9,12 +9,28 @@ export default function AdminDashboard() {
   const currentUser = useOpsStore((s) => s.user);
   const [activeKpi, setActiveKpi] = useState(null);
 
+  const fetchAdminSummary = useOpsStore((s) => s.fetchAdminSummary);
+  const adminMetrics = useOpsStore((s) => s.adminMetrics);
+  
+  useEffect(() => {
+    fetchAdminSummary();
+  }, [fetchAdminSummary]);
+
+  const stats = adminMetrics || {
+    qualifiedLeads: 0,
+    totalBookings: 0,
+    grossBookingValue: 0,
+    lifedCommission: 0
+  };
+
+  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
+
   const kpiData = [
-    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'No data', details: 'Organic: 0 | Social: 0 | Referral: 0', icon: Users, badgeColor: 'bg-slate-100 text-slate-600' },
-    { id: 'leads', label: 'Qualified leads', value: '0', sub: '0% of inquiries', details: 'High Intent: 0 | Medium Intent: 0 | Low Intent: 0', icon: Target, badgeColor: 'bg-orange-100 text-orange-600' },
-    { id: 'bookings', label: 'Bookings', value: '0', sub: '0% lead → booking', details: 'Residential: 0 | Online Sessions: 0', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
-    { id: 'gbv', label: 'Gross booking value', value: '₹0', sub: 'Residential + sessions', details: 'Residential: ₹0 | Sessions: ₹0', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
-    { id: 'commission', label: 'Lifed commission', value: '₹0', sub: '0% blended', details: 'Avg Margin: 0% | Net Realized: ₹0', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600' }
+    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'Pending GA4 API', details: 'Organic: 0 | Social: 0 | Referral: 0', icon: Users, badgeColor: 'bg-slate-100 text-slate-600' },
+    { id: 'leads', label: 'Qualified leads', value: stats.qualifiedLeads.toString(), sub: 'From Enquiries', details: 'High Intent | Medium Intent | Low Intent', icon: Target, badgeColor: 'bg-orange-100 text-orange-600' },
+    { id: 'bookings', label: 'Bookings', value: stats.totalBookings.toString(), sub: 'Total confirmed', details: 'From all service users', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
+    { id: 'gbv', label: 'Gross booking value', value: formatCurrency(stats.grossBookingValue), sub: 'Total revenue', details: 'Across all programs', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
+    { id: 'commission', label: 'Lifed commission', value: formatCurrency(stats.lifedCommission), sub: '15% margin', details: 'Net realized income', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600' }
   ];
 
   return (
