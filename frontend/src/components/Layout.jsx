@@ -110,9 +110,9 @@ export default function Layout({ children, activePage, onNavigate }) {
     id: 'ops',
     label: 'Internal / Ops',
     items: [
-
       { label: 'Team Chat', icon: MessageSquare, href: 'team_chat', showDot: chatHasUnread },
       { label: 'Stress Buster', icon: Activity, href: 'deflector' },
+      { label: 'System Support', icon: LifeBuoy, href: 'system_support' },
     ]
   });
 

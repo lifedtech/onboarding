@@ -3,6 +3,7 @@ import { X, Loader2, UserPlus } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import CategorySelector from './CategorySelector';
+import LocationSelector from '../LocationSelector';
 
 export default function AddHealthmateModal({ isOpen, onClose }) {
   const addHealthmate = useOpsStore((s) => s.addHealthmate);
@@ -101,7 +102,7 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
         aria-label="Add New Healthmate Partner"
       >
         <div
-          className="relative w-full max-w-md bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-md max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -225,44 +226,14 @@ export default function AddHealthmateModal({ isOpen, onClose }) {
             </div>
 
             {/* Location */}
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
-                  City
-                </label>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="e.g. Mumbai"
-                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
-                  State
-                </label>
-                <input
-                  type="text"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  placeholder="e.g. Maharashtra"
-                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  placeholder="e.g. India"
-                  className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
-                />
-              </div>
-            </div>
+            <LocationSelector
+              city={city}
+              setCity={setCity}
+              state={state}
+              setState={setState}
+              country={country}
+              setCountry={setCountry}
+            />
 
             {/* Additional Info */}
             <div className="flex gap-4">

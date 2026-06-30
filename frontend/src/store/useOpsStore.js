@@ -39,6 +39,7 @@ const useOpsStore = create((set, get) => ({
   selectedServiceUser: null,
   summaryMetrics:     null,
   adminMetrics:       null,
+  tickets:            [],
 
   recentActivity:     [],
   sessionLogs:        [],
@@ -900,12 +901,54 @@ const useOpsStore = create((set, get) => ({
       state.fetchAdminSummary(),
       state.fetchPendingTakeovers(),
       state.fetchPendingTasks(),
-      state.fetchTeamMembers()
+      state.fetchTeamMembers(),
+      state.fetchTickets()
     ]);
   },
 
   clearError: () => set({ error: null }),
   setChatHasUnread: (val) => set({ chatHasUnread: val }),
+
+  // ── Support Tickets ────────────────────────────────────────────────────────
+  fetchTickets: async () => {
+    try {
+      const { data } = await api.get('/support/tickets');
+      set({ tickets: data });
+    } catch (err) {
+      console.error('Failed to fetch tickets:', err);
+    }
+  },
+  createTicket: async (payload) => {
+    try {
+      const { data } = await api.post('/support/tickets', payload);
+      set((s) => ({ tickets: [data, ...s.tickets] }));
+      return { success: true };
+    } catch (err) {
+      console.error('Failed to create ticket:', err);
+      return { success: false, message: err.response?.data?.message || 'Failed to create ticket' };
+    }
+  },
+  updateTicket: async (id, payload) => {
+    try {
+      const { data } = await api.patch(`/support/tickets/${id}`, payload);
+      set((s) => ({ tickets: s.tickets.map(t => t.id === id ? data : t) }));
+      return { success: true };
+    } catch (err) {
+      console.error('Failed to update ticket:', err);
+      return { success: false, message: err.response?.data?.message || 'Failed to update ticket' };
+    }
+  },
+  deleteTicket: async (id) => {
+    try {
+      await api.delete(`/support/tickets/${id}`);
+      set((s) => ({ tickets: s.tickets.filter(t => t.id !== id) }));
+      return { success: true };
+    } catch (err) {
+      console.error('Failed to delete ticket:', err);
+      return { success: false, message: err.response?.data?.message || 'Failed to delete ticket' };
+    }
+  },
+
   // eslint-disable-next-line
   dummy: null
 }));

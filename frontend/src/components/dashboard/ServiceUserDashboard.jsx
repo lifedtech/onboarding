@@ -129,17 +129,16 @@ export default function ServiceUserDashboard() {
                {/* Mock Bar Chart */}
                <div className="flex-1 flex items-end justify-between gap-2 md:gap-6 pt-10 pb-2">
                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
-                   const height = 30 + Math.random() * 60; // Random height between 30% and 90%
                    return (
                      <div key={day} className="flex flex-col items-center gap-3 flex-1 group">
                        <div className="w-full bg-slate-100 rounded-t-[12px] relative flex items-end justify-center" style={{ height: '200px' }}>
                           <div 
                             className="w-full bg-brand-teal/80 group-hover:bg-brand-teal transition-all rounded-t-[12px]" 
-                            style={{ height: `${height}%` }}
+                            style={{ height: '0%' }}
                           />
                           {/* Tooltip */}
                           <div className="absolute -top-10 bg-text-main text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                            {Math.floor(height * 2.5)} Logins
+                            0 Logins
                           </div>
                        </div>
                        <span className="text-[11px] font-bold text-slate-400 group-hover:text-text-main uppercase tracking-wider">{day}</span>
@@ -156,10 +155,10 @@ export default function ServiceUserDashboard() {
               </h2>
               <div className="space-y-6">
                 {[
-                  { label: 'Booking System', percent: 85, color: 'bg-brand-teal' },
-                  { label: 'Chat Support', percent: 62, color: 'bg-amber-500' },
-                  { label: 'Profile Updates', percent: 34, color: 'bg-purple-500' },
-                  { label: 'Article Reads', percent: 91, color: 'bg-brand-green' }
+                  { label: 'Booking System', percent: 0, color: 'bg-brand-teal' },
+                  { label: 'Chat Support', percent: 0, color: 'bg-amber-500' },
+                  { label: 'Profile Updates', percent: 0, color: 'bg-purple-500' },
+                  { label: 'Article Reads', percent: 0, color: 'bg-brand-green' }
                 ].map(stat => (
                   <div key={stat.label} className="space-y-2">
                     <div className="flex justify-between text-xs font-bold text-text-main">
@@ -185,11 +184,11 @@ export default function ServiceUserDashboard() {
               </h2>
               <div className="space-y-6 flex-1 flex flex-col justify-center">
                 {[
-                  { range: '18 - 24', pct: 15 },
-                  { range: '25 - 34', pct: 45 },
-                  { range: '35 - 44', pct: 25 },
-                  { range: '45 - 54', pct: 10 },
-                  { range: '55+', pct: 5 }
+                  { range: '18 - 24', pct: 0 },
+                  { range: '25 - 34', pct: 0 },
+                  { range: '35 - 44', pct: 0 },
+                  { range: '45 - 54', pct: 0 },
+                  { range: '55+', pct: 0 }
                 ].map(age => (
                   <div key={age.range} className="flex items-center gap-4 group">
                     <span className="w-16 text-xs font-bold text-slate-500 group-hover:text-text-main">{age.range}</span>
@@ -209,22 +208,12 @@ export default function ServiceUserDashboard() {
                 Top Countries
               </h2>
               <div className="space-y-2">
-                {[
-                  { name: 'United Kingdom', users: 12400 },
-                  { name: 'United States', users: 8430 },
-                  { name: 'Germany', users: 6500 },
-                  { name: 'Australia', users: 4300 },
-                  { name: 'Japan', users: 2900 },
-                  { name: 'Brazil', users: 2100 }
-                ].map((loc, idx) => (
-                  <div key={loc.name} className="flex items-center justify-between p-3 rounded-[16px] hover:bg-slate-50 border border-transparent hover:border-border-leaf/50 transition-all">
-                    <div className="flex items-center gap-3">
-                      <span className="w-7 h-7 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center text-xs font-bold">{idx + 1}</span>
-                      <span className="text-sm font-bold text-text-main">{loc.name}</span>
-                    </div>
-                    <span className="text-sm font-black text-brand-teal">{loc.users.toLocaleString()}</span>
-                  </div>
-                ))}
+                <div className="flex flex-col items-center justify-center py-10">
+                  <span className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
+                    <MapPin className="w-5 h-5 text-slate-300" />
+                  </span>
+                  <p className="text-xs font-bold text-slate-400 text-center">Data will populate here<br/>as users register.</p>
+                </div>
               </div>
             </div>
 
@@ -235,22 +224,12 @@ export default function ServiceUserDashboard() {
                 Top Cities
               </h2>
               <div className="space-y-2">
-                {[
-                  { name: 'London', users: 5240 },
-                  { name: 'New York', users: 3843 },
-                  { name: 'Berlin', users: 2650 },
-                  { name: 'Sydney', users: 1430 },
-                  { name: 'Manchester', users: 1290 },
-                  { name: 'Tokyo', users: 1210 }
-                ].map((loc, idx) => (
-                  <div key={loc.name} className="flex items-center justify-between p-3 rounded-[16px] hover:bg-slate-50 border border-transparent hover:border-border-leaf/50 transition-all">
-                    <div className="flex items-center gap-3">
-                      <span className="w-7 h-7 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center text-xs font-bold">{idx + 1}</span>
-                      <span className="text-sm font-bold text-text-main">{loc.name}</span>
-                    </div>
-                    <span className="text-sm font-black text-brand-teal">{loc.users.toLocaleString()}</span>
-                  </div>
-                ))}
+                <div className="flex flex-col items-center justify-center py-10">
+                  <span className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
+                    <MapPin className="w-5 h-5 text-slate-300" />
+                  </span>
+                  <p className="text-xs font-bold text-slate-400 text-center">Data will populate here<br/>as users register.</p>
+                </div>
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
   Filter
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
+import HealthmateModal from '../pipeline/HealthmateModal';
 
 export default function HealthmatesList() {
   const healthmates = useOpsStore((s) => s.healthmates);
@@ -27,6 +28,7 @@ export default function HealthmatesList() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPhase, setFilterPhase] = useState('ALL');
+  const [viewingHealthmate, setViewingHealthmate] = useState(null);
 
   useEffect(() => {
     fetchHealthmates();
@@ -68,7 +70,7 @@ export default function HealthmatesList() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full h-full flex flex-col overflow-y-auto">
+    <div className="p-6 md:p-8 space-y-8 bg-bg-base w-full">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
         <div>
@@ -153,7 +155,7 @@ export default function HealthmatesList() {
       </div>
 
       {/* Main Table */}
-      <div className="flex-1 bg-white border border-slate-200/60 rounded-3xl shadow-sm overflow-hidden flex flex-col min-h-[300px]">
+      <div className="bg-white border border-slate-200/60 rounded-3xl shadow-sm overflow-hidden flex flex-col">
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
           <h3 className="text-text-main font-extrabold text-sm tracking-wide">Healthmates List</h3>
           <span className="text-[10px] font-bold text-text-muted bg-slate-200/50 border border-slate-200/80 px-2.5 py-0.5 rounded-full">
@@ -161,7 +163,7 @@ export default function HealthmatesList() {
           </span>
         </div>
 
-        <div className="flex-1 overflow-auto">
+        <div className="w-full overflow-x-auto">
           {isLoading && healthmates.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 gap-2">
               <Clock className="w-8 h-8 text-brand-teal animate-spin" />
@@ -193,7 +195,7 @@ export default function HealthmatesList() {
                   return (
                     <tr
                       key={hm.id}
-                      onClick={() => setSelectedHealthmate(hm)}
+                      onClick={() => setViewingHealthmate(hm)}
                       className="hover:bg-slate-50/50 transition-colors cursor-pointer group"
                     >
                       {/* Name */}
@@ -254,6 +256,14 @@ export default function HealthmatesList() {
           )}
         </div>
       </div>
+
+      {/* Basic Details Modal (View Only) */}
+      {viewingHealthmate && (
+        <HealthmateModal 
+          viewOnlyHealthmate={viewingHealthmate}
+          onCloseViewOnly={() => setViewingHealthmate(null)}
+        />
+      )}
     </div>
   );
 }

@@ -53,6 +53,8 @@ model OpsUser {
   messages     OpsMessage[]
   enquiries    Enquiry[]
   sessionLogs  SessionLog[]
+  raisedTickets   Ticket[] @relation("RaisedTickets")
+  assignedTickets Ticket[] @relation("AssignedTickets")
 }
 
 model SessionLog {
@@ -159,6 +161,7 @@ model Healthmate {
   opsUser       OpsUser  @relation(fields: [opsUserId], references: [id])
   tasks         Task[]
   qualification HealthmateQualification?
+  tickets       Ticket[]
 }
 
 model HealthmateQualification {
@@ -228,4 +231,49 @@ model OpsMessage {
 
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         OpsUser      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+enum TicketType {
+  SYSTEM
+  HEALTHMATE
+  SERVICE_USER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Ticket {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?  @db.Text
+  type          TicketType
+  status        TicketStatus @default(OPEN)
+  priority      TicketPriority @default(MEDIUM)
+  
+  // For SYSTEM tickets
+  raisedByOpsId String?
+  raisedByOps   OpsUser? @relation("RaisedTickets", fields: [raisedByOpsId], references: [id])
+
+  // For HEALTHMATE tickets
+  healthmateId  String?
+  healthmate    Healthmate? @relation(fields: [healthmateId], references: [id])
+  
+  // For SERVICE_USER tickets
+  serviceUserEmail String?
+
+  // Assigned Ops Teammate
+  assignedToId  String?
+  assignedTo    OpsUser? @relation("AssignedTickets", fields: [assignedToId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

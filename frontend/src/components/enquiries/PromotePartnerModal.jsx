@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Loader2, ArrowRight } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
+import CategorySelector from '../pipeline/CategorySelector';
 
 export default function PromotePartnerModal({ isOpen, onClose, enquiryId, enquiryName }) {
   const promoteEnquiry = useOpsStore((s) => s.promoteEnquiry);
@@ -84,13 +85,10 @@ export default function PromotePartnerModal({ isOpen, onClose, enquiryId, enquir
               <label className="block text-text-main text-xs font-extrabold uppercase mb-1.5">
                 Partner Category*
               </label>
-              <input
-                type="text"
+              <CategorySelector
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                placeholder="e.g. Yoga, Physiotherapy, Wellness"
-                className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
-                required
+                onChange={setCategory}
+                disabled={promoting}
               />
             </div>
 

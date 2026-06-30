@@ -148,4 +148,7 @@ router.post('/game/reject',                 rejectInvite);
 router.post('/game/cancel',                 cancelGame);
 router.post('/game/sync',                   syncGame);
 
+// Support System
+router.use('/support', require('./support.routes'));
+
 module.exports = router;

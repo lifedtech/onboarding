@@ -7,6 +7,7 @@ import {
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import CategorySelector from './CategorySelector';
+import LocationSelector from '../LocationSelector';
 
 // ─── Phase config ─────────────────────────────────────────────────────────────
 
@@ -70,7 +71,7 @@ const DEFAULT_TASKS = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function HealthmateModal() {
+export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseViewOnly = null }) {
   const selectedHealthmate    = useOpsStore((s) => s.selectedHealthmate);
   const setSelectedHealthmate = useOpsStore((s) => s.setSelectedHealthmate);
   const updateNotes           = useOpsStore((s) => s.updateNotes);
@@ -167,6 +168,10 @@ export default function HealthmateModal() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingPartner, setDeletingPartner] = useState(false);
 
+  // Revert confirm modal states
+  const [showRevertConfirm, setShowRevertConfirm] = useState(false);
+  const [revertingPhase, setRevertingPhase] = useState(false);
+
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -180,6 +185,8 @@ export default function HealthmateModal() {
       setNewTaskTitle('');
       setShowDeleteConfirm(false);
       setDeletingPartner(false);
+      setShowRevertConfirm(false);
+      setRevertingPhase(false);
 
       setEditName(selectedHealthmate.name);
       setEditType(selectedHealthmate.type);
@@ -245,23 +252,26 @@ export default function HealthmateModal() {
 
 
 
+  const hm = viewOnlyHealthmate || selectedHealthmate;
+  const isViewOnly = !!viewOnlyHealthmate;
+
   useEffect(() => {
-    if (selectedHealthmate) {
+    if (hm) {
       fetchPendingTakeovers();
     }
-  }, [selectedHealthmate?.id, fetchPendingTakeovers]);
+  }, [hm?.id, fetchPendingTakeovers]);
 
-  if (!selectedHealthmate) return null;
+  if (!hm) return null;
 
-  const hm           = selectedHealthmate;
   const isAdmin      = user?.role?.toUpperCase() === 'ADMIN';
-  const canModify    = isAdmin || (hm.opsUserId === user?.id);
+  const canModify    = !isViewOnly && (isAdmin || (hm.opsUserId === user?.id));
   const scopes       = user?.accessScopes || [];
   const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
   const isMarketingOnly = !hasFullAccess && !scopes.includes('HEALTHMATES') && scopes.includes('SALES_MARKETING');
   const isPending    = pendingOutboundTakeovers.some((req) => req.healthmateId === hm.id && req.status === 'PENDING');
   const currentIndex = PHASES.indexOf(hm.phase);
   const nextPhase    = PHASES[currentIndex + 1] ?? null;
+  const prevPhase    = PHASES[currentIndex - 1] ?? null;
   const tasks        = hm.tasks ?? [];
   const doneTasks    = tasks.filter((t) => t.completed).length;
 
@@ -423,6 +433,22 @@ export default function HealthmateModal() {
     }
   };
 
+  const handleRevertPhase = () => {
+    if (!prevPhase) return;
+    setShowRevertConfirm(true);
+  };
+
+  const handleConfirmRevert = async () => {
+    if (!prevPhase) return;
+    setRevertingPhase(true);
+    const success = await updateHealthmatePhase(hm.id, prevPhase);
+    setRevertingPhase(false);
+    if (success) {
+      setSelectedHealthmate(null);
+      setShowRevertConfirm(false);
+    }
+  };
+
   const handleSaveChanges = async () => {
     if (!editName.trim() || !editCategory.trim()) {
       return;
@@ -577,7 +603,7 @@ export default function HealthmateModal() {
         aria-label={`${hm.name} details`}
       >
         <div
-          className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
+          className="relative w-full max-w-7xl max-h-[90vh] bg-white border border-border-leaf rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* R&D Credential Status Bar */}
@@ -625,7 +651,7 @@ export default function HealthmateModal() {
                 </button>
               )}
               <button
-                onClick={() => setSelectedHealthmate(null)}
+                onClick={() => isViewOnly ? onCloseViewOnly?.() : setSelectedHealthmate(null)}
                 className="shrink-0 text-text-muted hover:text-text-main hover:bg-slate-100 rounded-xl p-1.5 transition-colors"
                 aria-label="Close modal"
               >
@@ -635,13 +661,40 @@ export default function HealthmateModal() {
           </div>
 
           {/* ── Body ── */}
-          <div className="flex-1 overflow-y-auto bg-white">
-            <div className="grid md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-border-leaf/40">
+          <div className="flex-1 flex flex-col md:flex-row min-h-0 bg-white divide-y md:divide-y-0 md:divide-x divide-border-leaf/40">
 
-              {/* Left: Contact Info + Notes */}
-              <div className="p-6 space-y-5">
+            {/* Left: Contact Info + Notes */}
+            <div className="flex-1 md:w-1/2 p-6 space-y-5 overflow-y-auto min-h-0">
+                {/* Status Banners for View Only */}
+                {isViewOnly && (
+                  <div className="grid grid-cols-2 gap-4 mb-2">
+                    <div className={`p-4 rounded-2xl flex flex-col border ${PHASE_COLORS[hm.phase]}`}>
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider opacity-70 mb-1">
+                        Current Phase
+                      </span>
+                      <span className="text-sm font-black uppercase tracking-wider">
+                        {PHASE_LABELS[hm.phase]}
+                      </span>
+                    </div>
+
+                    <div className={`p-4 rounded-2xl flex flex-col border ${
+                      hm.registrationStatus === 'VERIFIED'
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                        : 'bg-amber-50 border-amber-200 text-amber-700'
+                    }`}>
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider opacity-70 mb-1 flex items-center gap-1">
+                        {hm.registrationStatus === 'VERIFIED' ? <ShieldCheck className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+                        Registration Status
+                      </span>
+                      <span className="text-sm font-black uppercase tracking-wider">
+                        {hm.registrationStatus || 'PENDING'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Take Over Lock notice */}
-                {!canModify && (
+                {!canModify && !isViewOnly && (
                   <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl p-4 flex flex-col gap-2 shadow-sm animate-in fade-in duration-200">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-amber-700 shrink-0" />
@@ -695,7 +748,7 @@ export default function HealthmateModal() {
                       <span className={`w-2 h-2 rounded-full shrink-0 ${new Date(hm.recallReminder) < new Date() ? 'bg-red-500 animate-pulse' : 'bg-brand-teal'}`} />
                     )}
                   </button>
-                  {(hm.phase === 'REGISTER' || hm.phase === 'REVIEW' || hm.phase === 'LIVE') && (
+                  {(hm.phase === 'PREPARE' || hm.phase === 'REVIEW' || hm.phase === 'LIVE') && (
                     <button
                       onClick={() => setActiveTab('rdReview')}
                       className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
@@ -707,16 +760,18 @@ export default function HealthmateModal() {
                       R&D Review
                     </button>
                   )}
-                  <button
-                    onClick={() => setActiveTab('qualification')}
-                    className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
-                      activeTab === 'qualification'
-                        ? 'border-brand-teal text-brand-teal'
-                        : 'border-transparent text-text-muted/60 hover:text-text-main'
-                    }`}
-                  >
-                    Qualification
-                  </button>
+                  {(hm.phase === 'PRE_QUALIFY' || hm.phase === 'REGISTER') && (
+                    <button
+                      onClick={() => setActiveTab('qualification')}
+                      className={`pb-2 text-xs font-extrabold uppercase tracking-wider border-b-2 transition-all ${
+                        activeTab === 'qualification'
+                          ? 'border-brand-teal text-brand-teal'
+                          : 'border-transparent text-text-muted/60 hover:text-text-main'
+                      }`}
+                    >
+                      Qualification
+                    </button>
+                  )}
                 </div>
 
                 {activeTab === 'details' && (
@@ -800,36 +855,15 @@ export default function HealthmateModal() {
                               placeholder="e.g. +91 9876543210"
                             />
                           </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">City</label>
-                            <input
-                              type="text"
-                              value={editCity}
-                              onChange={(e) => setEditCity(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                              placeholder="e.g. Mumbai"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">State / Region</label>
-                            <input
-                              type="text"
-                              value={editState}
-                              onChange={(e) => setEditState(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                              placeholder="e.g. Maharashtra"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Country</label>
-                            <input
-                              type="text"
-                              value={editCountry}
-                              onChange={(e) => setEditCountry(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                              placeholder="e.g. India"
-                            />
-                          </div>
+                          <LocationSelector
+                            city={editCity}
+                            setCity={setEditCity}
+                            state={editState}
+                            setState={setEditState}
+                            country={editCountry}
+                            setCountry={setEditCountry}
+                            layout="fragment"
+                          />
                           <div>
                             <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Subcategory</label>
                             <input
@@ -1330,73 +1364,91 @@ export default function HealthmateModal() {
                       </div>
                     </div>
 
-                    <div className="bg-slate-50/50 rounded-2xl border border-border-leaf/35 overflow-hidden">
-                      <table className="w-full text-left border-collapse table-fixed">
-                        <thead>
-                          <tr className="bg-slate-100/70 border-b border-border-leaf/35 text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
-                            <th className="py-2.5 px-4 w-[25%]">Criteria</th>
-                            <th className="py-2.5 px-4 w-[55%]">What to Check</th>
-                            <th className="py-2.5 px-4 w-[20%] text-center">Score (1-5)</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border-leaf/35 text-[11px] text-text-main font-bold">
-                          {[
-                            { key: 'scoreRelevance', label: 'Program relevance', desc: 'Does it fit wellness, functional movement, or recovery?' },
-                            { key: 'scoreSafety', label: 'Safety', desc: 'Is it non-clinical, non-invasive, and suitable for general users?' },
-                            { key: 'scoreExperience', label: 'Experience quality', desc: 'Does the program feel meaningful, structured, and memorable?' },
-                            { key: 'scoreCredibility', label: 'Facilitator credibility', desc: 'Do they have training, experience, reviews, or visible work?' },
-                            { key: 'scoreLocation', label: 'Location quality', desc: 'Is the venue safe, accessible, calm, and suitable?' },
-                            { key: 'scoreVisual', label: 'Visual appeal', desc: 'Can it be marketed well through photos and videos?' },
-                            { key: 'scoreBooking', label: 'Booking readiness', desc: 'Can they give date, duration, price, inclusions, capacity?' },
-                            { key: 'scoreUniqueness', label: 'Uniqueness', desc: 'Does it add something different to Lifed?' },
-                            { key: 'scoreCorporate', label: 'Corporate potential', desc: 'Can this be adapted for employee wellbeing?' },
-                            { key: 'scoreRepeatability', label: 'Repeatability', desc: 'Can this program run monthly or quarterly?' },
-                          ].map((item) => (
-                            <tr key={item.key} className="hover:bg-white transition-colors">
-                              <td className="py-2.5 px-4 truncate">{item.label}</td>
-                              <td className="py-2.5 px-4 text-text-muted/80 font-medium truncate" title={item.desc}>{item.desc}</td>
-                              <td className="py-2 px-4">
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max="5"
-                                  disabled={!canModify}
-                                  value={qScores[item.key] || ''}
-                                  onChange={(e) => {
-                                    const val = Math.min(5, Math.max(0, parseInt(e.target.value) || 0));
-                                    setQScores(prev => ({ ...prev, [item.key]: val }));
-                                    setQSaved(false);
-                                  }}
-                                  className="w-full text-center bg-white border border-border-leaf/80 rounded-lg py-1 focus:outline-none focus:ring-1 focus:ring-brand-teal"
-                                />
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {canModify && (
-                      <div className="flex items-center justify-between pt-2">
-                        <span className={`text-xs font-bold transition-all ${qSaved ? 'text-brand-green' : 'text-transparent'}`}>
-                          ✓ Saved
-                        </span>
-                        <button
-                          onClick={handleSaveQualification}
-                          disabled={qSaving}
-                          className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm"
-                        >
-                          {qSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                          {qSaving ? 'Saving…' : 'Save Scores'}
-                        </button>
+                    {(hm.phase === 'PREPARE' || hm.phase === 'REVIEW' || hm.phase === 'LIVE') ? (
+                      <div className="bg-slate-50/50 rounded-2xl border border-border-leaf/35 p-8 flex flex-col items-center justify-center space-y-3">
+                        <div className="w-16 h-16 rounded-full bg-brand-teal/10 flex items-center justify-center border border-brand-teal/20">
+                          <span className="text-2xl font-black text-brand-teal">
+                            {Object.values(qScores).reduce((sum, val) => sum + (Number(val) || 0), 0)}
+                          </span>
+                        </div>
+                        <div className="text-center">
+                          <h4 className="text-text-main font-extrabold text-sm">Qualification Score</h4>
+                          <p className="text-text-muted text-xs font-semibold mt-1">
+                            This partner scored {Object.values(qScores).reduce((sum, val) => sum + (Number(val) || 0), 0)} out of 50 during Pre-Qualify.
+                          </p>
+                        </div>
                       </div>
+                    ) : (
+                      <>
+                        <div className="bg-slate-50/50 rounded-2xl border border-border-leaf/35 overflow-hidden">
+                          <table className="w-full text-left border-collapse table-fixed">
+                            <thead>
+                              <tr className="bg-slate-100/70 border-b border-border-leaf/35 text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
+                                <th className="py-2.5 px-4 w-[25%]">Criteria</th>
+                                <th className="py-2.5 px-4 w-[55%]">What to Check</th>
+                                <th className="py-2.5 px-4 w-[20%] text-center">Score (1-5)</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border-leaf/35 text-[11px] text-text-main font-bold">
+                              {[
+                                { key: 'scoreRelevance', label: 'Program relevance', desc: 'Does it fit wellness, functional movement, or recovery?' },
+                                { key: 'scoreSafety', label: 'Safety', desc: 'Is it non-clinical, non-invasive, and suitable for general users?' },
+                                { key: 'scoreExperience', label: 'Experience quality', desc: 'Does the program feel meaningful, structured, and memorable?' },
+                                { key: 'scoreCredibility', label: 'Facilitator credibility', desc: 'Do they have training, experience, reviews, or visible work?' },
+                                { key: 'scoreLocation', label: 'Location quality', desc: 'Is the venue safe, accessible, calm, and suitable?' },
+                                { key: 'scoreVisual', label: 'Visual appeal', desc: 'Can it be marketed well through photos and videos?' },
+                                { key: 'scoreBooking', label: 'Booking readiness', desc: 'Can they give date, duration, price, inclusions, capacity?' },
+                                { key: 'scoreUniqueness', label: 'Uniqueness', desc: 'Does it add something different to Lifed?' },
+                                { key: 'scoreCorporate', label: 'Corporate potential', desc: 'Can this be adapted for employee wellbeing?' },
+                                { key: 'scoreRepeatability', label: 'Repeatability', desc: 'Can this program run monthly or quarterly?' },
+                              ].map((item) => (
+                                <tr key={item.key} className="hover:bg-white transition-colors">
+                                  <td className="py-2.5 px-4 truncate">{item.label}</td>
+                                  <td className="py-2.5 px-4 text-text-muted/80 font-medium truncate" title={item.desc}>{item.desc}</td>
+                                  <td className="py-2 px-4">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      max="5"
+                                      disabled={!canModify}
+                                      value={qScores[item.key] || ''}
+                                      onChange={(e) => {
+                                        const val = Math.min(5, Math.max(0, parseInt(e.target.value) || 0));
+                                        setQScores(prev => ({ ...prev, [item.key]: val }));
+                                        setQSaved(false);
+                                      }}
+                                      className="w-full text-center bg-white border border-border-leaf/80 rounded-lg py-1 focus:outline-none focus:ring-1 focus:ring-brand-teal"
+                                    />
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {canModify && (
+                          <div className="flex items-center justify-between pt-2">
+                            <span className={`text-xs font-bold transition-all ${qSaved ? 'text-brand-green' : 'text-transparent'}`}>
+                              ✓ Saved
+                            </span>
+                            <button
+                              onClick={handleSaveQualification}
+                              disabled={qSaving}
+                              className="flex items-center gap-1.5 bg-brand-teal hover:bg-brand-teal-hover disabled:opacity-50 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm"
+                            >
+                              {qSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                              {qSaving ? 'Saving…' : 'Save Scores'}
+                            </button>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
-              </div>
+            </div>
 
-              {/* Right: Task Checklist */}
-              <div className="p-6 bg-slate-50/30 flex flex-col min-h-0">
+            {/* Right: Task Checklist */}
+            <div className="flex-1 md:w-1/2 p-6 bg-slate-50/30 flex flex-col min-h-0">
                 <div className="flex items-center justify-between mb-3 shrink-0">
                   <h3 className="text-text-muted/60 text-xs font-extrabold uppercase tracking-wider">
                     Tasks
@@ -1626,10 +1678,10 @@ export default function HealthmateModal() {
                   )}
                 </div>
               </div>
-            </div>
           </div>
 
           {/* ── Footer: Actions ── */}
+          {!isViewOnly && (
           <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border-leaf/40 bg-slate-50 shrink-0 flex-wrap">
 
             {/* Communication buttons */}
@@ -1667,39 +1719,53 @@ export default function HealthmateModal() {
               </button>
             </div>
 
-            {/* Advance phase */}
-            {nextPhase ? (
-              <div className="relative group">
+            {/* Advance & Revert phases */}
+            <div className="flex items-center gap-3">
+              {prevPhase && canModify && (
                 <button
-                  onClick={handleAdvancePhase}
-                  disabled={!canAdvancePhase}
-                  className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed
-                             text-white text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all"
+                  onClick={handleRevertPhase}
+                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-text-muted hover:text-text-main text-sm font-extrabold px-4 py-2.5 rounded-xl transition-all shadow-sm"
+                  title={`Move back to ${PHASE_LABELS[prevPhase]}`}
                 >
-                  Advance to {PHASE_LABELS[nextPhase]}
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 rotate-180" />
+                  Back to {PHASE_LABELS[prevPhase]}
                 </button>
-                {!canAdvancePhase && (
-                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Complete all tasks to advance
-                  </div>
-                )}
-              </div>
-            ) : canAdvancePhase ? (
-              <span className="text-brand-green text-sm font-extrabold flex items-center gap-1.5 px-3 py-1 bg-brand-green/10 border border-brand-green/20 rounded-full shadow-sm">
-                ✓ Partner is Live
-              </span>
-            ) : (
-              <div className="relative group">
-                <span className="text-slate-400 text-sm font-extrabold flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed">
-                  Complete Live Tasks
-                </span>
-                <div className="absolute bottom-full mb-2 right-0 w-max px-3 py-1.5 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  Complete all tasks to go live
+              )}
+
+              {nextPhase ? (
+                <div className="relative group">
+                  <button
+                    onClick={handleAdvancePhase}
+                    disabled={!canAdvancePhase}
+                    className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover disabled:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed
+                               text-white text-sm font-extrabold px-5 py-2.5 rounded-xl shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all"
+                  >
+                    Advance to {PHASE_LABELS[nextPhase]}
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  {!canAdvancePhase && (
+                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                      Complete all tasks to advance
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              ) : canAdvancePhase ? (
+                <span className="text-brand-green text-sm font-extrabold flex items-center gap-1.5 px-3 py-1 bg-brand-green/10 border border-brand-green/20 rounded-full shadow-sm">
+                  ✓ Partner is Live
+                </span>
+              ) : (
+                <div className="relative group">
+                  <span className="text-slate-400 text-sm font-extrabold flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed">
+                    Complete Live Tasks
+                  </span>
+                  <div className="absolute bottom-full mb-2 right-0 w-max px-3 py-1.5 bg-slate-800 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Complete all tasks to go live
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+          )}
         </div>
       </div>
 
@@ -1771,6 +1837,83 @@ export default function HealthmateModal() {
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 bg-white hover:bg-slate-100 text-text-main border border-slate-200 font-bold rounded-xl py-2.5 text-sm transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Confirm Revert Phase Modal */}
+      {showRevertConfirm && prevPhase && (
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 z-50 bg-[#2C3E50]/60 backdrop-blur-md animate-in fade-in duration-200"
+            onClick={() => setShowRevertConfirm(false)}
+          />
+
+          {/* Modal box */}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-200"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirm Revert Phase"
+          >
+            <div
+              className="relative w-full max-w-sm bg-white border border-amber-100 rounded-3xl shadow-2xl shadow-[#2C3E50]/10 flex flex-col overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 shrink-0 bg-white">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center border border-amber-100">
+                    <ChevronRight className="w-4.5 h-4.5 text-amber-600 rotate-180" />
+                  </div>
+                  <h2 className="text-text-main font-extrabold text-md tracking-wide">
+                    Revert Phase
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setShowRevertConfirm(false)}
+                  className="text-text-muted hover:text-text-main hover:bg-slate-100 rounded-xl p-1.5 transition-colors cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="px-6 py-4">
+                <p className="text-slate-600 text-sm font-semibold leading-relaxed">
+                  Are you sure you want to move <span className="text-text-main font-extrabold">"{hm.name}"</span> back to the <span className="text-brand-teal font-extrabold">{PHASE_LABELS[prevPhase]}</span> phase?
+                </p>
+                <p className="text-amber-700 text-xs font-bold mt-2 bg-amber-50/50 p-2 rounded-xl border border-amber-100/50">
+                  Any tasks you have completed in the current phase will remain saved.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100 shrink-0">
+                <button
+                  onClick={handleConfirmRevert}
+                  disabled={revertingPhase}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white font-extrabold rounded-xl py-2.5 text-sm flex items-center justify-center gap-1.5 transition-all shadow-md shadow-amber-500/10 cursor-pointer"
+                >
+                  {revertingPhase ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Reverting...
+                    </>
+                  ) : (
+                    'Yes, Revert'
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowRevertConfirm(false)}
                   className="flex-1 bg-white hover:bg-slate-100 text-text-main border border-slate-200 font-bold rounded-xl py-2.5 text-sm transition-all cursor-pointer"
                 >
                   Cancel
