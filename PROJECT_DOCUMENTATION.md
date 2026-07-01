@@ -63,7 +63,7 @@ graph TD
         Q -->|Twilio API / Simulation| S[WhatsApp Service]
     end
 
-    C <==>|Axios Intercepted Requests| K
+    C <-->|Axios Intercepted Requests| K
 ```
 
 ### 2.1 Backend Technology Stack
