@@ -26,6 +26,11 @@ export default function Layout({ children, activePage, onNavigate }) {
   const error = useOpsStore((s) => s.error);
   const refreshAll = useOpsStore((s) => s.refreshAll);
   const isLoading = useOpsStore((s) => s.isLoading);
+  const notifications = useOpsStore((s) => s.notifications);
+  const markNotificationAsRead = useOpsStore((s) => s.markNotificationAsRead);
+  const markAllNotificationsAsRead = useOpsStore((s) => s.markAllNotificationsAsRead);
+  
+  const [showNotifications, setShowNotifications] = useState(false);
   
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMinimized, setDesktopMinimized] = useState(false);
@@ -286,10 +291,105 @@ export default function Layout({ children, activePage, onNavigate }) {
           >
             <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
-          <button className="relative p-1.5 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors">
-            <Bell className="w-5 h-5" />
-            {chatHasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0f172a]"></span>}
-          </button>
+          {/* Notifications Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className={`relative p-1.5 rounded-md transition-colors ${
+                showNotifications ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+              title="Notifications"
+            >
+              <Bell className="w-5 h-5" />
+              {notifications.some(n => !n.read) && (
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0f172a] animate-pulse"></span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <>
+                {/* Overlay for clicking away */}
+                <div 
+                  className="fixed inset-0 z-40 cursor-default"
+                  onClick={() => setShowNotifications(false)}
+                />
+                
+                {/* Popover Dropdown */}
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150">
+                  {/* Header */}
+                  <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+                    <span className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
+                      Support Notifications ({notifications.filter(n => !n.read).length})
+                    </span>
+                    {notifications.some(n => !n.read) && (
+                      <button
+                        onClick={() => markAllNotificationsAsRead()}
+                        className="text-[10px] font-extrabold text-brand-teal hover:text-brand-teal-hover hover:underline transition-colors bg-transparent border-0 cursor-pointer p-0"
+                      >
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Notification List */}
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center text-xs font-semibold text-slate-400">
+                        No active support tickets. All clear!
+                      </div>
+                    ) : (
+                      notifications.map((notif) => {
+                        const getPriorityColor = (p) => {
+                          switch (p?.toUpperCase()) {
+                            case 'HIGH': return 'text-red-500 bg-red-50 border-red-100';
+                            case 'MEDIUM': return 'text-amber-500 bg-amber-50 border-amber-100';
+                            default: return 'text-brand-teal bg-brand-teal/10 border-brand-teal/20';
+                          }
+                        };
+                        
+                        return (
+                          <div
+                            key={notif.id}
+                            className={`px-4 py-3 flex flex-col gap-1 hover:bg-slate-50 transition-colors cursor-pointer text-left ${
+                              !notif.read ? 'bg-brand-teal/5 font-medium' : ''
+                            }`}
+                            onClick={() => {
+                              markNotificationAsRead(notif.id);
+                              // Navigate based on type
+                              if (notif.type === 'SYSTEM') {
+                                onNavigate('system_support');
+                              } else if (notif.type === 'HEALTHMATE') {
+                                onNavigate('healthmate_support');
+                              } else {
+                                onNavigate('service_user_support');
+                              }
+                              setShowNotifications(false);
+                            }}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-[10px] font-extrabold text-slate-800 uppercase tracking-wide">
+                                {notif.title}
+                              </span>
+                              <span className={`text-[8px] font-extrabold px-1.5 py-0.5 rounded border ${getPriorityColor(notif.priority)}`}>
+                                {notif.priority}
+                              </span>
+                            </div>
+                            <p className={`text-xs text-slate-600 line-clamp-2 ${!notif.read ? 'text-slate-900 font-bold' : ''}`}>
+                              {notif.description}
+                            </p>
+                            <div className="flex items-center justify-between text-[9px] text-slate-400 font-semibold mt-1">
+                              <span>By {notif.raisedBy}</span>
+                              <span>{new Date(notif.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           
           <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-700">
             <span className="text-[12px] font-semibold text-slate-300">{user?.name}</span>

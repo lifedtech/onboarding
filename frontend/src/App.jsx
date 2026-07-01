@@ -94,6 +94,7 @@ function Workspace() {
   const [gameSession, setGameSession] = useState(null);
   const token = useOpsStore((s) => s.token);
   const logout = useOpsStore((s) => s.logout);
+  const addNotification = useOpsStore((s) => s.addNotification);
 
   // Inactivity idle timer (15 minutes auto-logout)
   useEffect(() => {
@@ -192,8 +193,36 @@ function Workspace() {
       }
     });
 
+    // Listen for support tickets being raised
+    es.addEventListener('ticket_created', (event) => {
+      const ticket = JSON.parse(event.data);
+      
+      // Ignore if raised by the current user themselves
+      if (ticket.raisedByOpsId === currentUser?.id) return;
+      
+      // Add to store tickets & notifications
+      addNotification(ticket);
+      playNotificationSound();
+      
+      // Show elegant toast
+      toast.success(
+        <div className="flex flex-col gap-0.5">
+          <span className="font-extrabold text-[12px] text-brand-teal">
+            New Support Ticket Raised!
+          </span>
+          <span className="text-[11px] font-bold text-text-main line-clamp-1">
+            {ticket.title}
+          </span>
+          <span className="text-[10px] font-semibold text-text-muted">
+            Raised by {ticket.raisedByOps?.name || 'Unknown'} · {ticket.priority}
+          </span>
+        </div>,
+        { id: `ticket-${ticket.id}` }
+      );
+    });
+
     return () => es.close();
-  }, [token, currentUser]);
+  }, [token, currentUser, addNotification]);
 
   const currentPage =
     activePage === 'team_chat' ? <ChatBoxTab onClose={() => setActivePage('healthmate_dashboard')} /> :

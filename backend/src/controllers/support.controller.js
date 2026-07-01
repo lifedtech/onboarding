@@ -1,4 +1,5 @@
 const prisma = require('../lib/prisma');
+const { broadcastToAll } = require('./chat.controller');
 
 // Create a new support ticket
 const createTicket = async (req, res) => {
@@ -39,6 +40,9 @@ const createTicket = async (req, res) => {
         healthmate: { select: { id: true, name: true } }
       }
     });
+
+    // Broadcast real-time ticket creation event
+    broadcastToAll('ticket_created', ticket);
 
     res.status(201).json(ticket);
   } catch (error) {

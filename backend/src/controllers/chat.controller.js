@@ -22,6 +22,21 @@ function broadcastToParticipants(userIds, eventName, data) {
 }
 
 /**
+ * Broadcasts real-time events to ALL connected SSE streams.
+ */
+function broadcastToAll(eventName, data) {
+  const payload = `event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`;
+  activeChatStreams.forEach((res, id) => {
+    try {
+      res.write(payload);
+    } catch (err) {
+      console.warn(`[SSE] Failed to write to user ${id}, cleaning connection:`, err.message);
+      activeChatStreams.delete(id);
+    }
+  });
+}
+
+/**
  * GET /api/chat/stream
  * Establishes a real-time Server-Sent Events (SSE) connection for the authenticated user.
  */
@@ -237,4 +252,5 @@ module.exports = {
   createConversation,
   sendMessage,
   broadcastToParticipants,
+  broadcastToAll,
 };

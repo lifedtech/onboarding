@@ -40,6 +40,7 @@ const useOpsStore = create((set, get) => ({
   summaryMetrics:     null,
   adminMetrics:       null,
   tickets:            [],
+  notifications:      [],
 
   recentActivity:     [],
   sessionLogs:        [],
@@ -914,6 +915,7 @@ const useOpsStore = create((set, get) => ({
     try {
       const { data } = await api.get('/support/tickets');
       set({ tickets: data });
+      get().syncNotifications(data);
     } catch (err) {
       console.error('Failed to fetch tickets:', err);
     }
@@ -946,6 +948,73 @@ const useOpsStore = create((set, get) => ({
     } catch (err) {
       console.error('Failed to delete ticket:', err);
       return { success: false, message: err.response?.data?.message || 'Failed to delete ticket' };
+    }
+  },
+
+  syncNotifications: (ticketsList) => {
+    try {
+      const readIds = JSON.parse(localStorage.getItem('lifed_read_notifications') || '[]');
+      const activeTickets = (ticketsList || []).filter(t => t.status !== 'RESOLVED');
+      const mapped = activeTickets.map(t => ({
+        id: t.id,
+        title: `New ${t.type === 'SYSTEM' ? 'System' : t.type === 'HEALTHMATE' ? 'Healthmate' : 'Service User'} Ticket`,
+        description: t.title,
+        priority: t.priority,
+        createdAt: t.createdAt,
+        type: t.type,
+        raisedBy: t.raisedByOps?.name || 'Unknown',
+        read: readIds.includes(t.id)
+      }));
+      set({ notifications: mapped });
+    } catch (e) {
+      console.error('Failed to sync notifications:', e);
+    }
+  },
+  addNotification: (ticket) => {
+    const newNotif = {
+      id: ticket.id,
+      title: `New ${ticket.type === 'SYSTEM' ? 'System' : ticket.type === 'HEALTHMATE' ? 'Healthmate' : 'Service User'} Ticket`,
+      description: ticket.title,
+      priority: ticket.priority,
+      createdAt: ticket.createdAt,
+      type: ticket.type,
+      raisedBy: ticket.raisedByOps?.name || 'Unknown',
+      read: false
+    };
+    set(s => ({
+      tickets: [ticket, ...s.tickets.filter(t => t.id !== ticket.id)],
+      notifications: [newNotif, ...s.notifications.filter(n => n.id !== ticket.id)]
+    }));
+  },
+  markNotificationAsRead: (id) => {
+    try {
+      const readIds = JSON.parse(localStorage.getItem('lifed_read_notifications') || '[]');
+      if (!readIds.includes(id)) {
+        readIds.push(id);
+        localStorage.setItem('lifed_read_notifications', JSON.stringify(readIds));
+      }
+      set(s => ({
+        notifications: s.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  },
+  markAllNotificationsAsRead: () => {
+    try {
+      const { notifications } = get();
+      const readIds = JSON.parse(localStorage.getItem('lifed_read_notifications') || '[]');
+      notifications.forEach(n => {
+        if (!readIds.includes(n.id)) {
+          readIds.push(n.id);
+        }
+      });
+      localStorage.setItem('lifed_read_notifications', JSON.stringify(readIds));
+      set(s => ({
+        notifications: s.notifications.map(n => ({ ...n, read: true }))
+      }));
+    } catch (e) {
+      console.error(e);
     }
   },
 
