@@ -1,5 +1,5 @@
 require('dotenv').config();
-const bcrypt = require('bcryptjs');
+const bcrypt = require('@node-rs/bcrypt');
 const prisma = require('./src/lib/prisma.js');
 
 async function main() {

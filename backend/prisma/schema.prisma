@@ -63,6 +63,8 @@ model SessionLog {
   opsUser    OpsUser  @relation(fields: [opsUserId], references: [id], onDelete: Cascade)
   loginAt    DateTime @default(now())
   lastActive DateTime @default(now())
+
+  @@index([loginAt])
 }
 
 model Enquiry {

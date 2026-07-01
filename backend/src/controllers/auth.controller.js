@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('@node-rs/bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../lib/prisma');
 
@@ -74,12 +74,6 @@ const login = async (req, res) => {
         message: 'This account is already logged in on another device. Concurrent logins are not permitted.'
       });
     }
-
-    // Clean up old session logs (older than 7 days)
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    await prisma.sessionLog.deleteMany({
-      where: { loginAt: { lt: sevenDaysAgo } }
-    });
 
     // Create a new session log
     const sessionLog = await prisma.sessionLog.create({

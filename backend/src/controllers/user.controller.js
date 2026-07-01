@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('@node-rs/bcrypt');
 const prisma = require('../lib/prisma');
 const { isUserOnline } = require('../services/presence.service');
 
