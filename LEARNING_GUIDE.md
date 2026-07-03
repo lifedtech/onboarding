@@ -21,6 +21,8 @@
 12. [Design Aesthetics & Typography](#12-design-aesthetics--typography)
 13. [Data Flow — End-to-End Lifecycle](#13-data-flow--end-to-end-lifecycle)
 14. [Key Concepts Glossary](#14-key-concepts-glossary)
+15. [Security & Compliance Status](#15-security--compliance-status)
+16. [Error Logging & Monitoring](#16-error-logging--monitoring)
 
 ---
 
@@ -463,3 +465,20 @@ Here is the step-by-step lifecycle of a partner moving through the onboarding pl
 * **HMR (Hot Module Replacement)**: A development feature that updates application modules in the browser in real time without requiring a full page refresh.
 * **CORS (Cross-Origin Resource Sharing)**: A browser security mechanism that restricts HTTP requests made to a different domain than the one serving the web app.
 * **Prisma Migrations**: Programmatic records of database schema changes, tracking schema history directly inside the SQL database.
+
+---
+
+## 15. Security & Compliance Status
+
+* **Environment Variables:** ✅ **Implemented.** `dotenv` securely injects configuration (`PORT`, `CLIENT_ORIGIN`, database URIs, JWT secrets) across the backend without hardcoding.
+* **Rate Limiting:** ✅ **Implemented.** API routes are protected using `express-rate-limit` to mitigate brute-force and DDoS attacks.
+* **CORS Configuration:** ✅ **Implemented.** A strict CORS policy is enforced in the Express server, restricting access solely to authorized origins (`process.env.CLIENT_ORIGIN`, local development ports, and Cloudflare workers).
+* **Privacy Compliance (GDPR/CCPA):** ❌ **Pending.** The frontend currently lacks cookie consent banners, and a streamlined user-facing mechanism for data deletion requests is yet to be established.
+
+---
+
+## 16. Error Logging & Monitoring
+
+* **Application Error Tracking:** ❌ **Pending.** Tools like Sentry or Bugsnag have not yet been integrated into the frontend or backend; currently, errors are routed to standard console outputs.
+* **Server Health Monitoring:** ❌ **Pending.** Infrastructure monitoring agents (e.g., Datadog, New Relic, AWS CloudWatch) tracking CPU, memory, and database connections are not yet deployed.
+* **Uptime Alerts:** ⚠️ **Partially Implemented.** A dedicated health check endpoint (`GET /api/health`) is active, but requires external configuration with a service like UptimeRobot or Pingdom to dispatch Email/SMS downtime alerts.

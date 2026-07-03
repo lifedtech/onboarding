@@ -80,7 +80,25 @@ Exposes 4 public endpoints to automate compliance transitions:
 
 | Service Component | Deployed URL | Hosting Provider |
 | :--- | :--- | :--- |
-| **Frontend UI** | [https://onboarding.pixellon.in](https://onboarding.pixellon.in) (or [onboardingdesk.workers.dev](https://onboardingdesk.aayushraj1601.workers.dev)) | Cloudflare Pages |
+| **Frontend UI** | [https://operations.lifedhealth.com/](https://operations.lifedhealth.com/) | Cloudflare Pages |
 | **Backend Express Server** | [https://onboardingdesk.onrender.com](https://onboardingdesk.onrender.com) | Render |
-| **PostgreSQL Database** | `ihwvwjgamlskaehiofel` at Sydney region | Supabase |
+| **PostgreSQL Database** | `[REDACTED]` at Sydney region | Supabase |
+
+---
+
+## 5. Security & Compliance Status
+
+* **Environment Variables:** ✅ **Implemented.** `dotenv` securely injects configuration (`PORT`, `CLIENT_ORIGIN`, database URIs, JWT secrets) across the backend without hardcoding.
+* **Rate Limiting:** ✅ **Implemented.** API routes are protected using `express-rate-limit` to mitigate brute-force and DDoS attacks.
+* **CORS Configuration:** ✅ **Implemented.** A strict CORS policy is enforced in the Express server, restricting access solely to authorized origins (`process.env.CLIENT_ORIGIN`, local development ports, and Cloudflare workers).
+* **Privacy Compliance (GDPR/CCPA):** ❌ **Pending.** The frontend currently lacks cookie consent banners, and a streamlined user-facing mechanism for data deletion requests is yet to be established.
+
+---
+
+## 6. Error Logging & Monitoring
+
+* **Application Error Tracking:** ❌ **Pending.** Tools like Sentry or Bugsnag have not yet been integrated into the frontend or backend; currently, errors are routed to standard console outputs.
+* **Server Health Monitoring:** ❌ **Pending.** Infrastructure monitoring agents (e.g., Datadog, New Relic, AWS CloudWatch) tracking CPU, memory, and database connections are not yet deployed.
+* **Uptime Alerts:** ⚠️ **Partially Implemented.** A dedicated health check endpoint (`GET /api/health`) is active, but requires external configuration with a service like UptimeRobot or Pingdom to dispatch Email/SMS downtime alerts.
+
 
