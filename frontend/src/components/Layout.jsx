@@ -91,7 +91,7 @@ export default function Layout({ children, activePage, onNavigate }) {
         { label: 'Healthmates List', icon: Users, href: 'healthmates_list' },
         { label: 'Enquiries', icon: FileSpreadsheet, href: 'healthmate_enquiries' },
         { label: 'Pipeline', icon: GitBranch, href: 'pipeline' },
-        { label: 'Support', icon: LifeBuoy, href: 'healthmate_support' },
+        { label: 'Healthmate Support', icon: LifeBuoy, href: 'healthmate_support' },
         { label: 'Calendar', icon: Calendar, href: 'healthmate_calendar' },
       ]
     });

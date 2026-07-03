@@ -1,7 +1,11 @@
 import React from 'react';
 
 export default function BookingOperations() {
-  const operationsData = [];
+  const operationsData = [
+    { program: 'The Inner Reset', response: '1h 15m', availability: '98%', reviews: '4.8 (12)', content: 'Good', opsScore: 92, action: 'Monitor' },
+    { program: 'Ojas Renewal', response: '2h 30m', availability: '85%', reviews: '4.2 (8)', content: 'Needs update', opsScore: 78, action: 'Intervene' },
+    { program: 'Know Thyself', response: '45m', availability: '100%', reviews: '5.0 (5)', content: 'Excellent', opsScore: 95, action: 'Reward' },
+  ];
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'bg-[#e7f0e3] text-brand-teal'; // Green
@@ -25,7 +29,7 @@ export default function BookingOperations() {
         <div className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col justify-center min-h-[145px] hover:shadow-md transition-shadow">
           <p className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider mb-2">Payment success</p>
           <div className="flex items-end gap-3 mt-auto">
-            <h3 className="text-[26px] font-black text-text-main tracking-tight">-</h3>
+            <h3 className="text-[26px] font-black text-text-main tracking-tight">98.5%</h3>
           </div>
           <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-green" />
@@ -36,7 +40,7 @@ export default function BookingOperations() {
         <div className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col justify-center min-h-[145px] hover:shadow-md transition-shadow">
           <p className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider mb-2">Host response avg</p>
           <div className="flex items-end gap-3 mt-auto">
-            <h3 className="text-[26px] font-black text-text-main tracking-tight">-</h3>
+            <h3 className="text-[26px] font-black text-text-main tracking-tight">1h 15m</h3>
           </div>
           <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
@@ -47,7 +51,7 @@ export default function BookingOperations() {
         <div className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col justify-center min-h-[145px] hover:shadow-md transition-shadow">
           <p className="text-[10px] font-extrabold text-text-muted uppercase tracking-wider mb-2">Cancellation rate</p>
           <div className="flex items-end gap-3 mt-auto">
-            <h3 className="text-[26px] font-black text-text-main tracking-tight">-</h3>
+            <h3 className="text-[26px] font-black text-text-main tracking-tight">2.1%</h3>
           </div>
           <p className="text-[10px] font-bold text-slate-400 mt-2 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />

@@ -6,57 +6,65 @@ export default function SalesMarketingDashboard() {
   const [activeKpi, setActiveKpi] = useState(null);
 
   const topProgramsDetails = {
-    recentBookings: [],
-    searchHistoryByLocation: []
+    recentBookings: [
+      { id: 1, name: 'Rahul Sharma', program: 'The Inner Reset', location: 'Mumbai', date: 'Today' },
+      { id: 2, name: 'Sneha Patel', program: 'Ojas Renewal', location: 'Delhi', date: 'Yesterday' },
+      { id: 3, name: 'Anjali Desai', program: 'Know Thyself', location: 'Bangalore', date: '2 days ago' }
+    ],
+    searchHistoryByLocation: [
+      { id: 1, location: 'Mumbai', count: 1250, topProgram: 'The Inner Reset' },
+      { id: 2, location: 'Delhi', count: 980, topProgram: 'Ojas Renewal' },
+      { id: 3, location: 'Bangalore', count: 850, topProgram: 'The Inner Reset' }
+    ]
   };
 
   const kpiData = [
     { 
       id: 'campaigns', 
       label: 'Active Campaigns', 
-      value: '0', 
-      sub: 'Across 0 channels', 
-      details: 'No active campaigns',
+      value: '4', 
+      sub: 'Across 3 channels', 
+      details: 'Meta Ads (2) | Google Search (1) | Email (1)',
       icon: Megaphone
     },
     { 
       id: 'leads', 
       label: 'New Leads (MTD)', 
-      value: '0', 
-      sub: 'No data', 
-      details: 'Organic Search: 0 | Paid Social: 0 | Referrals: 0',
+      value: '620', 
+      sub: '+14% vs last month', 
+      details: 'Organic Search: 240 | Paid Social: 310 | Referrals: 70',
       icon: Users
     },
     { 
       id: 'conversion', 
       label: 'Conversion Rate', 
-      value: '0%', 
+      value: '23.4%', 
       sub: 'Lead to Booking', 
-      details: 'No data available',
+      details: 'Industry average: 18%. Top converting channel: Paid Social.',
       icon: Target
     },
     { 
       id: 'cac', 
       label: 'Avg. CAC', 
-      value: '₹0', 
+      value: '₹1,250', 
       sub: 'Cost Per Acquisition', 
-      details: 'No data available',
+      details: 'Blended CAC across all paid channels. Target: ₹1,500.',
       icon: Activity
     },
     { 
       id: 'roas', 
       label: 'Est. ROAS', 
-      value: '0x', 
+      value: '3.2x', 
       sub: 'Return on Ad Spend', 
-      details: 'Total Ad Spend (MTD): ₹0 | Attributed Revenue: ₹0',
+      details: 'Total Ad Spend (MTD): ₹45,000 | Attributed Revenue: ₹144,000',
       icon: TrendingUp
     },
     {
       id: 'top_programs',
       label: 'Top Programs',
-      value: '-',
-      sub: 'No data this month',
-      details: 'No bookings recorded yet',
+      value: 'Inner Reset',
+      sub: '38% of bookings',
+      details: 'Most popular among corporate professionals.',
       icon: Search
     }
   ];
@@ -182,10 +190,10 @@ export default function SalesMarketingDashboard() {
           <h3 className="text-sm font-black text-text-main mb-6 uppercase tracking-wider">Lead Volume by Channel (MTD)</h3>
           <div className="h-48 flex items-end justify-between gap-2 md:gap-4 border-b border-border-leaf/50 pb-2">
             {/* Mock Bars */}
-            <div className="w-full bg-slate-100 rounded-t-[12px] h-[0%] relative group"></div>
-            <div className="w-full bg-slate-100 rounded-t-[12px] h-[0%] relative group"></div>
-            <div className="w-full bg-slate-100 rounded-t-[12px] h-[0%] relative group"></div>
-            <div className="w-full bg-slate-100 rounded-t-[12px] h-[0%] relative group"></div>
+            <div className="w-full bg-brand-teal/80 hover:bg-brand-teal transition-colors rounded-t-[12px] h-[65%] relative group"><div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-main text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">240 Leads</div></div>
+            <div className="w-full bg-brand-teal/80 hover:bg-brand-teal transition-colors rounded-t-[12px] h-[85%] relative group"><div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-main text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">310 Leads</div></div>
+            <div className="w-full bg-brand-teal/80 hover:bg-brand-teal transition-colors rounded-t-[12px] h-[20%] relative group"><div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-main text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">70 Leads</div></div>
+            <div className="w-full bg-brand-teal/80 hover:bg-brand-teal transition-colors rounded-t-[12px] h-[10%] relative group"><div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-main text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">35 Leads</div></div>
           </div>
           <div className="flex justify-between text-[11px] font-bold text-slate-400 mt-4 px-1 uppercase tracking-wider">
             <span>Org. Search</span>
@@ -198,8 +206,37 @@ export default function SalesMarketingDashboard() {
         {/* Mock Chart Area 2 */}
         <div className="bg-white border border-border-leaf rounded-[24px] p-7 shadow-sm">
           <h3 className="text-sm font-black text-text-main mb-6 uppercase tracking-wider">Campaign Performance</h3>
-          <div className="flex items-center justify-center h-48 border-2 border-dashed border-border-leaf rounded-[16px]">
-            <div className="text-sm font-bold text-slate-400">No active campaigns data to display.</div>
+          <div className="flex flex-col justify-center h-48 border border-border-leaf rounded-[16px] overflow-hidden">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-400 border-b border-border-leaf">
+                <tr>
+                  <th className="py-3 px-4 font-semibold uppercase tracking-wider">Campaign</th>
+                  <th className="py-3 px-4 font-semibold uppercase tracking-wider text-right">Spend</th>
+                  <th className="py-3 px-4 font-semibold uppercase tracking-wider text-right">Leads</th>
+                  <th className="py-3 px-4 font-semibold uppercase tracking-wider text-right">CPA</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border-leaf/50">
+                <tr className="hover:bg-slate-50/50">
+                  <td className="py-3 px-4 font-bold text-text-main">Meta Retargeting</td>
+                  <td className="py-3 px-4 text-right text-text-muted font-medium">₹15,000</td>
+                  <td className="py-3 px-4 text-right text-text-muted font-medium">120</td>
+                  <td className="py-3 px-4 text-right font-black text-brand-teal">₹125</td>
+                </tr>
+                <tr className="hover:bg-slate-50/50">
+                  <td className="py-3 px-4 font-bold text-text-main">Google Search Non-Brand</td>
+                  <td className="py-3 px-4 text-right text-text-muted font-medium">₹25,000</td>
+                  <td className="py-3 px-4 text-right text-text-muted font-medium">150</td>
+                  <td className="py-3 px-4 text-right font-black text-amber-600">₹166</td>
+                </tr>
+                <tr className="hover:bg-slate-50/50">
+                  <td className="py-3 px-4 font-bold text-text-main">Email Reactivation</td>
+                  <td className="py-3 px-4 text-right text-text-muted font-medium">₹5,000</td>
+                  <td className="py-3 px-4 text-right text-text-muted font-medium">40</td>
+                  <td className="py-3 px-4 text-right font-black text-brand-teal">₹125</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

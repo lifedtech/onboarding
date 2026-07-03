@@ -19,28 +19,37 @@ import {
 import useOpsStore from '../store/useOpsStore';
 import toast from 'react-hot-toast';
 
-export default function SystemSupport() {
-  const { user: currentUser, tickets, fetchTickets, createTicket, updateTicket, deleteTicket } = useOpsStore();
+export default function SystemSupport({ supportType = 'SYSTEM' }) {
+  const { user: currentUser, tickets, fetchTickets, createTicket, updateTicket, deleteTicket, healthmates, fetchHealthmates } = useOpsStore();
   
   const isAdmin = currentUser?.role?.toLowerCase() === 'admin';
   const isSuperAdmin = currentUser?.email === 'admin@lifed.com' || currentUser?.role === 'SUPER_ADMIN';
 
-  const [activeTab, setActiveTab] = useState('SYSTEM'); // SYSTEM, HEALTHMATE, SERVICE_USER
+  const activeTab = supportType;
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [resolvingTicketId, setResolvingTicketId] = useState(null);
+  const [resolutionRemarksText, setResolutionRemarksText] = useState('');
 
   const [ticketForm, setTicketForm] = useState({
     title: '',
     description: '',
-    type: 'SYSTEM',
+    type: supportType,
     priority: 'MEDIUM',
     healthmateId: '',
     serviceUserEmail: ''
   });
 
   useEffect(() => {
+    setTicketForm(p => ({ ...p, type: supportType }));
+  }, [supportType]);
+
+  useEffect(() => {
     fetchTickets();
-  }, [fetchTickets]);
+    if (supportType === 'HEALTHMATE') {
+      fetchHealthmates();
+    }
+  }, [fetchTickets, fetchHealthmates, supportType]);
 
   const handleRaiseTicket = async (e) => {
     e.preventDefault();
@@ -75,6 +84,22 @@ export default function SystemSupport() {
     const res = await updateTicket(ticketId, { status: nextStatus });
     if (res.success) {
       toast.success(`Ticket status updated to ${nextStatus}.`);
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  const handleResolveClick = (ticketId) => {
+    setResolvingTicketId(ticketId);
+    setResolutionRemarksText('');
+  };
+
+  const handleResolveSubmit = async (ticketId) => {
+    const res = await updateTicket(ticketId, { status: 'RESOLVED', resolutionRemarks: resolutionRemarksText });
+    if (res.success) {
+      toast.success('Ticket resolved successfully.');
+      setResolvingTicketId(null);
+      setResolutionRemarksText('');
     } else {
       toast.error(res.message);
     }
@@ -131,12 +156,13 @@ export default function SystemSupport() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-2xl font-black text-text-main tracking-tight flex items-center gap-2">
-            <LifeBuoy className="w-6 h-6 text-brand-teal" /> System Support
+            <LifeBuoy className="w-6 h-6 text-brand-teal" /> {supportType === 'SYSTEM' ? 'System Support' : supportType === 'HEALTHMATE' ? 'Healthmate Support' : 'User Support'}
           </h1>
           <p className="text-sm font-semibold text-text-muted mt-0.5">
-            {isSuperAdmin
-              ? 'Manage all System-level technical issues.'
-              : 'Raise System-level technical issues directly to the Super Admin.'}
+            {supportType === 'SYSTEM' 
+              ? (isSuperAdmin ? 'Manage all System-level technical issues.' : 'Raise System-level technical issues directly to the Super Admin.')
+              : supportType === 'HEALTHMATE' ? 'Manage and resolve tickets raised by Healthmates.'
+              : 'Manage and resolve tickets raised by Service Users.'}
           </p>
         </div>
       </div>
@@ -144,15 +170,15 @@ export default function SystemSupport() {
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-8">
         
               {/* Left Panel: Ticket Form */}
-        {!isSuperAdmin && (
+        {(!isSuperAdmin || supportType !== 'SYSTEM') && (
           <div className="lg:col-span-1 bg-white border border-border-leaf rounded-[24px] p-6 shadow-sm flex flex-col justify-start space-y-5 h-fit">
             <div className="space-y-1.5 border-b border-border-leaf pb-4 shrink-0">
               <div className="flex items-center gap-2 text-brand-teal">
                 <LifeBuoy className="w-5 h-5 animate-spin" style={{ animationDuration: '8s' }} />
-                <h3 className="font-black text-text-main text-sm tracking-wide">Raise System Ticket</h3>
+                <h3 className="font-black text-text-main text-sm tracking-wide">Raise {supportType === 'SYSTEM' ? 'System' : supportType === 'HEALTHMATE' ? 'Healthmate' : 'Service User'} Ticket</h3>
               </div>
               <p className="text-slate-500 text-[11px] font-semibold">
-                Submit technical issues directly to the Super Admin.
+                {supportType === 'SYSTEM' ? 'Submit technical issues directly to the Super Admin.' : `Log a ticket for a ${supportType === 'HEALTHMATE' ? 'partner' : 'user'}.`}
               </p>
             </div>
 
@@ -163,7 +189,7 @@ export default function SystemSupport() {
                   required
                   type="text"
                   value={ticketForm.title}
-                  onChange={(e) => setTicketForm((p) => ({ ...p, title: e.target.value, type: activeTab }))}
+                  onChange={(e) => setTicketForm((p) => ({ ...p, title: e.target.value, type: supportType }))}
                   placeholder="Short title..."
                   className="w-full bg-slate-50 border border-border-leaf focus:border-brand-teal/80 text-text-main rounded-[16px] py-2 px-3 text-sm font-semibold transition-all focus:outline-none"
                 />
@@ -193,8 +219,24 @@ export default function SystemSupport() {
                   <option value="HIGH">High</option>
                 </select>
               </div>
+              {supportType === 'HEALTHMATE' && (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase text-text-muted tracking-wider">Select Healthmate</label>
+                  <select
+                    required
+                    value={ticketForm.healthmateId}
+                    onChange={(e) => setTicketForm((p) => ({ ...p, healthmateId: e.target.value }))}
+                    className="w-full bg-slate-50 border border-border-leaf focus:border-brand-teal/80 text-text-main rounded-[16px] py-2 px-3 text-xs font-bold transition-all focus:outline-none"
+                  >
+                    <option value="">-- Select Partner --</option>
+                    {healthmates?.map(hm => (
+                      <option key={hm.id} value={hm.id}>{hm.name} ({hm.category})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               
-              {activeTab === 'SERVICE_USER' && (
+              {supportType === 'SERVICE_USER' && (
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-extrabold uppercase text-text-muted tracking-wider">Service User Email</label>
                   <input
@@ -221,14 +263,14 @@ export default function SystemSupport() {
         )}
 
         {/* Right Panel: Ticket List */}
-        <div className={`${isSuperAdmin ? 'lg:col-span-4' : 'lg:col-span-3'} bg-white border border-border-leaf rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]`}>
+        <div className={`${(!isSuperAdmin || supportType !== 'SYSTEM') ? 'lg:col-span-3' : 'lg:col-span-4'} bg-white border border-border-leaf rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]`}>
           <div className="px-6 py-4 border-b border-border-leaf flex items-center justify-between shrink-0 bg-slate-50/50 flex-wrap gap-4">
             <div className="relative flex-1 min-w-[200px] max-w-sm">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search system tickets..."
+                placeholder={`Search ${supportType.toLowerCase()} tickets...`}
                 className="w-full bg-white border border-border-leaf focus:border-brand-teal/80 text-text-main rounded-[12px] py-2 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
               />
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
@@ -293,6 +335,16 @@ export default function SystemSupport() {
                       )}
                       
                       {/* Ticket Context */}
+                      {ticket.resolutionRemarks && (
+                        <div className="mt-3 bg-brand-green/5 border border-brand-green/20 p-3 rounded-[12px]">
+                          <p className="text-[10px] font-extrabold text-brand-green uppercase tracking-wider mb-1 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> Resolution Remarks
+                          </p>
+                          <p className="text-[11px] text-slate-600 leading-relaxed font-medium whitespace-pre-wrap">
+                            {ticket.resolutionRemarks}
+                          </p>
+                        </div>
+                      )}
                       <div className="pt-2 flex flex-wrap gap-2">
                         {ticket.raisedByOps && (
                           <div className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded flex items-center gap-1">
@@ -317,38 +369,66 @@ export default function SystemSupport() {
                       </div>
                     </div>
 
-                    <div className="border-t border-border-leaf pt-4 flex items-center justify-between shrink-0">
-                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {new Date(ticket.createdAt).toLocaleDateString()}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {canManage && ticket.status !== 'RESOLVED' && (
-                          <button
-                            onClick={() => handleUpdateStatus(ticket.id, 'RESOLVED')}
-                            className="text-[9px] font-extrabold px-2.5 py-1.5 rounded-lg bg-brand-green text-white hover:bg-brand-green/95 transition-all shadow-sm"
-                          >
-                            Resolve
-                          </button>
-                        )}
-                        {canManage && ticket.status === 'OPEN' && (
-                          <button
-                            onClick={() => handleUpdateStatus(ticket.id, 'IN_PROGRESS')}
-                            className="text-[9px] font-extrabold px-2.5 py-1.5 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all shadow-sm"
-                          >
-                            Investigate
-                          </button>
-                        )}
-                        {isSuperAdmin && (
-                          <button
-                            onClick={() => handleDeleteTicket(ticket.id)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all focus:outline-none"
-                            title="Delete Ticket"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
+                    <div className="border-t border-border-leaf pt-4 flex flex-col gap-2 shrink-0">
+                      {resolvingTicketId === ticket.id ? (
+                        <div className="flex flex-col gap-2 w-full mt-2">
+                          <textarea
+                            value={resolutionRemarksText}
+                            onChange={(e) => setResolutionRemarksText(e.target.value)}
+                            placeholder="Add remarks to send to the partner/user..."
+                            className="w-full text-[11px] font-medium p-3 border border-border-leaf rounded-[12px] bg-slate-50 focus:border-brand-teal outline-none transition-all resize-none"
+                            rows={3}
+                          />
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => setResolvingTicketId(null)}
+                              className="text-[10px] font-extrabold px-3 py-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-all"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => handleResolveSubmit(ticket.id)}
+                              className="text-[10px] font-extrabold px-3 py-1.5 rounded-lg bg-brand-green text-white hover:bg-brand-green/95 transition-all shadow-sm flex items-center gap-1"
+                            >
+                              <CheckCircle2 className="w-3 h-3" /> Confirm Resolve
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-slate-400" />
+                            {new Date(ticket.createdAt).toLocaleDateString()}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {canManage && ticket.status !== 'RESOLVED' && (
+                              <button
+                                onClick={() => handleResolveClick(ticket.id)}
+                                className="text-[9px] font-extrabold px-2.5 py-1.5 rounded-lg bg-brand-green text-white hover:bg-brand-green/95 transition-all shadow-sm"
+                              >
+                                Resolve
+                              </button>
+                            )}
+                            {canManage && ticket.status === 'OPEN' && (
+                              <button
+                                onClick={() => handleUpdateStatus(ticket.id, 'IN_PROGRESS')}
+                                className="text-[9px] font-extrabold px-2.5 py-1.5 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all shadow-sm"
+                              >
+                                Investigate
+                              </button>
+                            )}
+                            {(isSuperAdmin || isAdmin) && (
+                              <button
+                                onClick={() => handleDeleteTicket(ticket.id)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all focus:outline-none"
+                                title="Delete Ticket"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )})}

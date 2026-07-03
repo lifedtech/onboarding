@@ -3,7 +3,12 @@ import React, { useState } from 'react';
 export default function ProgramPerformance() {
   const [expandedRow, setExpandedRow] = useState(null);
 
-  const programData = [];
+  const programData = [
+    { program: 'The Inner Reset', category: 'Wellness', format: 'Retreat', leads: 142, bookings: 45, score: 92, action: 'Scale' },
+    { program: 'Ojas Renewal', category: 'Ayurveda', format: 'Workshop', leads: 85, bookings: 22, score: 85, action: 'Scale' },
+    { program: 'Know Thyself', category: 'Mental Health', format: 'Session', leads: 60, bookings: 12, score: 72, action: 'Improve' },
+    { program: 'Forest Community', category: 'Community', format: 'Meetup', leads: 24, bookings: 3, score: 55, action: 'Delay' },
+  ];
 
   const getScoreColor = (score) => {
     if (score >= 80) return 'bg-[#e7f0e3] text-brand-teal'; // Green

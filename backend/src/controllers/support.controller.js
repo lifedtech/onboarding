@@ -104,12 +104,13 @@ const getTickets = async (req, res) => {
 const updateTicket = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, priority, assignedToId } = req.body;
+    const { status, priority, assignedToId, resolutionRemarks } = req.body;
 
     const data = {};
     if (status) data.status = status;
     if (priority) data.priority = priority;
     if (assignedToId !== undefined) data.assignedToId = assignedToId;
+    if (resolutionRemarks !== undefined) data.resolutionRemarks = resolutionRemarks;
 
     const ticket = await prisma.ticket.update({
       where: { id },
@@ -133,9 +134,9 @@ const deleteTicket = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const isSuperAdmin = req.user.email === 'admin@lifed.com' || req.user.role === 'SUPER_ADMIN';
-    if (!isSuperAdmin) {
-      return res.status(403).json({ message: 'Only Super Admins can delete tickets' });
+    const isAdmin = req.user.email === 'admin@lifed.com' || req.user.role === 'SUPER_ADMIN' || req.user.role?.toLowerCase() === 'admin';
+    if (!isAdmin) {
+      return res.status(403).json({ message: 'Only Admins can delete tickets' });
     }
 
     await prisma.ticket.delete({

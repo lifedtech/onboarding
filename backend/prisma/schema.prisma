@@ -260,6 +260,7 @@ model Ticket {
   type          TicketType
   status        TicketStatus @default(OPEN)
   priority      TicketPriority @default(MEDIUM)
+  resolutionRemarks String? @db.Text
   
   // For SYSTEM tickets
   raisedByOpsId String?

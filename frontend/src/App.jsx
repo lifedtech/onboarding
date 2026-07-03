@@ -10,7 +10,6 @@ import ServiceUserDashboard from './components/dashboard/ServiceUserDashboard';
 import HealthmateModal from './components/pipeline/HealthmateModal';
 import TeamManagement from './components/dashboard/TeamManagement';
 import MyTasks from './components/dashboard/MyTasks';
-import Support from './components/Support';
 import SystemSupport from './components/SystemSupport';
 import SupportDashboard from './components/dashboard/SupportDashboard';
 import useOpsStore from './store/useOpsStore';
@@ -45,9 +44,9 @@ const PAGES = {
   healthmate_calendar:  <CalendarView />, // Pass category prop later if needed
   service_user_calendar:  <CalendarView />, 
   team:      <TeamManagement />,
-  healthmate_support:   <Support />,
-  service_user_support:   <Support />,
-  system_support: <SystemSupport />,
+  healthmate_support:   <SystemSupport supportType="HEALTHMATE" />,
+  service_user_support:   <SystemSupport supportType="SERVICE_USER" />,
+  system_support: <SystemSupport supportType="SYSTEM" />,
   support_dashboard: <SupportDashboard />,
   promotions: <div className="p-8 text-center text-text-muted">Promotions functionality coming soon.</div>,
 };
