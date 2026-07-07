@@ -4,8 +4,8 @@ async function main() {
   try {
     console.log('--- Testing Port 3005 Login Endpoint ---');
     const response = await axios.post('http://localhost:3005/api/auth/login', {
-      email: 'admin@lifed.com',
-      password: 'admin123'
+      email: 'tech@lifedhealth.com',
+      password: 'tech@456'
     });
     console.log('Response Status:', response.status);
     console.log('Response Data:', JSON.stringify(response.data, null, 2));

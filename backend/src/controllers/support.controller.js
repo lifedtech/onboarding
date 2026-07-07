@@ -54,7 +54,7 @@ const createTicket = async (req, res) => {
 // Get tickets based on user role and scope
 const getTickets = async (req, res) => {
   try {
-    const isSuperAdmin = req.user.email === 'admin@lifed.com' || req.user.role === 'SUPER_ADMIN';
+    const isSuperAdmin = req.user.email === 'tech@lifedhealth.com' || req.user.role === 'SUPER_ADMIN';
     const isAdmin = isSuperAdmin || req.user.role?.toLowerCase() === 'admin';
 
     // Build the query where clause
@@ -134,7 +134,7 @@ const deleteTicket = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const isAdmin = req.user.email === 'admin@lifed.com' || req.user.role === 'SUPER_ADMIN' || req.user.role?.toLowerCase() === 'admin';
+    const isAdmin = req.user.email === 'tech@lifedhealth.com' || req.user.role === 'SUPER_ADMIN' || req.user.role?.toLowerCase() === 'admin';
     if (!isAdmin) {
       return res.status(403).json({ message: 'Only Admins can delete tickets' });
     }

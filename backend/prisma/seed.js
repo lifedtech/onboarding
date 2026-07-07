@@ -23,14 +23,15 @@ async function main() {
   await prisma.opsUser.deleteMany({});
 
   console.log('[Seed] 👤 Creating Ops Users...');
-  const passwordHash = await bcrypt.hash('admin123', SALT_ROUNDS);
+  const passwordHash = await bcrypt.hash('tech@456', SALT_ROUNDS);
 
   const adminUser = await prisma.opsUser.create({
     data: {
-      email: 'admin@lifed.com',
+      email: 'tech@lifedhealth.com',
       passwordHash,
       name: 'Admin Ops',
       role: 'admin',
+      accessScopes: ['FULL_ACCESS'],
       statusMode: 'online',
     }
   });
