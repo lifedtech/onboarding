@@ -137,6 +137,31 @@ function Workspace() {
     const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/chat/stream?token=${token}`;
     const es = new EventSource(url);
 
+    const isSuperAdmin = currentUser?.email === 'tech@lifedhealth.com' || currentUser?.role === 'SUPER_ADMIN';
+
+    // Listen for special Admin Ops ticket creation notifications
+    if (isSuperAdmin) {
+      es.addEventListener('ticket_created', (event) => {
+        try {
+          const ticket = JSON.parse(event.data);
+          playNotificationSound();
+          toast.success(`🎫 New Support Ticket Raised!\nTitle: ${ticket.title}`, { duration: 8000 });
+        } catch (e) {}
+      });
+    } else {
+      // For non-Super Admins, listen for when tickets are updated with remarks
+      es.addEventListener('ticket_updated', (event) => {
+        try {
+          const ticket = JSON.parse(event.data);
+          // Only notify if there are remarks
+          if (ticket.resolutionRemarks) {
+            playNotificationSound();
+            toast.success(`🎫 Ticket Update: ${ticket.title}\nAdmin Ops replied: "${ticket.resolutionRemarks}"`, { duration: 8000 });
+          }
+        } catch (e) {}
+      });
+    }
+
     // Listen for multiplayer game invitations
     es.addEventListener('game_invite', (event) => {
       const { gameId, hostName, gameType } = JSON.parse(event.data);

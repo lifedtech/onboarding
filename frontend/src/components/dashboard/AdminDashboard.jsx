@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import useOpsStore from '../../store/useOpsStore';
 import { 
   Users, Target, CalendarCheck, Wallet, PieChart, 
-  MoreHorizontal, ChevronRight, TrendingUp, Clock, AlertCircle
+  MoreHorizontal, ChevronRight, TrendingUp, Clock, AlertCircle,
+  Download, UserPlus, CheckCircle, Activity, Repeat, HeartPulse, Handshake
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -31,11 +32,26 @@ export default function AdminDashboard() {
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
 
   const kpiData = [
-    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'Pending GA4 API', details: 'No data', icon: Users, badgeColor: 'bg-slate-100 text-slate-600' },
-    { id: 'leads', label: 'Qualified leads', value: stats.qualifiedLeads.toString(), sub: 'From Enquiries', details: 'High Intent | Medium Intent | Low Intent', icon: Target, badgeColor: 'bg-orange-100 text-orange-600' },
-    { id: 'bookings', label: 'Bookings', value: stats.totalBookings.toString(), sub: 'Total confirmed', details: 'From all service users', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
-    { id: 'gbv', label: 'Gross booking value', value: formatCurrency(stats.grossBookingValue), sub: 'Total revenue', details: 'Across all programs', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
-    { id: 'commission', label: 'Lifed commission', value: formatCurrency(stats.lifedCommission), sub: '15% margin', details: 'Net realized income', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600' }
+    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'Pending GA4 API', details: 'No data', icon: Users, badgeColor: 'bg-slate-100 text-slate-600', category: 'Marketing ROI' },
+    { id: 'leads', label: 'Qualified leads', value: stats.qualifiedLeads.toString(), sub: 'From Enquiries', details: 'High Intent | Medium Intent | Low Intent', icon: Target, badgeColor: 'bg-orange-100 text-orange-600', category: 'Marketing ROI' },
+    { id: 'bookings', label: 'Bookings', value: stats.totalBookings.toString(), sub: 'Total confirmed', details: 'From all service users', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
+    { id: 'gbv', label: 'Gross booking value', value: formatCurrency(stats.grossBookingValue), sub: 'Total revenue', details: 'Across all programs', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
+    { id: 'commission', label: 'Lifed commission', value: formatCurrency(stats.lifedCommission), sub: '20-25% margin', details: 'Commission is made through 20% from residential programs and 25% from session-based programs.', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600', category: 'Business Growth' },
+    { id: 'app_downloads', label: 'App Downloads', value: '0', sub: 'Pending API', details: 'No data', icon: Download, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
+    { id: 'user_registrations', label: 'User Registrations', value: '0', sub: 'Pending API', details: 'No data', icon: UserPlus, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
+    { id: 'total_booking_roi', label: 'Total Booking', value: stats.totalBookings.toString(), sub: 'Across all channels', details: 'List of programs and their total bookings.', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Marketing ROI' },
+    { id: 'lewis_completions', label: 'LEWIS Completions', value: '0', sub: 'Pending API', details: 'No data', icon: CheckCircle, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
+    { id: 'active_users', label: 'Active Monthly Users', value: '0', sub: 'Pending API', details: 'No data', icon: Activity, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
+    { id: 'repeat_bookings', label: 'Repeat Bookings', value: '0', sub: 'Pending API', details: 'No data', icon: Repeat, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
+    { id: 'live_programs', label: 'Live Programs', value: '3', sub: 'Active now', details: 'List of currently active programs.', icon: Activity, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
+    { id: 'healthmate_growth', label: 'Healthmate Growth', value: '0', sub: 'Pending API', details: 'No data', icon: HeartPulse, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
+    { id: 'partner_conversions', label: 'Partner Conversions', value: '0', sub: 'Pending API', details: 'No data', icon: Handshake, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' }
+  ];
+
+  const categories = [
+    { title: 'Marketing ROI', id: 'Marketing ROI' },
+    { title: 'User Growth', id: 'User Growth' },
+    { title: 'Business Growth', id: 'Business Growth' }
   ];
 
   return (
@@ -72,42 +88,49 @@ export default function AdminDashboard() {
 
       {activeTab === 'OVERVIEW' ? (
         <>
-          {/* Top 5 Cards */}
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5">
-          {kpiData.map((card) => {
-            const Icon = card.icon;
-            const isActive = activeKpi === card.id;
-            return (
-              <div 
-                key={card.id} 
-                onClick={() => setActiveKpi(isActive ? null : card.id)}
-                className={`bg-white rounded-[24px] p-5 shadow-sm border cursor-pointer flex flex-col justify-between transition-all group min-h-[140px] ${
-                  isActive ? 'border-brand-teal ring-1 ring-brand-teal shadow-md' : 'border-border-leaf hover:border-brand-teal/40 hover:shadow-md'
-                }`}
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${isActive ? 'bg-brand-teal text-white' : 'bg-slate-50 border border-slate-100 text-slate-500 group-hover:bg-brand-teal/10 group-hover:text-brand-teal group-hover:border-transparent'}`}>
-                    <Icon className="w-5 h-5 stroke-[2.5]" />
-                  </div>
-                  <button className="text-slate-400 hover:text-slate-600 transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
-                </div>
-                
-                <div>
-                  <p className="text-[12px] font-bold text-text-muted mb-1.5">{card.label}</p>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h3 className="text-[26px] font-black text-text-main tracking-tight">{card.value}</h3>
-                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap ${card.badgeColor}`}>
-                      {card.sub}
-                    </span>
-                  </div>
-                </div>
+          {/* KPI Cards */}
+      <div className="space-y-8">
+        {categories.map((category) => {
+          const categoryKpis = kpiData.filter(k => k.category === category.id);
+          if (categoryKpis.length === 0) return null;
+
+          return (
+            <div key={category.id}>
+              <h2 className="text-[16px] font-black text-text-main mb-4 px-1">{category.title}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                {categoryKpis.map((card) => {
+                  const Icon = card.icon;
+                  const isActive = activeKpi === card.id;
+                  return (
+                    <div 
+                      key={card.id} 
+                      onClick={() => setActiveKpi(isActive ? null : card.id)}
+                      className={`bg-white rounded-[24px] p-5 shadow-sm border cursor-pointer flex flex-col justify-between transition-all group min-h-[140px] ${
+                        isActive ? 'border-brand-teal ring-1 ring-brand-teal shadow-md' : 'border-border-leaf hover:border-brand-teal/40 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center mb-4">
+                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${isActive ? 'bg-brand-teal text-white' : 'bg-slate-50 border border-slate-100 text-slate-500 group-hover:bg-brand-teal/10 group-hover:text-brand-teal group-hover:border-transparent'}`}>
+                          <Icon className="w-5 h-5 stroke-[2.5]" />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <p className="text-[12px] font-bold text-text-muted mb-1.5">{card.label}</p>
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h3 className="text-[26px] font-black text-text-main tracking-tight">{card.value}</h3>
+                          <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap ${card.badgeColor}`}>
+                            {card.sub}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
 
         {/* Details Pane */}
         {activeKpi && (
@@ -118,9 +141,59 @@ export default function AdminDashboard() {
                 {kpiData.find(k => k.id === activeKpi)?.label} Breakdown
               </h4>
             </div>
-            <p className="text-[13px] font-semibold text-text-muted">
-              {kpiData.find(k => k.id === activeKpi)?.details}
-            </p>
+            
+            {activeKpi === 'live_programs' ? (
+              <div className="mt-4">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-brand-teal/20">
+                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted">Program Name</th>
+                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted text-right">Users Booked</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { id: 1, name: 'Yoga for Beginners', bookings: 45 },
+                      { id: 2, name: 'Advanced Meditation', bookings: 28 },
+                      { id: 3, name: 'HIIT Bootcamp', bookings: 62 },
+                    ].map(prog => (
+                      <tr key={prog.id} className="border-b border-brand-teal/10 last:border-0 hover:bg-brand-teal/10 transition-colors">
+                        <td className="py-3 px-4 text-[13px] font-bold text-text-main">{prog.name}</td>
+                        <td className="py-3 px-4 text-[13px] font-black text-brand-teal text-right">{prog.bookings}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : activeKpi === 'total_booking_roi' ? (
+              <div className="mt-4">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-brand-teal/20">
+                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted">Program Name</th>
+                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted text-right">Total Bookings</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { id: 1, name: 'Yoga for Beginners', bookings: 120 },
+                      { id: 2, name: 'Advanced Meditation', bookings: 85 },
+                      { id: 3, name: 'HIIT Bootcamp', bookings: 210 },
+                      { id: 4, name: 'Nutrition Fundamentals', bookings: 95 },
+                    ].map(prog => (
+                      <tr key={prog.id} className="border-b border-brand-teal/10 last:border-0 hover:bg-brand-teal/10 transition-colors">
+                        <td className="py-3 px-4 text-[13px] font-bold text-text-main">{prog.name}</td>
+                        <td className="py-3 px-4 text-[13px] font-black text-brand-teal text-right">{prog.bookings}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-[13px] font-semibold text-text-muted">
+                {kpiData.find(k => k.id === activeKpi)?.details}
+              </p>
+            )}
           </div>
         )}
       </div>

@@ -106,6 +106,11 @@ const updateTicket = async (req, res) => {
     const { id } = req.params;
     const { status, priority, assignedToId, resolutionRemarks } = req.body;
 
+    const isSuperAdmin = req.user.email === 'tech@lifedhealth.com' || req.user.role === 'SUPER_ADMIN';
+    if ((status === 'RESOLVED' || resolutionRemarks) && !isSuperAdmin) {
+      return res.status(403).json({ message: 'Only Admin Ops can resolve tickets.' });
+    }
+
     const data = {};
     if (status) data.status = status;
     if (priority) data.priority = priority;
@@ -122,6 +127,9 @@ const updateTicket = async (req, res) => {
       }
     });
 
+    // Broadcast real-time ticket update event
+    broadcastToAll('ticket_updated', ticket);
+
     res.json(ticket);
   } catch (error) {
     console.error('Error updating ticket:', error);
@@ -134,9 +142,9 @@ const deleteTicket = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const isAdmin = req.user.email === 'tech@lifedhealth.com' || req.user.role === 'SUPER_ADMIN' || req.user.role?.toLowerCase() === 'admin';
-    if (!isAdmin) {
-      return res.status(403).json({ message: 'Only Admins can delete tickets' });
+    const isSuperAdmin = req.user.email === 'tech@lifedhealth.com' || req.user.role === 'SUPER_ADMIN';
+    if (!isSuperAdmin) {
+      return res.status(403).json({ message: 'Only Admin Ops can delete tickets' });
     }
 
     await prisma.ticket.delete({

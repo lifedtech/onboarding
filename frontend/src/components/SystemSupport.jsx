@@ -23,7 +23,7 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
   const { user: currentUser, tickets, fetchTickets, createTicket, updateTicket, deleteTicket, healthmates, fetchHealthmates } = useOpsStore();
   
   const isAdmin = currentUser?.role?.toLowerCase() === 'admin';
-  const isSuperAdmin = currentUser?.email === 'admin@lifed.com' || currentUser?.role === 'SUPER_ADMIN';
+  const isSuperAdmin = currentUser?.email === 'tech@lifedhealth.com' || currentUser?.role === 'SUPER_ADMIN';
 
   const activeTab = supportType;
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -401,7 +401,7 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
                             {new Date(ticket.createdAt).toLocaleDateString()}
                           </span>
                           <div className="flex items-center gap-2">
-                            {canManage && ticket.status !== 'RESOLVED' && (
+                            {isSuperAdmin && ticket.status !== 'RESOLVED' && (
                               <button
                                 onClick={() => handleResolveClick(ticket.id)}
                                 className="text-[9px] font-extrabold px-2.5 py-1.5 rounded-lg bg-brand-green text-white hover:bg-brand-green/95 transition-all shadow-sm"
@@ -409,7 +409,7 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
                                 Resolve
                               </button>
                             )}
-                            {canManage && ticket.status === 'OPEN' && (
+                            {isSuperAdmin && ticket.status === 'OPEN' && (
                               <button
                                 onClick={() => handleUpdateStatus(ticket.id, 'IN_PROGRESS')}
                                 className="text-[9px] font-extrabold px-2.5 py-1.5 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all shadow-sm"
@@ -417,7 +417,7 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
                                 Investigate
                               </button>
                             )}
-                            {(isSuperAdmin || isAdmin) && (
+                            {isSuperAdmin && (
                               <button
                                 onClick={() => handleDeleteTicket(ticket.id)}
                                 className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all focus:outline-none"

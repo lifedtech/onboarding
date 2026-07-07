@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useOpsStore from '../../store/useOpsStore';
-import { Target, Users, Megaphone, TrendingUp, DollarSign, Activity, Search, ChevronRight } from 'lucide-react';
+import { Target, Users, Megaphone, TrendingUp, DollarSign, Activity, Search, ChevronRight, Heart, Mail } from 'lucide-react';
 
 export default function SalesMarketingDashboard() {
   const [activeKpi, setActiveKpi] = useState(null);
@@ -58,6 +58,22 @@ export default function SalesMarketingDashboard() {
       sub: '0% of bookings',
       details: 'No data available.',
       icon: Search
+    },
+    { 
+      id: 'customer_ltv', 
+      label: 'Customer LTV', 
+      value: '₹0', 
+      sub: 'Pending API', 
+      details: 'No data',
+      icon: Heart
+    },
+    { 
+      id: 'email_referral', 
+      label: 'Email & Referral Opt', 
+      value: '0', 
+      sub: 'Pending API', 
+      details: 'No data',
+      icon: Mail
     }
   ];
 
@@ -75,7 +91,7 @@ export default function SalesMarketingDashboard() {
 
       {/* KPI Cards */}
       <div className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {kpiData.map((card) => {
             const Icon = card.icon;
             const isActive = activeKpi === card.id;
