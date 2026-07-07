@@ -200,10 +200,10 @@ export default function Layout({ children, activePage, onNavigate }) {
               <img
                 src={UPLOADS_BASE + user.avatar}
                 alt="avatar"
-                className="w-8 h-8 rounded-full object-cover border border-slate-600 shadow-sm"
+                className="w-8 h-8 rounded-[12px] object-cover border border-slate-600 shadow-sm"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-brand-green flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
+              <div className="w-8 h-8 rounded-[12px] bg-[var(--color-brand-green)] flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
                 {initials}
               </div>
             )}
@@ -393,7 +393,7 @@ export default function Layout({ children, activePage, onNavigate }) {
           
           <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-700">
             <span className="text-[12px] font-semibold text-slate-300">{user?.name}</span>
-            <div className="w-6 h-6 rounded-full bg-brand-teal text-white flex items-center justify-center text-[10px] font-extrabold">
+            <div className="w-6 h-6 rounded-[12px] bg-[var(--color-brand-teal)] text-white flex items-center justify-center text-[10px] font-extrabold">
               {initials}
             </div>
           </div>

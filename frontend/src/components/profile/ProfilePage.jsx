@@ -161,7 +161,7 @@ export default function ProfilePage({ onClose }) {
           <div className="relative inline-block">
             {/* Status ring */}
             <div 
-              className="absolute -inset-1.5 rounded-full transition-shadow duration-300 pointer-events-none"
+              className="absolute -inset-1.5 rounded-[16px] transition-shadow duration-300 pointer-events-none"
               style={{
                 boxShadow: `0 0 0 3px ${currentStatus.color}, 0 0 20px ${currentStatus.ring}`,
               }} 
@@ -172,11 +172,11 @@ export default function ProfilePage({ onClose }) {
               <img
                 src={avatarPreview}
                 alt="avatar"
-                className="w-[108px] h-[108px] rounded-full object-cover block border-4 border-white shadow-sm"
+                className="w-[108px] h-[108px] rounded-[12px] object-cover block border-4 border-white shadow-sm"
               />
             ) : (
               <div 
-                className="w-[108px] h-[108px] rounded-full flex items-center justify-center text-[38px] font-black text-white border-4 border-white shadow-sm"
+                className="w-[108px] h-[108px] rounded-[12px] flex items-center justify-center text-[38px] font-black text-white border-4 border-white shadow-sm"
                 style={{
                   background: `linear-gradient(135deg, ${c1}, ${c2})`,
                 }}

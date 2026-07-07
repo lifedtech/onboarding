@@ -20,10 +20,13 @@ export default function ServiceUserDashboard() {
     );
   }
 
-  // Calculate some basic mock metrics for a rich demo
-  const totalUsers = serviceUsers.length > 5 ? serviceUsers.length : 14250;
-  const activeEnquiries = serviceUsers.length > 5 ? serviceUsers.filter(u => u.enquiries && u.enquiries.length > 0).length : 340;
-  const newThisWeek = serviceUsers.length > 5 ? Math.floor(totalUsers * 0.1) : 215;
+  const totalUsers = serviceUsers.length;
+  const activeEnquiries = serviceUsers.filter(u => u.enquiries && u.enquiries.length > 0).length;
+  const newThisWeek = serviceUsers.filter(u => {
+    const d = new Date(u.createdAt);
+    const now = new Date();
+    return (now - d) < 7 * 24 * 60 * 60 * 1000;
+  }).length;
 
   return (
     <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto flex-1">
@@ -95,13 +98,7 @@ export default function ServiceUserDashboard() {
             <div className="bg-white border border-border-leaf rounded-[24px] shadow-sm p-7">
               <h2 className="text-lg font-black text-text-main mb-6">Recent Service Users</h2>
               <div className="space-y-2">
-                {(serviceUsers.length > 5 ? serviceUsers.slice(0, 5) : [
-                  { id: '1', name: 'Aarav Patel', email: 'aarav.p@example.com', createdAt: new Date().toISOString() },
-                  { id: '2', name: 'Sarah Jenkins', email: 'sarah.j@example.com', createdAt: new Date(Date.now() - 86400000).toISOString() },
-                  { id: '3', name: 'Mohammed Ali', email: 'm.ali@example.com', createdAt: new Date(Date.now() - 86400000 * 2).toISOString() },
-                  { id: '4', name: 'Priya Sharma', email: 'priya.s@example.com', createdAt: new Date(Date.now() - 86400000 * 3).toISOString() },
-                  { id: '5', name: 'David Chen', email: 'david.c@example.com', createdAt: new Date(Date.now() - 86400000 * 4).toISOString() }
-                ]).map(user => (
+                {serviceUsers.slice(0, 5).map(user => (
                   <div key={user.id} className="flex justify-between items-center p-4 hover:bg-slate-50 border border-transparent hover:border-border-leaf/50 transition-all rounded-[16px]">
                     <div>
                       <p className="font-bold text-sm text-text-main">{user.name}</p>
@@ -130,7 +127,7 @@ export default function ServiceUserDashboard() {
                
                {/* Mock Bar Chart */}
                <div className="flex-1 flex items-end justify-between gap-2 md:gap-6 pt-10 pb-2">
-                 {[{day:'Mon', val:45}, {day:'Tue', val:65}, {day:'Wed', val:85}, {day:'Thu', val:40}, {day:'Fri', val:95}, {day:'Sat', val:120}, {day:'Sun', val:110}].map((item, i) => {
+                 {[{day:'Mon', val:0}, {day:'Tue', val:0}, {day:'Wed', val:0}, {day:'Thu', val:0}, {day:'Fri', val:0}, {day:'Sat', val:0}, {day:'Sun', val:0}].map((item, i) => {
                    return (
                      <div key={item.day} className="flex flex-col items-center gap-3 flex-1 group">
                        <div className="w-full bg-slate-100 rounded-t-[12px] relative flex items-end justify-center" style={{ height: '200px' }}>
@@ -157,10 +154,10 @@ export default function ServiceUserDashboard() {
               </h2>
               <div className="space-y-6">
                 {[
-                  { label: 'Booking System', percent: 85, color: 'bg-brand-teal' },
-                  { label: 'Chat Support', percent: 62, color: 'bg-amber-500' },
-                  { label: 'Profile Updates', percent: 45, color: 'bg-purple-500' },
-                  { label: 'Article Reads', percent: 92, color: 'bg-brand-green' }
+                  { label: 'Booking System', percent: 0, color: 'bg-brand-teal' },
+                  { label: 'Chat Support', percent: 0, color: 'bg-amber-500' },
+                  { label: 'Profile Updates', percent: 0, color: 'bg-purple-500' },
+                  { label: 'Article Reads', percent: 0, color: 'bg-brand-green' }
                 ].map(stat => (
                   <div key={stat.label} className="space-y-2">
                     <div className="flex justify-between text-xs font-bold text-text-main">
@@ -186,11 +183,11 @@ export default function ServiceUserDashboard() {
               </h2>
               <div className="space-y-6 flex-1 flex flex-col justify-center">
                 {[
-                  { range: '18 - 24', pct: 15 },
-                  { range: '25 - 34', pct: 45 },
-                  { range: '35 - 44', pct: 25 },
-                  { range: '45 - 54', pct: 10 },
-                  { range: '55+', pct: 5 }
+                  { range: '18 - 24', pct: 0 },
+                  { range: '25 - 34', pct: 0 },
+                  { range: '35 - 44', pct: 0 },
+                  { range: '45 - 54', pct: 0 },
+                  { range: '55+', pct: 0 }
                 ].map(age => (
                   <div key={age.range} className="flex items-center gap-4 group">
                     <span className="w-16 text-xs font-bold text-slate-500 group-hover:text-text-main">{age.range}</span>
@@ -210,11 +207,9 @@ export default function ServiceUserDashboard() {
                 Top Countries
               </h2>
               <div className="space-y-4 pt-2">
-                {[
-                  { name: 'India', users: '8,420' },
-                  { name: 'United Arab Emirates', users: '2,150' },
-                  { name: 'United Kingdom', users: '1,840' },
-                  { name: 'United States', users: '1,200' }
+                {serviceUsers.length === 0 ? (
+                  <div className="text-center text-slate-400 font-medium py-4 text-xs">No data available</div>
+                ) : [
                 ].map(country => (
                   <div key={country.name} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors border border-transparent hover:border-border-leaf/50">
                     <span className="text-sm font-bold text-text-main">{country.name}</span>
@@ -231,11 +226,9 @@ export default function ServiceUserDashboard() {
                 Top Cities
               </h2>
               <div className="space-y-4 pt-2">
-                {[
-                  { name: 'Mumbai', users: '4,120' },
-                  { name: 'Delhi', users: '2,850' },
-                  { name: 'Dubai', users: '2,150' },
-                  { name: 'London', users: '1,420' }
+                {serviceUsers.length === 0 ? (
+                  <div className="text-center text-slate-400 font-medium py-4 text-xs">No data available</div>
+                ) : [
                 ].map(city => (
                   <div key={city.name} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors border border-transparent hover:border-border-leaf/50">
                     <span className="text-sm font-bold text-text-main">{city.name}</span>

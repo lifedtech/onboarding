@@ -1,24 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Roboto", sans-serif;
-  --color-brand-teal: #00B09B;
-  --color-brand-teal-hover: #009684;
-  --color-brand-green: #78C652;
-  --color-brand-green-hover: #67ac43;
-  --color-bg-mint: #eaf7f4;
-  --color-bg-base: #edf0f2;
-  --color-text-main: #2C3E50;
-  --color-text-muted: #5a738e;
-  --color-border-leaf: #cbd5e1;
+  --font-sans: "Nunito", sans-serif;
+  --font-heading: "Manrope", sans-serif;
+  --color-brand-teal: #00ae9d;
+  --color-brand-teal-hover: #009384;
+  --color-brand-green: #5fbb46;
+  --color-brand-green-hover: #4e9d38;
+  --color-bg-mint: #e6f4d0;
+  --color-bg-base: #f4f4f4;
+  --color-text-main: #414242;
+  --color-text-muted: #767878;
+  --color-border-leaf: #d6edea;
 }
 
 @layer base {
   body {
-    font-family: "Roboto", sans-serif;
+    font-family: "Nunito", sans-serif;
     font-weight: 400;
-    background-color: #edf0f2;
-    color: #2C3E50;
+    line-height: 1.2;
+    background-color: #f4f4f4;
+    color: #414242;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Manrope", sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply h-[56px] px-[32px] rounded-[16px] bg-[var(--color-brand-teal)] text-white font-sans font-semibold text-[24px] uppercase flex items-center justify-center transition-colors hover:bg-[var(--color-brand-teal-hover)];
+  }
+  .btn-secondary {
+    @apply h-[56px] px-[32px] rounded-[16px] bg-transparent border border-[var(--color-brand-teal)] text-[var(--color-brand-teal)] font-sans font-semibold text-[24px] uppercase flex items-center justify-center transition-colors hover:bg-[var(--color-bg-mint)];
   }
 }
 

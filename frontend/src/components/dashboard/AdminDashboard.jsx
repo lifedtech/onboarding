@@ -22,20 +22,20 @@ export default function AdminDashboard() {
   }, [fetchAdminSummary, fetchSessionLogs]);
 
   const stats = {
-    qualifiedLeads: adminMetrics?.qualifiedLeads || 620,
-    totalBookings: adminMetrics?.totalBookings || 145,
-    grossBookingValue: adminMetrics?.grossBookingValue || 850000,
-    lifedCommission: adminMetrics?.lifedCommission || 127500
+    qualifiedLeads: adminMetrics?.qualifiedLeads || 0,
+    totalBookings: adminMetrics?.totalBookings || 0,
+    grossBookingValue: adminMetrics?.grossBookingValue || 0,
+    lifedCommission: adminMetrics?.lifedCommission || 0
   };
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
 
   const kpiData = [
-    { id: 'visitors', label: 'Website visitors', value: '5,240', sub: 'Pending GA4 API', details: 'Organic: 2,100 | Social: 1,800 | Referral: 1,340', icon: Users, badgeColor: 'bg-slate-100 text-slate-600' },
-    { id: 'leads', label: 'Qualified leads', value: stats.qualifiedLeads === 0 ? '620' : stats.qualifiedLeads.toString(), sub: 'From Enquiries', details: 'High Intent | Medium Intent | Low Intent', icon: Target, badgeColor: 'bg-orange-100 text-orange-600' },
-    { id: 'bookings', label: 'Bookings', value: stats.totalBookings === 0 ? '145' : stats.totalBookings.toString(), sub: 'Total confirmed', details: 'From all service users', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
-    { id: 'gbv', label: 'Gross booking value', value: stats.grossBookingValue === 0 ? formatCurrency(850000) : formatCurrency(stats.grossBookingValue), sub: 'Total revenue', details: 'Across all programs', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
-    { id: 'commission', label: 'Lifed commission', value: stats.lifedCommission === 0 ? formatCurrency(127500) : formatCurrency(stats.lifedCommission), sub: '15% margin', details: 'Net realized income', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600' }
+    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'Pending GA4 API', details: 'No data', icon: Users, badgeColor: 'bg-slate-100 text-slate-600' },
+    { id: 'leads', label: 'Qualified leads', value: stats.qualifiedLeads.toString(), sub: 'From Enquiries', details: 'High Intent | Medium Intent | Low Intent', icon: Target, badgeColor: 'bg-orange-100 text-orange-600' },
+    { id: 'bookings', label: 'Bookings', value: stats.totalBookings.toString(), sub: 'Total confirmed', details: 'From all service users', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
+    { id: 'gbv', label: 'Gross booking value', value: formatCurrency(stats.grossBookingValue), sub: 'Total revenue', details: 'Across all programs', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal' },
+    { id: 'commission', label: 'Lifed commission', value: formatCurrency(stats.lifedCommission), sub: '15% margin', details: 'Net realized income', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600' }
   ];
 
   return (
@@ -140,12 +140,12 @@ export default function AdminDashboard() {
           
           <div className="flex-1 flex items-end gap-3 md:gap-4 h-[280px] mt-4 mb-8">
             {[
-              { label: 'Visitors', value: '5,240', height: '100%' },
-              { label: 'Program views', value: '3,890', height: '75%' },
-              { label: 'WhatsApp starts', value: '1,250', height: '45%' },
-              { label: 'Qualified leads', value: '620', height: '25%' },
-              { label: 'Bookings', value: '145', height: '12%' },
-              { label: 'Reviews', value: '98', height: '8%' }
+              { label: 'Visitors', value: '0', height: '0%' },
+              { label: 'Program views', value: '0', height: '0%' },
+              { label: 'WhatsApp starts', value: '0', height: '0%' },
+              { label: 'Qualified leads', value: '0', height: '0%' },
+              { label: 'Bookings', value: '0', height: '0%' },
+              { label: 'Reviews', value: '0', height: '0%' }
             ].map((bar, idx) => (
               <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group">
                 <div 
@@ -186,12 +186,11 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Bottom Row - Horizontal Bars */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { title: 'Top audience', data: [ {name: 'Corporate Profs', value: '45%', width: '45%'}, {name: 'Yoga Enthusiasts', value: '28%', width: '28%'}, {name: 'Rehab Patients', value: '15%', width: '15%'} ] },
-          { title: 'Top programs', data: [ {name: 'The Inner Reset', value: '38%', width: '38%'}, {name: 'Ojas Renewal', value: '32%', width: '32%'}, {name: 'Women\'s Wellbeing', value: '18%', width: '18%'} ] },
-          { title: 'Top channels', data: [ {name: 'Instagram Ads', value: '52%', width: '52%'}, {name: 'Organic Search', value: '25%', width: '25%'}, {name: 'Referrals', value: '14%', width: '14%'} ] }
+          { title: 'Top audience', data: [] },
+          { title: 'Top programs', data: [] },
+          { title: 'Top channels', data: [] }
         ].map((block, idx) => (
           <div key={idx} className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col">
             <div className="flex justify-between items-center mb-6">

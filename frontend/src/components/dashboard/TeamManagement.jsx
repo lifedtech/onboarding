@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  Users, Plus, Mail, Key, Shield, Calendar, X, UserCheck, Clock, Trash2, RefreshCw, CheckSquare, Edit2
+  Users, Plus, Mail, Key, Shield, Calendar, X, UserCheck, Clock, Trash2, RefreshCw, CheckSquare, Edit2, AlertTriangle
 } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 
@@ -15,6 +15,8 @@ export default function TeamManagement() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMemberId, setEditingMemberId] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -116,11 +118,17 @@ export default function TeamManagement() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this team member? This will automatically reassign any active onboarding partners they manage to you.')) {
-      return;
+  const handleDeleteClick = (member) => {
+    setMemberToDelete(member);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (memberToDelete) {
+      await deleteTeamMember(memberToDelete.id);
+      setMemberToDelete(null);
     }
-    await deleteTeamMember(id);
+    setDeleteModalOpen(false);
   };
 
   return (
@@ -330,7 +338,7 @@ export default function TeamManagement() {
                             </button>
                             <button
                               disabled={member.id === currentUser?.id}
-                              onClick={() => handleDelete(member.id)}
+                              onClick={() => handleDeleteClick(member)}
                               className="inline-flex items-center justify-center p-2 rounded-[12px] text-red-500 hover:bg-red-50 active:bg-red-100 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-transparent transition-all shrink-0 border border-transparent hover:border-red-200"
                               title={member.id === currentUser?.id ? "You cannot delete your own account" : "Delete Team Member"}
                             >
@@ -532,6 +540,36 @@ export default function TeamManagement() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setDeleteModalOpen(false)} />
+          <div className="relative w-full max-w-sm bg-white border border-border-leaf rounded-[24px] shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 p-6 flex flex-col items-center text-center">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-4 shadow-sm border border-red-100">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black text-text-main mb-2">Delete Team Member?</h3>
+            <p className="text-sm font-semibold text-slate-500 mb-6">
+              Are you sure you want to delete <strong className="text-slate-700">{memberToDelete?.name}</strong>? This will automatically reassign any active onboarding partners they manage to you.
+            </p>
+            <div className="flex items-center gap-3 w-full">
+              <button
+                onClick={() => setDeleteModalOpen(false)}
+                className="flex-1 bg-white hover:bg-slate-50 border border-border-leaf text-slate-600 px-5 py-2.5 rounded-[12px] text-sm font-black transition-all shadow-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-[12px] text-sm font-black shadow-sm hover:shadow-md transition-all"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
