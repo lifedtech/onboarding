@@ -8,10 +8,10 @@ const verifyRdSignature = (req, res, next) => {
   const signature = req.headers['x-rd-signature'];
   const secret = process.env.RD_WEBHOOK_SECRET;
 
-  // If secret is not configured in .env, log a warning and let the request through (e.g. during development transition)
+  // If secret is not configured in .env, reject the request rather than letting it through unauthenticated.
   if (!secret) {
-    console.warn('[Webhook Security] ⚠️ RD_WEBHOOK_SECRET is not configured in .env. Skipping signature check.');
-    return next();
+    console.error('[Webhook Security] RD_WEBHOOK_SECRET is not configured in .env. Rejecting webhook request.');
+    return res.status(503).json({ message: 'Webhook signature verification is not configured.' });
   }
 
   if (!signature) {

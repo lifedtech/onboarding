@@ -55,7 +55,7 @@ router.post('/webhooks/program-status',         webhookLimiter, verifyRdSignatur
 router.use(authenticate);
 router.use(globalLimiter);
 
-router.post('/rnd/verify-credentials', rndVerifyCredentials);
+router.post('/rnd/verify-credentials', requireAdmin, rndVerifyCredentials);
 
 // Enquiries
 router.get('/enquiries',                  getAllEnquiries);
@@ -93,7 +93,7 @@ router.post('/auth/logout', logout);
 
 // Analytics
 router.get('/analytics/summary',            getDashboardSummary);
-router.get('/analytics/admin-summary',      getAdminSummary);
+router.get('/analytics/admin-summary',      requireAdmin, getAdminSummary);
 
 // Healthmates
 router.get('/healthmates',                  getAllHealthmates);

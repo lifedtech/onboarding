@@ -5,6 +5,17 @@ const helmet = require('helmet');
 
 const app = express();
 
+// ─── Crash Resilience ─────────────────────────────────────────────────────────
+// A single unhandled rejection/exception anywhere (background worker, SSE broadcast,
+// presence tracking) would otherwise terminate the whole Node process by default,
+// taking the entire API down with it. Log and keep serving instead.
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason);
+});
+
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 app.use(helmet({

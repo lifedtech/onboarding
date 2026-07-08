@@ -449,7 +449,7 @@ export default function HealthmateDashboard() {
                   const btn = Array.from(document.querySelectorAll('nav button')).find(el => el.textContent.includes('Stress Buster'));
                   if (btn) btn.click();
                 }}
-                className="w-full bg-brand-teal hover:bg-teal-600 text-white font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                className="w-full bg-brand-teal hover:bg-brand-teal-hover text-white font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
               >
                 Launch Ticket Deflector
                 <ArrowRight className="w-4 h-4 text-white" />
@@ -478,7 +478,7 @@ export default function HealthmateDashboard() {
                   const btn = Array.from(document.querySelectorAll('nav button')).find(el => el.textContent.includes('Stress Buster'));
                   if (btn) btn.click();
                 }}
-                className="w-full bg-brand-teal hover:bg-teal-600 text-white font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                className="w-full bg-brand-teal hover:bg-brand-teal-hover text-white font-bold text-xs py-2.5 rounded-[12px] flex items-center justify-center gap-1.5 transition-all shadow-sm"
               >
                 Launch Tug of War
                 <ArrowRight className="w-4 h-4 text-white" />

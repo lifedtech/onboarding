@@ -274,7 +274,7 @@ export default function App() {
   useEffect(() => {
     console.log(
       "%c🎨 Crafted with care by Ayush",
-      "color: #00B09B; font-size: 13px; font-weight: bold; font-family: monospace;"
+      "color: #00ae9d; font-size: 13px; font-weight: bold; font-family: monospace;"
     );
     initAudio(); // Unlock Web Audio API on first user gesture
   }, []);
@@ -306,13 +306,13 @@ export default function App() {
             boxShadow: '0 10px 35px rgba(20,43,39,0.07)',
           },
           success: {
-            iconTheme: { primary: '#78C652', secondary: '#ffffff' },
+            iconTheme: { primary: '#5fbb46', secondary: '#ffffff' },
           },
           error: {
             iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
           },
           loading: {
-            iconTheme: { primary: '#00B09B', secondary: '#ffffff' },
+            iconTheme: { primary: '#00ae9d', secondary: '#ffffff' },
           },
         }}
       />

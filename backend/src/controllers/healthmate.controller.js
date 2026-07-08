@@ -251,7 +251,7 @@ const updateHealthmate = async (req, res) => {
         ...(city !== undefined && { city }),
         ...(partnerState !== undefined && { state: partnerState }),
         ...(country !== undefined && { country }),
-        ...(opsUserId !== undefined && { opsUserId }),
+        ...(opsUserId !== undefined && isAdmin && { opsUserId }),
         ...(screeningRemarks !== undefined && { screeningRemarks }),
         ...(screeningQueries !== undefined && { screeningQueries }),
         ...(recallReminder !== undefined && { recallReminder: recallReminder ? new Date(recallReminder) : null }),

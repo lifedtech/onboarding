@@ -6,15 +6,18 @@ const prisma = require('../lib/prisma');
  */
 const getDashboardSummary = async (req, res) => {
   try {
-    // 1. Total active onboarding partners
-    const totalHealthmates = await prisma.healthmate.count({});
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
+    const ownerScope = isAdmin ? {} : { opsUserId: req.user.id };
+
+    // 1. Total active onboarding partners (scoped to the requesting coordinator unless admin)
+    const totalHealthmates = await prisma.healthmate.count({ where: ownerScope });
 
     // 2. Breakdown count per Phase
     const phases = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
     const phaseBreakdown = {};
     for (const phase of phases) {
       phaseBreakdown[phase] = await prisma.healthmate.count({
-        where: { phase }
+        where: { ...ownerScope, phase }
       });
     }
 
@@ -22,7 +25,7 @@ const getDashboardSummary = async (req, res) => {
     const phaseAverages = [];
     for (const phase of phases) {
       const agg = await prisma.healthmate.aggregate({
-        where: { phase },
+        where: { ...ownerScope, phase },
         _avg: { daysInPhase: true }
       });
       phaseAverages.push({
@@ -38,15 +41,17 @@ const getDashboardSummary = async (req, res) => {
       : { phase: 'None', avgDays: 0 };
 
     // 4. Overall percentage of completed tasks
-    const totalTasks = await prisma.task.count({});
+    const taskScope = isAdmin ? {} : { healthmate: { opsUserId: req.user.id } };
+    const totalTasks = await prisma.task.count({ where: taskScope });
     const completedTasks = await prisma.task.count({
-      where: { completed: true }
+      where: { ...taskScope, completed: true }
     });
     const taskCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     // 5. Action Required: Count of partners with overdue tasks OR overdue recall reminders
     const actionRequiredCount = await prisma.healthmate.count({
       where: {
+        ...ownerScope,
         OR: [
           {
             tasks: {
@@ -63,8 +68,9 @@ const getDashboardSummary = async (req, res) => {
       }
     });
 
-    // 6. Recent Activity Log: 5 most recently updated healthmates
+    // 6. Recent Activity Log: 5 most recently updated healthmates (scoped to the requesting coordinator unless admin)
     const recentActivity = await prisma.healthmate.findMany({
+      where: ownerScope,
       orderBy: { updatedAt: 'desc' },
       take: 5,
       include: {

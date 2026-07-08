@@ -8,7 +8,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ayush@123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
       POSTGRES_DB: lifed_healthmate
     ports:
       - "5433:5432"
@@ -40,9 +40,9 @@ services:
     container_name: lifed-backend
     restart: always
     environment:
-      DATABASE_URL: "postgresql://postgres:Ayush@123@db:5432/lifed_healthmate"
+      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@db:5432/lifed_healthmate"
       REDIS_URL: "redis://redis:6379"
-      JWT_SECRET: "lifed-healthmate-super-secret-jwt-key-2026"
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
       PORT: 3001
       CLIENT_ORIGIN: "http://localhost"
     ports:

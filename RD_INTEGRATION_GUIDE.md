@@ -10,12 +10,12 @@ All third-party credentials, integration secrets, and system configurations are 
 
 ### Backend `.env` Keys
 
-Open your [backend/.env](file:///e:/lifed-1kiro%20-%20Copy/backend/.env) file and configure the following variables:
+Open your `backend/.env` file and configure the following variables:
 
 ```env
 # ─── System Variables ─────────────────────────────────────────────────────────
 PORT=3001
-JWT_SECRET="lifed-healthmate-super-secret-jwt-key-2026"
+JWT_SECRET="your_long_random_jwt_secret_replace_this"
 CLIENT_ORIGIN="http://localhost:5173"
 
 # ─── Database & Redis ─────────────────────────────────────────────────────────
