@@ -13,7 +13,8 @@ import HealthmateCard from './HealthmateCard';
 import AddHealthmateModal from './AddHealthmateModal';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
-import { GitBranch, RefreshCw, Plus, Clock } from 'lucide-react';
+import { GitBranch, RefreshCw, Plus, Clock, BookOpen, X } from 'lucide-react';
+import HealthmateSOP from '../dashboard/HealthmateSOP';
 const PHASES = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
 
 export default function PipelineBoard() {
@@ -30,6 +31,7 @@ export default function PipelineBoard() {
   const [localHealthmates, setLocalHealthmates] = useState([]);
   const [activeHealthmate, setActiveHealthmate] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [sopOpen, setSopOpen] = useState(false);
 
   // Sync local state whenever the store updates
   useEffect(() => {
@@ -184,6 +186,14 @@ export default function PipelineBoard() {
         
         <div className="flex items-center gap-3">
           <button
+            onClick={() => setSopOpen(true)}
+            className="flex items-center gap-2 text-brand-teal bg-brand-teal/10 hover:bg-brand-teal/20 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
+          >
+            <BookOpen className="w-4 h-4" />
+            SOP
+          </button>
+
+          <button
             onClick={() => setAddOpen(true)}
             className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-4 py-2.5 rounded-xl text-sm font-extrabold shadow-md shadow-brand-teal/10 hover:shadow-lg transition-all"
           >
@@ -278,7 +288,25 @@ export default function PipelineBoard() {
         </div>
       </div>
       {/* Add Partner Modal */}
-      <AddHealthmateModal isOpen={addOpen} onClose={() => setAddOpen(false)} />
+      <AddHealthmateModal
+        isOpen={addOpen}
+        onClose={() => setAddOpen(false)}
+        onSuccess={fetchHealthmates}
+      />
+
+      {/* Quick SOP Modal */}
+      {sopOpen && (
+        <div className="fixed inset-0 z-40 flex justify-end bg-slate-900/40 backdrop-blur-sm" onClick={() => setSopOpen(false)}>
+          <div className="bg-white w-full max-w-4xl h-full shadow-2xl flex flex-col relative animate-in slide-in-from-right duration-300" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSopOpen(false)} className="absolute top-4 right-4 z-50 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors bg-white/80 backdrop-blur-sm">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex-1 overflow-y-auto">
+              <HealthmateSOP />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -23,6 +23,7 @@ import AdminDashboard from './components/dashboard/AdminDashboard';
 import BookingOperations from './components/dashboard/BookingOperations';
 import ProgramPerformance from './components/dashboard/ProgramPerformance';
 import SalesMarketingDashboard from './components/dashboard/SalesMarketingDashboard';
+import HealthmateSOP from './components/dashboard/HealthmateSOP';
 import { initAudio, playNotificationSound } from './lib/audio';
 
 
@@ -49,6 +50,7 @@ const PAGES = {
   system_support: <SystemSupport supportType="SYSTEM" />,
   support_dashboard: <SupportDashboard />,
   promotions: <div className="p-8 text-center text-text-muted">Promotions functionality coming soon.</div>,
+  healthmate_sop: <HealthmateSOP />,
 };
 
 

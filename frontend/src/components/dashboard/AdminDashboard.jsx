@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import useOpsStore from '../../store/useOpsStore';
-import { 
-  Users, Target, CalendarCheck, Wallet, PieChart, 
+import {
+  Users, Target, CalendarCheck, Wallet, PieChart,
   MoreHorizontal, ChevronRight, TrendingUp, Clock, AlertCircle,
-  Download, UserPlus, CheckCircle, Activity, Repeat, HeartPulse, Handshake
+  Download, UserPlus, CheckCircle, Activity, Repeat, HeartPulse, Handshake,
+  Globe, Percent, Mail, IndianRupee, LineChart, X
 } from 'lucide-react';
 
 export default function AdminDashboard() {
   const currentUser = useOpsStore((s) => s.user);
-  const [activeKpi, setActiveKpi] = useState(null);
   const [activeTab, setActiveTab] = useState('OVERVIEW'); // 'OVERVIEW' | 'LOG_BOOK'
 
   const fetchAdminSummary = useOpsStore((s) => s.fetchAdminSummary);
   const adminMetrics = useOpsStore((s) => s.adminMetrics);
-  
+
   const fetchSessionLogs = useOpsStore((s) => s.fetchSessionLogs);
   const sessionLogs = useOpsStore((s) => s.sessionLogs);
 
@@ -31,32 +31,9 @@ export default function AdminDashboard() {
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
 
-  const kpiData = [
-    { id: 'visitors', label: 'Website visitors', value: '0', sub: 'Pending GA4 API', details: 'No data', icon: Users, badgeColor: 'bg-slate-100 text-slate-600', category: 'Marketing ROI' },
-    { id: 'leads', label: 'Qualified leads', value: stats.qualifiedLeads.toString(), sub: 'From Enquiries', details: 'High Intent | Medium Intent | Low Intent', icon: Target, badgeColor: 'bg-orange-100 text-orange-600', category: 'Marketing ROI' },
-    { id: 'bookings', label: 'Bookings', value: stats.totalBookings.toString(), sub: 'Total confirmed', details: 'From all service users', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
-    { id: 'gbv', label: 'Gross booking value', value: formatCurrency(stats.grossBookingValue), sub: 'Total revenue', details: 'Across all programs', icon: Wallet, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
-    { id: 'commission', label: 'Lifed commission', value: formatCurrency(stats.lifedCommission), sub: '20-25% margin', details: 'Commission is made through 20% from residential programs and 25% from session-based programs.', icon: PieChart, badgeColor: 'bg-slate-100 text-slate-600', category: 'Business Growth' },
-    { id: 'app_downloads', label: 'App Downloads', value: '0', sub: 'Pending API', details: 'No data', icon: Download, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
-    { id: 'user_registrations', label: 'User Registrations', value: '0', sub: 'Pending API', details: 'No data', icon: UserPlus, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
-    { id: 'total_booking_roi', label: 'Total Booking', value: stats.totalBookings.toString(), sub: 'Across all channels', details: 'List of programs and their total bookings.', icon: CalendarCheck, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Marketing ROI' },
-    { id: 'lewis_completions', label: 'LEWIS Completions', value: '0', sub: 'Pending API', details: 'No data', icon: CheckCircle, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
-    { id: 'active_users', label: 'Active Monthly Users', value: '0', sub: 'Pending API', details: 'No data', icon: Activity, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
-    { id: 'repeat_bookings', label: 'Repeat Bookings', value: '0', sub: 'Pending API', details: 'No data', icon: Repeat, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
-    { id: 'live_programs', label: 'Live Programs', value: '3', sub: 'Active now', details: 'List of currently active programs.', icon: Activity, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' },
-    { id: 'healthmate_growth', label: 'Healthmate Growth', value: '0', sub: 'Pending API', details: 'No data', icon: HeartPulse, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'User Growth' },
-    { id: 'partner_conversions', label: 'Partner Conversions', value: '0', sub: 'Pending API', details: 'No data', icon: Handshake, badgeColor: 'bg-brand-teal/10 text-brand-teal', category: 'Business Growth' }
-  ];
-
-  const categories = [
-    { title: 'Marketing ROI', id: 'Marketing ROI' },
-    { title: 'User Growth', id: 'User Growth' },
-    { title: 'Business Growth', id: 'Business Growth' }
-  ];
-
   return (
     <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto">
-      
+
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -68,17 +45,15 @@ export default function AdminDashboard() {
         <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
           <button
             onClick={() => setActiveTab('OVERVIEW')}
-            className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors ${
-              activeTab === 'OVERVIEW' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
-            }`}
+            className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors ${activeTab === 'OVERVIEW' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
+              }`}
           >
             Overview
           </button>
           <button
             onClick={() => setActiveTab('LOG_BOOK')}
-            className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors flex items-center gap-2 ${
-              activeTab === 'LOG_BOOK' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
-            }`}
+            className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors flex items-center gap-2 ${activeTab === 'LOG_BOOK' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
+              }`}
           >
             <Clock className="w-4 h-4" />
             Log Book
@@ -88,214 +63,238 @@ export default function AdminDashboard() {
 
       {activeTab === 'OVERVIEW' ? (
         <>
-          {/* KPI Cards */}
-      <div className="space-y-8">
-        {categories.map((category) => {
-          const categoryKpis = kpiData.filter(k => k.category === category.id);
-          if (categoryKpis.length === 0) return null;
-
-          return (
-            <div key={category.id}>
-              <h2 className="text-[16px] font-black text-text-main mb-4 px-1">{category.title}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                {categoryKpis.map((card) => {
-                  const Icon = card.icon;
-                  const isActive = activeKpi === card.id;
-                  return (
-                    <div 
-                      key={card.id} 
-                      onClick={() => setActiveKpi(isActive ? null : card.id)}
-                      className={`bg-white rounded-[24px] p-5 shadow-sm border cursor-pointer flex flex-col justify-between transition-all group min-h-[140px] ${
-                        isActive ? 'border-brand-teal ring-1 ring-brand-teal shadow-md' : 'border-border-leaf hover:border-brand-teal/40 hover:shadow-md'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center mb-4">
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${isActive ? 'bg-brand-teal text-white' : 'bg-slate-50 border border-slate-100 text-slate-500 group-hover:bg-brand-teal/10 group-hover:text-brand-teal group-hover:border-transparent'}`}>
-                          <Icon className="w-5 h-5 stroke-[2.5]" />
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <p className="text-[12px] font-bold text-text-muted mb-1.5">{card.label}</p>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <h3 className="text-[26px] font-black text-text-main tracking-tight">{card.value}</h3>
-                          <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap ${card.badgeColor}`}>
-                            {card.sub}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Details Pane */}
-        {activeKpi && (
-          <div className="bg-white rounded-[24px] p-6 shadow-sm border border-brand-teal/30 bg-brand-teal/5 animate-in slide-in-from-top-4 duration-300">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="w-5 h-5 text-brand-teal" />
-              <h4 className="text-[15px] font-black text-text-main">
-                {kpiData.find(k => k.id === activeKpi)?.label} Breakdown
-              </h4>
-            </div>
-            
-            {activeKpi === 'live_programs' ? (
-              <div className="mt-4">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-brand-teal/20">
-                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted">Program Name</th>
-                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted text-right">Users Booked</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { id: 1, name: 'Yoga for Beginners', bookings: 45 },
-                      { id: 2, name: 'Advanced Meditation', bookings: 28 },
-                      { id: 3, name: 'HIIT Bootcamp', bookings: 62 },
-                    ].map(prog => (
-                      <tr key={prog.id} className="border-b border-brand-teal/10 last:border-0 hover:bg-brand-teal/10 transition-colors">
-                        <td className="py-3 px-4 text-[13px] font-bold text-text-main">{prog.name}</td>
-                        <td className="py-3 px-4 text-[13px] font-black text-brand-teal text-right">{prog.bookings}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : activeKpi === 'total_booking_roi' ? (
-              <div className="mt-4">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-brand-teal/20">
-                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted">Program Name</th>
-                      <th className="py-2 px-4 text-[12px] font-bold text-text-muted text-right">Total Bookings</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { id: 1, name: 'Yoga for Beginners', bookings: 120 },
-                      { id: 2, name: 'Advanced Meditation', bookings: 85 },
-                      { id: 3, name: 'HIIT Bootcamp', bookings: 210 },
-                      { id: 4, name: 'Nutrition Fundamentals', bookings: 95 },
-                    ].map(prog => (
-                      <tr key={prog.id} className="border-b border-brand-teal/10 last:border-0 hover:bg-brand-teal/10 transition-colors">
-                        <td className="py-3 px-4 text-[13px] font-bold text-text-main">{prog.name}</td>
-                        <td className="py-3 px-4 text-[13px] font-black text-brand-teal text-right">{prog.bookings}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-[13px] font-semibold text-text-muted">
-                {kpiData.find(k => k.id === activeKpi)?.details}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Middle Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Funnel Chart - Spans 2 cols */}
-        <div className="lg:col-span-2 bg-white rounded-[24px] shadow-sm border border-border-leaf p-7 flex flex-col">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <h3 className="text-text-main font-black text-[18px]">Journey conversion snapshot</h3>
-              <p className="text-[13px] font-medium text-text-muted mt-1">Track drop-offs across the booking funnel</p>
-            </div>
-            <span className="text-[11px] font-black text-brand-teal bg-bg-mint px-3 py-1.5 rounded-lg tracking-wide border border-brand-teal/20">Live Well. For Real.</span>
-          </div>
-          
-          <div className="flex-1 flex items-end gap-3 md:gap-4 h-[280px] mt-4 mb-8">
+          {/* Top KPIs Section */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             {[
-              { label: 'Visitors', value: '0', height: '0%' },
-              { label: 'Program views', value: '0', height: '0%' },
-              { label: 'WhatsApp starts', value: '0', height: '0%' },
-              { label: 'Qualified leads', value: '0', height: '0%' },
-              { label: 'Bookings', value: '0', height: '0%' },
-              { label: 'Reviews', value: '0', height: '0%' }
-            ].map((bar, idx) => (
-              <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group">
-                <div 
-                  className="w-full bg-slate-50 border border-slate-100 rounded-t-2xl flex flex-col items-center justify-end pb-4 transition-all hover:bg-brand-teal/10 hover:border-brand-teal/30 cursor-pointer" 
-                  style={{ height: bar.height === '0%' ? '50px' : bar.height }}
-                >
-                  <p className="font-black text-slate-700 text-lg md:text-xl group-hover:text-brand-teal transition-colors">{bar.value}</p>
-                  <p className="text-[11px] text-slate-500 font-bold mt-1.5 text-center leading-tight px-1 group-hover:text-brand-teal/80 transition-colors">{bar.label}</p>
+              { label: 'Website Traffic', value: '0', icon: Globe, color: 'text-blue-500', bg: 'bg-blue-50' },
+              { label: 'Total Users', value: '0', icon: Users, color: 'text-brand-teal', bg: 'bg-brand-teal/10' },
+              { label: 'Total Booking', value: stats.totalBookings.toString(), icon: CalendarCheck, color: 'text-purple-500', bg: 'bg-purple-50' },
+              { label: 'Gross Revenue', value: formatCurrency(stats.grossBookingValue), icon: Wallet, color: 'text-green-600', bg: 'bg-green-50' },
+              { label: 'CPA', value: '₹0', icon: Target, color: 'text-orange-500', bg: 'bg-orange-50' },
+              { label: 'ROAS', value: '0x', icon: TrendingUp, color: 'text-rose-500', bg: 'bg-rose-50' },
+            ].map((kpi, idx) => {
+              const Icon = kpi.icon;
+              return (
+                <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[120px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                  <div className="flex justify-between items-start mb-3">
+                    <p className="text-[12px] font-bold text-slate-500 leading-tight">{kpi.label}</p>
+                    <div className={`w-8 h-8 rounded-xl ${kpi.bg} flex items-center justify-center ${kpi.color}`}>
+                      <Icon className="w-4 h-4 stroke-[2.5]" />
+                    </div>
+                  </div>
+                  <h3 className="text-[22px] font-black text-slate-800 tracking-tight">{kpi.value}</h3>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Metrics Dashboard */}
+          <div className="space-y-8 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-brand-teal/10 flex items-center justify-center text-brand-teal">
+                <LineChart className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <h2 className="text-[22px] font-black text-slate-800 tracking-tight">Metrics Dashboard</h2>
+            </div>
+
+            <div className="space-y-8">
+              {/* User Growth */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-brand-teal stroke-[2.5]" />
+                  <h3 className="text-[18px] font-bold text-text-main">User Growth</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { label: 'App Downloads', value: '0', sub: 'Pending API', icon: Download },
+                    { label: 'User Registrations', value: '0', sub: 'Pending API', icon: UserPlus },
+                    { label: 'LEWIS Completions', value: '0', sub: 'Pending API', icon: CheckCircle },
+                    { label: 'Active Monthly Users', value: '0', sub: 'Pending API', icon: Activity }
+                  ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                        <div className="flex justify-between items-start mb-3">
+                          <p className="text-[13px] font-bold text-slate-500 leading-tight">{item.label}</p>
+                          <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500">
+                            <Icon className="w-4 h-4 stroke-[2.5]" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-[24px] font-black text-slate-800 tracking-tight mb-1.5">{item.value}</h3>
+                          <span className="text-[11px] font-bold text-brand-teal bg-brand-teal/10 px-2 py-1 rounded-md">{item.sub}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Business Growth */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-5 h-5 text-brand-teal stroke-[2.5]" />
+                  <h3 className="text-[18px] font-bold text-text-main">Business Growth</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { label: 'Programme Bookings', value: '0', sub: 'Pending API', icon: CalendarCheck },
+                    { label: 'Repeat Bookings', value: '0', sub: 'Pending API', icon: Repeat },
+                    { label: 'Healthmate Growth', value: '0', sub: 'Pending API', icon: HeartPulse },
+                    { label: 'Partner Conversions', value: '0', sub: 'Pending API', icon: Handshake }
+                  ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                        <div className="flex justify-between items-start mb-3">
+                          <p className="text-[13px] font-bold text-slate-500 leading-tight">{item.label}</p>
+                          <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500">
+                            <Icon className="w-4 h-4 stroke-[2.5]" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-[24px] font-black text-slate-800 tracking-tight mb-1.5">{item.value}</h3>
+                          <span className="text-[11px] font-bold text-brand-teal bg-brand-teal/10 px-2 py-1 rounded-md">{item.sub}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Marketing ROI */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <IndianRupee className="w-5 h-5 text-brand-teal stroke-[2.5]" />
+                  <h3 className="text-[18px] font-bold text-text-main">Marketing ROI</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {[
+                    { label: 'Conversion Rate', value: '0%', sub: 'Pending API', icon: Percent },
+                    { label: 'CPA & ROAS', value: '0', sub: 'Pending API', icon: TrendingUp },
+                    { label: 'Customer LTV', value: '0', sub: 'Pending API', icon: HeartPulse },
+                    { label: 'Email & Referral Opt', value: '0', sub: 'Pending API', icon: Mail }
+                  ].map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                        <div className="flex justify-between items-start mb-3">
+                          <p className="text-[13px] font-bold text-slate-500 leading-tight">{item.label}</p>
+                          <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500">
+                            <Icon className="w-4 h-4 stroke-[2.5]" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-[24px] font-black text-slate-800 tracking-tight mb-1.5">{item.value}</h3>
+                          <span className="text-[11px] font-bold text-brand-teal bg-brand-teal/10 px-2 py-1 rounded-md">{item.sub}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          {/* Middle Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* Funnel Chart - Spans 2 cols */}
+            <div className="lg:col-span-2 bg-white rounded-[24px] shadow-sm border border-border-leaf p-7 flex flex-col">
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <h3 className="text-text-main font-black text-[18px]">Journey conversion snapshot</h3>
+                  <p className="text-[13px] font-medium text-text-muted mt-1">Track drop-offs across the booking funnel</p>
+                </div>
+                <span className="text-[11px] font-black text-brand-teal bg-bg-mint px-3 py-1.5 rounded-lg tracking-wide border border-brand-teal/20">Live Well. For Real.</span>
+              </div>
+
+              <div className="flex-1 flex items-end gap-3 md:gap-4 h-[280px] mt-4 mb-8">
+                {[
+                  { label: 'Visitors', value: '0', height: '0%' },
+                  { label: 'Program views', value: '0', height: '0%' },
+                  { label: 'WhatsApp starts', value: '0', height: '0%' },
+                  { label: 'Qualified leads', value: '0', height: '0%' },
+                  { label: 'Bookings', value: '0', height: '0%' },
+                  { label: 'Reviews', value: '0', height: '0%' }
+                ].map((bar, idx) => (
+                  <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group">
+                    <div
+                      className="w-full bg-slate-50 border border-slate-100 rounded-t-2xl flex flex-col items-center justify-end pb-4 transition-all hover:bg-brand-teal/10 hover:border-brand-teal/30 cursor-pointer"
+                      style={{ height: bar.height === '0%' ? '50px' : bar.height }}
+                    >
+                      <p className="font-black text-slate-700 text-lg md:text-xl group-hover:text-brand-teal transition-colors">{bar.value}</p>
+                      <p className="text-[11px] text-slate-500 font-bold mt-1.5 text-center leading-tight px-1 group-hover:text-brand-teal/80 transition-colors">{bar.label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-[#e7f0e3] rounded-2xl p-5 text-[12px] text-brand-teal font-medium leading-relaxed border border-[#e7f0e3] flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center shrink-0">
+                  <span className="text-brand-teal font-bold">↑</span>
+                </div>
+                <p><span className="font-bold text-text-main">Healthy conversion:</span> The journey from Visitors to Program views is highly optimized. Consider pushing more Top-of-Funnel traffic.</p>
+              </div>
+            </div>
+
+            {/* Strategic Actions */}
+            <div className="bg-white rounded-[24px] shadow-sm border border-border-leaf p-7 flex flex-col">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-text-main font-black text-[18px]">Strategic actions</h3>
+                <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">This week</span>
+              </div>
+
+              <div className="flex flex-col gap-4 flex-1">
+                <div className="flex-1 border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center p-6 text-center bg-slate-50/50">
+                  <div className="w-12 h-12 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-3">
+                    <Target className="w-6 h-6 text-slate-400" />
+                  </div>
+                  <p className="text-[14px] font-bold text-slate-600 mb-1">Boost WhatsApp Starts</p>
+                  <p className="text-[12px] font-medium text-slate-400">Add an incentive for users to reach out on WhatsApp to improve the 32% conversion rate from Program Views.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: 'Top audience', data: [] },
+              { title: 'Top programs', data: [] },
+              { title: 'Top channels', data: [] }
+            ].map((block, idx) => (
+              <div key={idx} className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-text-main font-black text-[16px]">{block.title}</h3>
+                  <button className="text-brand-teal hover:bg-brand-teal/10 p-1.5 rounded-lg transition-colors">
+                    <ChevronRight className="w-4 h-4 stroke-[3]" />
+                  </button>
+                </div>
+
+                <div className="flex-1 flex flex-col justify-center">
+                  {block.data.length > 0 ? (
+                    <div className="space-y-4">
+                      {block.data.map((item, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                          <span className="w-28 text-[12px] font-bold text-text-muted truncate">{item.name}</span>
+                          <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-brand-teal rounded-full transition-all duration-500" style={{ width: item.width }} />
+                          </div>
+                          <span className="w-8 text-right text-[12px] font-black text-text-main">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-[13px] font-bold text-slate-400">Not enough data</p>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="bg-[#e7f0e3] rounded-2xl p-5 text-[12px] text-brand-teal font-medium leading-relaxed border border-[#e7f0e3] flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center shrink-0">
-              <span className="text-brand-teal font-bold">↑</span>
-            </div>
-            <p><span className="font-bold text-text-main">Healthy conversion:</span> The journey from Visitors to Program views is highly optimized. Consider pushing more Top-of-Funnel traffic.</p>
-          </div>
-        </div>
-
-        {/* Strategic Actions */}
-        <div className="bg-white rounded-[24px] shadow-sm border border-border-leaf p-7 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-text-main font-black text-[18px]">Strategic actions</h3>
-            <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">This week</span>
-          </div>
-          
-          <div className="flex flex-col gap-4 flex-1">
-            <div className="flex-1 border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center p-6 text-center bg-slate-50/50">
-               <div className="w-12 h-12 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-3">
-                 <Target className="w-6 h-6 text-slate-400" />
-               </div>
-               <p className="text-[14px] font-bold text-slate-600 mb-1">Boost WhatsApp Starts</p>
-               <p className="text-[12px] font-medium text-slate-400">Add an incentive for users to reach out on WhatsApp to improve the 32% conversion rate from Program Views.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { title: 'Top audience', data: [] },
-          { title: 'Top programs', data: [] },
-          { title: 'Top channels', data: [] }
-        ].map((block, idx) => (
-          <div key={idx} className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-text-main font-black text-[16px]">{block.title}</h3>
-              <button className="text-brand-teal hover:bg-brand-teal/10 p-1.5 rounded-lg transition-colors">
-                <ChevronRight className="w-4 h-4 stroke-[3]" />
-              </button>
-            </div>
-            
-            <div className="flex-1 flex flex-col justify-center">
-              {block.data.length > 0 ? (
-                <div className="space-y-4">
-                  {block.data.map((item, i) => (
-                    <div key={i} className="flex items-center gap-4">
-                      <span className="w-28 text-[12px] font-bold text-text-muted truncate">{item.name}</span>
-                      <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-brand-teal rounded-full transition-all duration-500" style={{ width: item.width }} />
-                      </div>
-                      <span className="w-8 text-right text-[12px] font-black text-text-main">{item.value}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-[13px] font-bold text-slate-400">Not enough data</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-      </>
+        </>
       ) : (
         <div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
@@ -308,7 +307,7 @@ export default function AdminDashboard() {
               Logs auto-delete after 7 days
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -328,7 +327,7 @@ export default function AdminDashboard() {
                     const durationMs = lastActiveDate - loginDate;
                     const hours = Math.floor(durationMs / (1000 * 60 * 60));
                     const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-                    
+
                     return (
                       <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-4 px-6">
@@ -353,9 +352,8 @@ export default function AdminDashboard() {
                           </span>
                         </td>
                         <td className="py-4 px-6">
-                          <span className={`text-[12px] font-black px-2.5 py-1 rounded-md ${
-                            hours > 0 ? 'bg-brand-teal/10 text-brand-teal' : 'bg-slate-100 text-slate-600'
-                          }`}>
+                          <span className={`text-[12px] font-black px-2.5 py-1 rounded-md ${hours > 0 ? 'bg-brand-teal/10 text-brand-teal' : 'bg-slate-100 text-slate-600'
+                            }`}>
                             {hours > 0 ? `${hours}h ` : ''}{minutes}m
                           </span>
                         </td>

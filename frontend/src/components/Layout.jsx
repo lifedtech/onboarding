@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
-  RefreshCw
+  RefreshCw, BookOpen
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
@@ -93,6 +93,7 @@ export default function Layout({ children, activePage, onNavigate }) {
         { label: 'Pipeline', icon: GitBranch, href: 'pipeline' },
         { label: 'Healthmate Support', icon: LifeBuoy, href: 'healthmate_support' },
         { label: 'Calendar', icon: Calendar, href: 'healthmate_calendar' },
+        { label: 'SOP - Standard Operation Protocol', icon: BookOpen, href: 'healthmate_sop' },
       ]
     });
   }

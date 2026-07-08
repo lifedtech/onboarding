@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lifed · Healthmate Onboarding — Master Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#142019;--forest:#0E3B2E;--forest-700:#0A2C22;--emerald:#1E9B74;
+    --emerald-soft:#E7F0EA;--paper:#F6F4EC;--card:#FCFBF6;--sage:#5C6660;
+    --line:#DEE3D8;--line-strong:#C9D2C4;--mist:#EDF1E9;--gold:#B98A3C;
+    --display:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --body:'Inter', system-ui, -apple-system, sans-serif;
+    --maxw:980px;--r:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  body.locked{overflow:hidden;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+
+  .eyebrow{font-family:var(--body);font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--emerald);margin:0 0 14px;display:flex;align-items:center;gap:12px;}
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--emerald);display:inline-block;}
+  .eyebrow--light{color:#7FD8B4;}
+  .eyebrow--light::before{background:#7FD8B4;}
+  h1,h2,h3,h4{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:0;}
+
+  /* HERO */
+  .hero{background:var(--forest);color:#F4F7F2;padding:74px 0 92px;position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle at center, rgba(30,155,116,.28), transparent 62%);}
+  .hero h1{font-size:clamp(2.3rem,5.4vw,3.6rem);max-width:16ch;margin:0 0 18px;}
+  .hero p.lead{font-size:1.12rem;color:#C8D6CC;max-width:56ch;margin:0;}
+  .hero .brandline{display:flex;align-items:baseline;gap:14px;margin-bottom:34px;flex-wrap:wrap;}
+  .hero .logo{font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em;color:#fff;}
+  .hero .tag{font-family:var(--display);font-weight:700;font-size:.86rem;color:#7FD8B4;}
+  .hero .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;}
+  .hero .pill{font-size:.78rem;font-weight:600;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#E6EFE9;padding:7px 14px;border-radius:999px;}
+
+  .section{padding:64px 0;}
+  .section h2{font-size:clamp(1.6rem,3.4vw,2.2rem);max-width:20ch;margin-bottom:14px;}
+  .section .sub{color:var(--sage);max-width:62ch;margin:0 0 36px;font-size:1.02rem;}
+
+  /* COMPONENTS */
+  .legend{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .comp{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;}
+  .comp__k{font-family:var(--display);font-weight:800;font-size:1.06rem;margin:0 0 6px;color:var(--forest);}
+  .comp__d{font-size:.92rem;color:var(--sage);margin:0 0 12px;}
+  .comp__tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .tag-s{font-size:.72rem;font-weight:600;color:var(--forest);background:var(--mist);border-radius:6px;padding:3px 9px;}
+  .comp--lewis{grid-column:1 / -1;background:var(--forest);color:#EAF2EC;border-color:var(--forest);}
+  .comp--lewis .comp__k{color:#fff;}.comp--lewis .comp__d{color:#BFD2C5;}
+  .comp--lewis .lewis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px;}
+  .comp--lewis .lewis-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 15px;}
+  .comp--lewis .lewis-item b{display:block;font-family:var(--display);font-weight:700;font-size:.92rem;color:#fff;margin-bottom:3px;}
+  .comp--lewis .lewis-item span{font-size:.84rem;color:#BFD2C5;line-height:1.45;}
+  .comp--lewis .lewis-note{font-size:.78rem;color:#9FBBA9;margin:16px 0 0;border-top:1px solid rgba(255,255,255,.12);padding-top:12px;}
+
+  /* STANDARDS */
+  .standards{background:var(--emerald-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .standards .grid{display:grid;grid-template-columns:repeat(4,1fr);}
+  .stat{padding:30px 22px;border-right:1px solid var(--line-strong);}
+  .stat:last-child{border-right:none;}
+  .stat .n{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--forest);line-height:1;margin-bottom:8px;letter-spacing:-.02em;}
+  .stat .l{font-size:.82rem;color:var(--sage);font-weight:500;}
+
+  /* FLOW */
+  .flow{padding-top:60px;}
+  .hint{display:inline-flex;align-items:center;gap:9px;background:var(--forest);color:#EAF2EC;font-size:.84rem;font-weight:600;padding:9px 16px;border-radius:999px;margin-bottom:34px;}
+  .hint .dot{width:8px;height:8px;border-radius:50%;background:#7FD8B4;box-shadow:0 0 0 4px rgba(127,216,180,.25);}
+  .stage{display:grid;grid-template-columns:96px 1fr;gap:26px;position:relative;}
+  .stage__rail{position:relative;display:flex;flex-direction:column;align-items:center;}
+  .stage__rail::before{content:"";position:absolute;top:0;bottom:-46px;left:50%;width:2px;background:var(--line-strong);transform:translateX(-50%);}
+  .stage:last-of-type .stage__rail::before{display:none;}
+  .stage__node{width:54px;height:54px;border-radius:50%;background:var(--forest);color:#fff;font-family:var(--display);font-weight:800;font-size:1.3rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;border:4px solid var(--paper);box-shadow:0 0 0 1px var(--line-strong);}
+  .stage__node--live{background:var(--emerald);}
+  .stage__sla{margin-top:14px;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--emerald);text-align:center;line-height:1.3;position:relative;z-index:2;background:var(--paper);padding:4px 0;}
+  .stage__card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px 30px 26px;margin-bottom:46px;}
+  .stage__title{font-size:1.45rem;color:var(--forest);margin-bottom:8px;}
+  .stage__lead{color:var(--sage);font-size:.97rem;margin:0 0 22px;max-width:62ch;}
+  .stage__grid{display:grid;grid-template-columns:1.15fr 1fr;gap:30px;margin-bottom:22px;}
+  .block__h{font-family:var(--body);font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald);margin:0 0 12px;}
+  .steps{margin:0;padding:0;list-style:none;counter-reset:s;}
+  .steps li{position:relative;padding:0 0 11px 26px;font-size:.93rem;color:var(--ink);}
+  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:1px;width:17px;height:17px;border-radius:50%;background:var(--mist);color:var(--forest);font-size:.66rem;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--display);}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{font-family:var(--body);font-size:.76rem;font-weight:600;color:var(--forest);background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:5px 10px 5px 9px;line-height:1.3;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease;}
+  .chip:hover{transform:translateY(-1px);border-color:var(--emerald);box-shadow:0 4px 12px rgba(14,59,46,.1);}
+  .chip:focus-visible{outline:2px solid var(--emerald);outline-offset:2px;}
+  .chip b{color:var(--emerald);font-weight:800;}
+  .chip::after{content:"↗";font-size:.7rem;color:var(--line-strong);margin-left:1px;}
+  .chip:hover::after{color:var(--emerald);}
+
+  .stage__meta{display:flex;flex-wrap:wrap;gap:10px 26px;border-top:1px solid var(--line);padding-top:18px;}
+  .meta{font-size:.85rem;color:var(--ink);}
+  .meta b{font-family:var(--body);font-weight:700;color:var(--sage);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:2px;}
+  .meta--next b{color:var(--emerald);}
+
+  .fork{display:flex;gap:14px;flex-wrap:wrap;margin:4px 0 22px;}
+  .fork__path{flex:1;min-width:220px;border:1px dashed var(--line-strong);border-radius:12px;padding:14px 16px;background:#fff;}
+  .fork__path h5{font-family:var(--display);font-weight:700;font-size:.95rem;margin:0 0 4px;color:var(--forest);}
+  .fork__path p{margin:0;font-size:.84rem;color:var(--sage);}
+  .fork__path.is-active{border-style:solid;border-color:var(--emerald);background:var(--emerald-soft);}
+  .fork__path .arrow{color:var(--emerald);font-weight:800;}
+
+  .score{margin-top:6px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
+  .score__head{background:var(--forest);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .score__head h5{font-family:var(--display);font-weight:700;font-size:1rem;margin:0;}
+  .score__head .thr{font-size:.78rem;color:#7FD8B4;font-weight:600;}
+  table.qt{width:100%;border-collapse:collapse;font-size:.86rem;}
+  table.qt th,table.qt td{text-align:left;padding:9px 18px;border-bottom:1px solid var(--line);}
+  table.qt th{font-family:var(--body);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);font-weight:700;}
+  table.qt td.c{color:var(--sage);}
+  table.qt td.sc{text-align:center;width:64px;color:var(--emerald);font-weight:700;font-family:var(--display);}
+  table.qt tr:last-child td{border-bottom:none;}
+  .score__foot{background:var(--mist);padding:11px 18px;font-size:.8rem;color:var(--forest);font-weight:600;}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px 28px;}
+  .panel--flag{border-left:4px solid var(--gold);}
+  .panel h3{font-size:1.15rem;color:var(--forest);margin-bottom:10px;}
+  .panel p{margin:0 0 8px;font-size:.94rem;color:var(--ink);}
+  .panel p:last-child{margin-bottom:0;}
+  .panel .flagtag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  .loop{display:flex;align-items:center;gap:16px;background:var(--forest);color:#EAF2EC;border-radius:var(--r);padding:22px 26px;margin-top:18px;}
+  .loop .ic{font-size:1.5rem;color:#7FD8B4;}
+  .loop p{margin:0;font-size:.95rem;color:#CFE0D5;}.loop b{color:#fff;}
+
+  .foot{background:var(--forest-700);color:#9FBBA9;padding:46px 0;font-size:.86rem;}
+  .foot .spine{color:#EAF2EC;font-family:var(--display);font-weight:700;font-size:1.05rem;margin-bottom:10px;}
+  .foot .row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-end;}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* DRAWER */
+  .overlay{position:fixed;inset:0;background:rgba(8,28,21,.5);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;z-index:40;}
+  .overlay.open{opacity:1;visibility:visible;}
+  .drawer{position:fixed;top:0;right:0;height:100dvh;width:min(560px,100%);background:var(--paper);box-shadow:-20px 0 60px rgba(8,28,21,.25);transform:translateX(102%);transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:50;display:flex;flex-direction:column;}
+  .drawer.open{transform:none;}
+  .drawer__head{background:var(--forest);color:#fff;padding:24px 28px 22px;flex-shrink:0;}
+  .drawer__id{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.1em;color:#7FD8B4;margin:0 0 6px;}
+  .drawer__name{font-family:var(--display);font-weight:800;font-size:1.4rem;line-height:1.12;margin:0 0 14px;padding-right:34px;}
+  .drawer__metas{display:flex;flex-wrap:wrap;gap:7px;}
+  .dmeta{font-size:.72rem;font-weight:600;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#E6EFE9;padding:4px 10px;border-radius:999px;}
+  .drawer__close{position:absolute;top:20px;right:22px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;font-size:1.1rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .drawer__close:hover{background:rgba(255,255,255,.12);}
+  .drawer__body{padding:24px 28px 36px;overflow-y:auto;flex:1;}
+  .dfield{margin-bottom:20px;}
+  .dfield__h{font-family:var(--body);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald);margin:0 0 7px;}
+  .dfield p{margin:0;font-size:.92rem;color:var(--ink);}
+  .copywrap{position:relative;}
+  .copybtn{position:absolute;top:8px;right:8px;font-family:var(--body);font-size:.72rem;font-weight:700;letter-spacing:.04em;background:var(--forest);color:#fff;border:none;border-radius:8px;padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s ease;}
+  .copybtn:hover{background:var(--emerald);}
+  .copybtn.done{background:var(--emerald);}
+  .copybox{background:#fff;border:1px solid var(--line-strong);border-radius:12px;padding:34px 18px 18px;white-space:pre-wrap;font-family:var(--body);font-size:.9rem;line-height:1.6;color:var(--ink);max-height:none;}
+  .drawer__deploy{flex-shrink:0;border-top:1px solid var(--line);padding:14px 28px;background:var(--card);display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .drawer__deploy span{font-size:.8rem;color:var(--sage);}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:.85rem;font-weight:600;padding:11px 20px;border-radius:999px;opacity:0;visibility:hidden;transition:all .25s ease;z-index:60;}
+  .toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:760px){
+    .legend{grid-template-columns:1fr;}
+    .comp--lewis .lewis-grid{grid-template-columns:1fr;}
+    .standards .grid{grid-template-columns:repeat(2,1fr);}
+    .stat:nth-child(2){border-right:none;}
+    .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line-strong);}
+    .stage{grid-template-columns:56px 1fr;gap:16px;}
+    .stage__node{width:44px;height:44px;font-size:1.05rem;}
+    .stage__card{padding:22px 20px;}
+    .stage__grid{grid-template-columns:1fr;gap:22px;}
+    .wrap{padding:0 20px;}
+    .drawer{width:100%;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    .drawer{transition:none;}.overlay{transition:none;}
+    html{scroll-behavior:auto;}
+  }
+  @media print{
+    body{background:#fff;}
+    .hero{background:var(--forest)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .reveal{opacity:1;transform:none;}
+    .stage__card,.comp,.panel,.score{break-inside:avoid;}
+    .standards,.comp--lewis,.score__head,.loop,.foot{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .overlay,.drawer,.toast,.hint{display:none!important;}
+    .chip::after{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brandline"><span class="logo">Lifed</span><span class="tag">Live Well. For Real.</span></div>
+    <p class="eyebrow eyebrow--light">Healthmate Onboarding · Master Blueprint</p>
+    <h1>The flow, and every asset to deploy it — in one place.</h1>
+    <p class="lead">Walk the six-stage onboarding journey, then tap any asset to open its ready-to-use copy and deploy it. The operating system and the communication system, finally one document.</p>
+    <div class="meta">
+      <span class="pill">6 stages</span>
+      <span class="pill">49 deployable assets</span>
+      <span class="pill">Partners, not listings</span>
+      <span class="pill">Non-clinical throughout</span>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow reveal">The moving parts</p>
+    <h2 class="reveal">Five components, named the same way everywhere.</h2>
+    <p class="sub reveal">Before the flow, the vocabulary. Every asset, screen, and conversation refers to these — and only these — by these names.</p>
+    <div class="legend">
+      <div class="comp reveal"><p class="comp__k">Healthmates</p><p class="comp__d">The experts and spaces who co-create and host curated programs. Partners we build with — never listings.</p><div class="comp__tags"><span class="tag-s">Practitioner</span><span class="tag-s">Centre</span><span class="tag-s">Community</span><span class="tag-s">Organiser</span></div></div>
+      <div class="comp reveal"><p class="comp__k">Programs</p><p class="comp__d">Curated, real-world experiences — residential stays or session-based workshops. Co-created and validated, not aggregated.</p><div class="comp__tags"><span class="tag-s">Wellness</span><span class="tag-s">Functional movement</span><span class="tag-s">Recovery</span></div></div>
+      <div class="comp reveal"><p class="comp__k">Booking</p><p class="comp__d">Seekers discover and book securely; the Healthmate is notified instantly. Transparent, tiered terms.</p><div class="comp__tags"><span class="tag-s">20% residential</span><span class="tag-s">25% session-based</span></div></div>
+      <div class="comp reveal"><p class="comp__k">Dashboard</p><p class="comp__d">The Healthmate's workspace: build programs, review all bookings, and manage them — in one place.</p><div class="comp__tags"><span class="tag-s">Build</span><span class="tag-s">Review</span><span class="tag-s">Manage</span></div></div>
+      <div class="comp comp--lewis reveal">
+        <p class="comp__k">LEWIS · the optional layer</p>
+        <p class="comp__d">An additional, non-clinical feature a person can use if they'd like help. Never required, never the headline, never "AI" — and for Healthmates, it means the right seekers, not just more of them.</p>
+        <div class="lewis-grid">
+          <div class="lewis-item"><b>Understand</b><span>Reflect on your holistic wellbeing across nine dimensions.</span></div>
+          <div class="lewis-item"><b>Build habits</b><span>Get healthy habits tailored to what you share.</span></div>
+          <div class="lewis-item"><b>Find your fit</b><span>Get matched to the right program for you.</span></div>
+        </div>
+        <p class="lewis-note">Guidance is fit-based, never pay-to-rank. LEWIS reflects and guides — it does not diagnose.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="standards">
+  <div class="wrap"><div class="grid">
+    <div class="stat reveal"><div class="n">1 day</div><div class="l">Healthmate account approved</div></div>
+    <div class="stat reveal"><div class="n">1 week</div><div class="l">Program reviewed &amp; taken live</div></div>
+    <div class="stat reveal"><div class="n">3–7 days</div><div class="l">Payout after settlement</div></div>
+    <div class="stat reveal"><div class="n">~3 weeks</div><div class="l">Target to first booking</div></div>
+  </div></div>
+</section>
+
+<section class="section flow">
+  <div class="wrap">
+    <p class="eyebrow reveal">The flow</p>
+    <h2 class="reveal">Six stages — read the steps, deploy the assets.</h2>
+    <p class="sub reveal">Each stage shows what happens in the operating system and the assets that carry it. The asset chips are live: tap one to open its full copy and deploy it.</p>
+    <div class="hint reveal"><span class="dot"></span> Tap any <b style="color:#7FD8B4">↗</b> asset to open and copy it</div>
+
+    <!-- STAGE 0 -->
+    <div class="stage reveal">
+      <div class="stage__rail"><div class="stage__node">0</div><div class="stage__sla">Instant<br>welcome</div></div>
+      <article class="stage__card">
+        <p class="eyebrow">Stage 0</p><h3 class="stage__title">Enquiry &amp; Leads</h3>
+        <p class="stage__lead">A warm welcome to Lifed and a 60-second film, then a clear fork: explore programs to book, or become a Healthmate to host.</p>
+        <div class="fork">
+          <div class="fork__path"><h5>Explore programs</h5><p>For seekers <span class="arrow">→</span> Lifed website to discover and book.</p></div>
+          <div class="fork__path is-active"><h5>Become a Healthmate</h5><p>Show the partnership poster <span class="arrow">→</span> registration page. <b>This path continues below.</b></p></div>
+        </div>
+        <div class="stage__grid">
+          <div class="block"><p class="block__h">What happens</p>
+            <ol class="steps"><li>Send the welcome message + "What is Lifed?" video.</li><li>Offer the two paths: explore, or partner.</li><li>If partner: share the Healthmate poster &amp; FAQ.</li><li>Link straight to the registration page.</li></ol>
+          </div>
+          <div class="block"><p class="block__h">Assets · tap to deploy</p>
+            <div class="chips">
+              <button class="chip" data-id="A1"><b>A1</b>Welcome WhatsApp</button>
+              <button class="chip" data-id="A2"><b>A2</b>Welcome email</button>
+              <button class="chip" data-id="A3"><b>A3</b>What is Lifed?</button>
+              <button class="chip" data-id="A4"><b>A4</b>Become a Healthmate poster</button>
+              <button class="chip" data-id="A5"><b>A5</b>Video: What is Lifed?</button>
+              <button class="chip" data-id="A6"><b>A6</b>Video: Who is a Healthmate?</button>
+              <button class="chip" data-id="A7"><b>A7</b>Partner page</button>
+              <button class="chip" data-id="A8"><b>A8</b>Healthmate FAQ</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage__meta"><span class="meta"><b>Owner</b>Growth / front desk</span><span class="meta"><b>Channel</b>WhatsApp · Email · Web · Video</span><span class="meta meta--next"><b>Next →</b>Chooses "Become a Healthmate"</span></div>
+      </article>
+    </div>
+
+    <!-- STAGE 1 -->
+    <div class="stage reveal">
+      <div class="stage__rail"><div class="stage__node">1</div><div class="stage__sla">Score<br>≥ 35 / 50</div></div>
+      <article class="stage__card">
+        <p class="eyebrow">Stage 1</p><h3 class="stage__title">Pre-Qualify</h3>
+        <p class="stage__lead">A friendly explainer call to understand the host, score fit consistently, and name the first program Lifed can co-create.</p>
+        <div class="stage__grid">
+          <div class="block"><p class="block__h">What happens</p>
+            <ol class="steps"><li>Schedule a 15–20 min call to explain Lifed.</li><li>Score the Healthmate against 10 criteria (below).</li><li>Schedule follow-ups; log internal notes.</li><li>Identify the first program to co-create.</li></ol>
+          </div>
+          <div class="block"><p class="block__h">Assets · tap to deploy</p>
+            <div class="chips">
+              <button class="chip" data-id="B1"><b>B1</b>Call invitation</button>
+              <button class="chip" data-id="B2"><b>B2</b>Call script</button>
+              <button class="chip" data-id="B3"><b>B3</b>Scoring form</button>
+              <button class="chip" data-id="B4"><b>B4</b>Fit checklist</button>
+              <button class="chip" data-id="B5"><b>B5</b>Follow-up message</button>
+              <button class="chip" data-id="B6"><b>B6</b>Program idea worksheet</button>
+              <button class="chip" data-id="B7"><b>B7</b>Internal notes</button>
+            </div>
+          </div>
+        </div>
+        <div class="score">
+          <div class="score__head"><h5>Healthmate Qualification — score each 1–5</h5><span class="thr">Ideal first Healthmate: 35+ / 50</span></div>
+          <table class="qt">
+            <thead><tr><th>Criterion</th><th>What to check</th><th class="sc">Score</th></tr></thead>
+            <tbody>
+              <tr><td>Program relevance</td><td class="c">Fits wellness, functional movement, or recovery</td><td class="sc">1–5</td></tr>
+              <tr><td>Safety</td><td class="c">Non-clinical, non-invasive, suitable for general users</td><td class="sc">1–5</td></tr>
+              <tr><td>Experience quality</td><td class="c">Meaningful, structured, memorable</td><td class="sc">1–5</td></tr>
+              <tr><td>Facilitator credibility</td><td class="c">Training, experience, reviews, or visible work</td><td class="sc">1–5</td></tr>
+              <tr><td>Location quality</td><td class="c">Venue is safe, accessible, calm, suitable</td><td class="sc">1–5</td></tr>
+              <tr><td>Visual appeal</td><td class="c">Markets well through photos and video</td><td class="sc">1–5</td></tr>
+              <tr><td>Booking readiness</td><td class="c">Has date, duration, price, inclusions, capacity</td><td class="sc">1–5</td></tr>
+              <tr><td>Uniqueness</td><td class="c">Adds something different to Lifed</td><td class="sc">1–5</td></tr>
+              <tr><td>Corporate potential <span style="color:var(--sage);font-weight:400">(internal)</span></td><td class="c">Could adapt for employee wellbeing</td><td class="sc">1–5</td></tr>
+              <tr><td>Repeatability</td><td class="c">Can run monthly or quarterly</td><td class="sc">1–5</td></tr>
+            </tbody>
+          </table>
+          <div class="score__foot">Proceed at 35+. Score 25–34 → develop and re-score. Below 25 → hold. A safety score of 1–2 is an automatic hold, whatever the total.</div>
+        </div>
+        <div class="stage__meta" style="margin-top:22px;"><span class="meta"><b>Owner</b>Onboarding team</span><span class="meta"><b>Channel</b>Call · WhatsApp · Internal</span><span class="meta meta--next"><b>Next →</b>Scores 35+ &amp; agrees to co-create</span></div>
+      </article>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div class="stage reveal">
+      <div class="stage__rail"><div class="stage__node">2</div><div class="stage__sla">Approved<br>in 1 day</div></div>
+      <article class="stage__card">
+        <p class="eyebrow">Stage 2</p><h3 class="stage__title">Register</h3>
+        <p class="stage__lead">Guide the host through registration, validate credentials and payout details, approve the account, and hand over the dashboard.</p>
+        <div class="stage__grid">
+          <div class="block"><p class="block__h">What happens</p>
+            <ol class="steps"><li>Walk through the registration process on a call.</li><li>Validate credentials and licences.</li><li>Validate bank / UPI details for payouts.</li><li>Approve the Healthmate account (within 1 day).</li><li>Send the dashboard &amp; program-builder videos.</li></ol>
+          </div>
+          <div class="block"><p class="block__h">Assets · tap to deploy</p>
+            <div class="chips">
+              <button class="chip" data-id="C1"><b>C1</b>Registration instruction</button>
+              <button class="chip" data-id="C2"><b>C2</b>Registration page</button>
+              <button class="chip" data-id="C3"><b>C3</b>Credential checklist</button>
+              <button class="chip" data-id="C4"><b>C4</b>Bank validation</button>
+              <button class="chip" data-id="C5"><b>C5</b>Approval email</button>
+              <button class="chip" data-id="C6"><b>C6</b>On-hold email</button>
+              <button class="chip" data-id="C7"><b>C7</b>Rejection email</button>
+              <button class="chip" data-id="C8"><b>C8</b>Builder video</button>
+              <button class="chip" data-id="C9"><b>C9</b>Dashboard video</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage__meta"><span class="meta"><b>Owner</b>Onboarding + Finance</span><span class="meta"><b>Channel</b>Web · Email · Video · Internal</span><span class="meta meta--next"><b>Next →</b>Account approved, dashboard issued</span></div>
+      </article>
+    </div>
+
+    <!-- STAGE 3 -->
+    <div class="stage reveal">
+      <div class="stage__rail"><div class="stage__node">3</div><div class="stage__sla">Ready or<br>co-create</div></div>
+      <article class="stage__card">
+        <p class="eyebrow">Stage 3</p><h3 class="stage__title">Prepare</h3>
+        <p class="stage__lead">Walk through the dashboard and builder, collect the program, then sort it: ready to go live, or shape it together first.</p>
+        <div class="fork">
+          <div class="fork__path is-active"><h5>Ready to go live</h5><p>Follow up <span class="arrow">→</span> Healthmate submits the program for review.</p></div>
+          <div class="fork__path is-active"><h5>Co-create &amp; curate</h5><p>R&amp;D curates with the Healthmate's input <span class="arrow">→</span> then submit for review.</p></div>
+        </div>
+        <div class="stage__grid">
+          <div class="block"><p class="block__h">What happens</p>
+            <ol class="steps"><li>Call to explain the dashboard and program builder.</li><li>Collect the program details.</li><li>Categorize: ready to go live, or co-create.</li><li>Shape the objective and structure; submit for review.</li></ol>
+          </div>
+          <div class="block"><p class="block__h">Assets · tap to deploy</p>
+            <div class="chips">
+              <button class="chip" data-id="D1"><b>D1</b>Dashboard guide</button>
+              <button class="chip" data-id="D2"><b>D2</b>Builder guide</button>
+              <button class="chip" data-id="D3"><b>D3</b>Details form</button>
+              <button class="chip" data-id="D4"><b>D4</b>Ready-to-go-live checklist</button>
+              <button class="chip" data-id="D5"><b>D5</b>Co-create worksheet</button>
+              <button class="chip" data-id="D6"><b>D6</b>Objective worksheet</button>
+              <button class="chip" data-id="D7"><b>D7</b>Structure worksheet</button>
+              <button class="chip" data-id="D8"><b>D8</b>Submission follow-up</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage__meta"><span class="meta"><b>Owner</b>Onboarding + Curation (R&amp;D)</span><span class="meta"><b>Channel</b>Dashboard · Call · PDF</span><span class="meta meta--next"><b>Next →</b>Program submitted for review</span></div>
+      </article>
+    </div>
+
+    <!-- STAGE 4 -->
+    <div class="stage reveal">
+      <div class="stage__rail"><div class="stage__node">4</div><div class="stage__sla">Live within<br>1 week</div></div>
+      <article class="stage__card">
+        <p class="eyebrow">Stage 4</p><h3 class="stage__title">Review</h3>
+        <p class="stage__lead">Full validation against the curation standard. If anything needs fixing, we do it together on a call — then approve and send the SOP.</p>
+        <div class="stage__grid">
+          <div class="block"><p class="block__h">What happens</p>
+            <ol class="steps"><li>Review the program with full validation.</li><li>If rectification is needed, sit with the host and finish it.</li><li>When ready, approve and send the conduction SOP.</li><li>Whole review-to-live completes within 1 week.</li></ol>
+          </div>
+          <div class="block"><p class="block__h">Assets · tap to deploy</p>
+            <div class="chips">
+              <button class="chip" data-id="E1"><b>E1</b>Review checklist</button>
+              <button class="chip" data-id="E2"><b>E2</b>Validation scorecard</button>
+              <button class="chip" data-id="E3"><b>E3</b>Rectification email</button>
+              <button class="chip" data-id="E4"><b>E4</b>Rectification call</button>
+              <button class="chip" data-id="E5"><b>E5</b>Approval email</button>
+              <button class="chip" data-id="E6"><b>E6</b>Rejection email</button>
+              <button class="chip" data-id="E7"><b>E7</b>Conduction SOP</button>
+              <button class="chip" data-id="E8"><b>E8</b>Quality &amp; safety checklist</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage__meta"><span class="meta"><b>Owner</b>Curation team</span><span class="meta"><b>Channel</b>Internal · Email · Call · PDF</span><span class="meta meta--next"><b>Next →</b>Program approved &amp; SOP sent</span></div>
+      </article>
+    </div>
+
+    <!-- STAGE 5 -->
+    <div class="stage reveal">
+      <div class="stage__rail"><div class="stage__node stage__node--live">5</div><div class="stage__sla">Payout<br>3–7 days</div></div>
+      <article class="stage__card">
+        <p class="eyebrow">Stage 5</p><h3 class="stage__title">Live</h3>
+        <p class="stage__lead">Go live, prompt sharing, send the welcome kit, and support the first bookings — stepping in if a program is quiet after ten days.</p>
+        <div class="stage__grid">
+          <div class="block"><p class="block__h">What happens</p>
+            <ol class="steps"><li>Announce live; ask the host to share on their channels.</li><li>Send the welcome kit — digital for all, physical for the first 100.</li><li>Review the program at day 10.</li><li>No booking by day 10 → trigger Sales &amp; Marketing.</li><li>Activation aims for first booking within ~3 weeks.</li></ol>
+          </div>
+          <div class="block"><p class="block__h">Assets · tap to deploy</p>
+            <div class="chips">
+              <button class="chip" data-id="F1"><b>F1</b>Live announcement</button>
+              <button class="chip" data-id="F2"><b>F2</b>Welcome kit</button>
+              <button class="chip" data-id="F3"><b>F3</b>Caption templates</button>
+              <button class="chip" data-id="F4"><b>F4</b>WhatsApp share</button>
+              <button class="chip" data-id="F5"><b>F5</b>Instagram story</button>
+              <button class="chip" data-id="F6"><b>F6</b>Post-live follow-up</button>
+              <button class="chip" data-id="F7"><b>F7</b>10-day review</button>
+              <button class="chip" data-id="F8"><b>F8</b>No-booking trigger</button>
+              <button class="chip" data-id="F9"><b>F9</b>S&amp;M activation</button>
+            </div>
+          </div>
+        </div>
+        <div class="stage__meta"><span class="meta"><b>Owner</b>Onboarding → Sales &amp; Marketing</span><span class="meta"><b>Channel</b>WhatsApp · Email · Social · Internal</span><span class="meta meta--next"><b>Welcome kit</b>Handmade card + Lifed journal (first 100)</span></div>
+      </article>
+    </div>
+
+    <div class="loop reveal"><span class="ic">↻</span><p><b>It doesn't end at live.</b> Once a Healthmate is booked and steady, each new program re-enters at <b>Prepare</b> — the partnership is ongoing, and the relationship grows program by program.</p></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:8px;">
+  <div class="wrap">
+    <div class="panel panel--flag reveal">
+      <span class="flagtag">One consistency note to confirm</span>
+      <h3>LEWIS now includes "healthy habits"</h3>
+      <p>This blueprint portrays LEWIS as: understand your wellbeing → get healthy habits tailored to you → find the right program. To keep it on-system, the copy says <b>"healthy habits, tailored to you"</b> rather than "AI personalisation," and keeps LEWIS optional and non-clinical.</p>
+      <p style="color:var(--sage);font-size:.88rem;">Worth a quick confirm: a habit layer was previously tracked as the deferred "SMALL Habits" roadmap. Please confirm whether habit guidance is a <b>LEWIS feature available now</b> or should read as <b>coming soon</b> — so user-facing copy claims only what's live.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap"><div class="row">
+    <div>
+      <div class="spine">Hold the spine, adapt the surface.</div>
+      <div>Lifed is a global platform to book and host curated, real-world wellbeing programs.<br>One blueprint: the operating system and the 49-asset communication system, together.</div>
+    </div>
+    <div style="text-align:right;"><div style="color:#7FD8B4;font-weight:700;">Live Well. For Real.</div><div>Master Blueprint v1 · flow + deployable assets</div></div>
+  </div></div>
+</footer>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dName" tabindex="-1">
+  <div class="drawer__head">
+    <button class="drawer__close" id="closeBtn" aria-label="Close">✕</button>
+    <p class="drawer__id" id="dId"></p>
+    <h3 class="drawer__name" id="dName"></h3>
+    <div class="drawer__metas" id="dMetas"></div>
+  </div>
+  <div class="drawer__body" id="dBody"></div>
+  <div class="drawer__deploy">
+    <span>Edit anything in [brackets] before sending.</span>
+    <button class="copybtn" id="deployCopy">⧉ Copy copy</button>
+  </div>
+</aside>
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script id="assetData" type="application/json">[
+ {
+  "id": "A1",
+  "name": "First welcome WhatsApp message",
+  "stage": "Enquiry / Lead",
+  "purpose": "Open the relationship warmly and present the two paths (explore / partner) in one tap-friendly message.",
+  "audience": "New enquirer (could become a seeker or a Healthmate)",
+  "channel": "WhatsApp",
+  "cta": "Reply 1 (→ website) or 2 (→ Healthmate poster + registration)",
+  "design": "Short lines, one emoji max, video thumbnail preview. No walls of text.",
+  "tone": "Warm, human, unhurried. Like a real person, not a broadcast.",
+  "avoid": "Hype, \"sign up now,\" multiple links, calling them a user/vendor before they choose.",
+  "copy": "Hi [First name] — welcome to Lifed 🌿\n\nLifed is a global platform to book and host curated, real-world wellbeing programs — across wellness, functional movement, and recovery.\n\nHere's a 60-second look at what we're building: [video link]\n\nWhat would you like to do next?\n1️⃣ Explore programs to book\n2️⃣ Become a Healthmate and host your own\n\nJust reply 1 or 2 and I'll take you there."
+ },
+ {
+  "id": "A2",
+  "name": "First welcome email",
+  "stage": "Enquiry / Lead",
+  "purpose": "A slightly fuller welcome for those who prefer email; same two-path fork.",
+  "audience": "New enquirer",
+  "channel": "Email",
+  "cta": "[Explore programs] / [Become a Healthmate]",
+  "design": "Cream background, deep-green header band with logo, two clearly separated path blocks, generous spacing.",
+  "tone": "Premium, calm, welcoming. Confident without selling.",
+  "avoid": "Stock \"join thousands\" claims, urgency, AI mentions, clinical language.",
+  "copy": "Subject: Welcome to Lifed — Live Well. For Real.\n\nHi [First name],\n\nThank you for finding your way to Lifed.\n\nLifed is a global platform to book and host curated, real-world wellbeing programs — residential stays and session-based workshops, across wellness, functional movement, and recovery. Every program is shaped with the people and places who host it, so what you find is genuinely worth your time.\n\nHere's a short look at the idea: [Watch: What is Lifed? →]\n\nTwo ways in:\n\nIf you're here to experience wellbeing — explore curated programs and book one that fits.\n→ [Explore programs]\n\nIf you host wellbeing experiences — join us as a Healthmate and co-create programs for a global audience.\n→ [Become a Healthmate]\n\nWhichever path you choose, we're glad you're here.\n\nWarmly,\nThe Lifed Team"
+ },
+ {
+  "id": "A3",
+  "name": "\"What is Lifed?\" one-page explainer",
+  "stage": "Enquiry / Lead",
+  "purpose": "A single clean page anyone can read in under a minute to understand Lifed.",
+  "audience": "Seekers and prospective Healthmates",
+  "channel": "PDF / Website",
+  "cta": "Explore programs · Become a Healthmate",
+  "design": "One page, deep-green header, three short blocks (problem / different / how), four-bullet \"different\" set, soft footer with both CTAs.",
+  "tone": "Clear, premium, plain-spoken.",
+  "avoid": "\"Just a marketplace,\" \"AI-powered,\" outcome promises, jargon (\"ecosystem,\" \"operating system\").",
+  "copy": "— WHAT IS LIFED\n\n# Live Well. For Real.\n\nLifed is a global platform to book and host curated, real-world wellbeing programs — residential stays and session-based workshops, across wellness, functional movement, and recovery.\n\nThe problem we're solving\nMost help with wellbeing arrives too late and in too many pieces — scattered across apps and centres that are hard to find and harder to trust. And many excellent practitioners and spaces stay invisible to the people who'd benefit most.\n\nWhat makes Lifed different\n• Real-world, not digital-only — the change happens in person.\n• Curated, not aggregated — every program is co-created with its host and shaped for Lifed.\n• Two-sided by design — built equally to book and to host.\n• Drawn from the world — practices from many traditions, in one trusted place.\n\nHow it works\nFind a program → book securely → attend the real-world experience. If you'd like help choosing, LEWIS — Lifed's non-clinical wellbeing intelligence — is an optional way to find the program that fits you.\n\nLifed is proactive and non-clinical: it helps people live well, rather than waiting for things to break."
+ },
+ {
+  "id": "A4",
+  "name": "\"Become a Healthmate\" one-page poster copy",
+  "stage": "Enquiry / Lead",
+  "purpose": "The hand-off asset when someone chooses the partner path — invites them to register.",
+  "audience": "Prospective Healthmates (practitioners, centres, communities, organisers)",
+  "channel": "PDF / Website",
+  "cta": "Register as a Healthmate → [registration link]",
+  "design": "Poster format (portrait). Bold headline, warm photo of a real host at work, five-point \"what you gain\" column, four host-type words in a row, QR code + short URL at the foot.",
+  "tone": "Respectful, warm, partner-first. Premium, not salesy.",
+  "avoid": "\"List your services,\" \"sell on Lifed,\" \"vendor,\" income guarantees, clinical claims.",
+  "copy": "— BECOME A HEALTHMATE\n\n# Your expertise, finally found.\n\nYour work changes lives — but being found, taking bookings, and earning steadily all year is hard to build alone.\n\nAs a Healthmate, you co-create curated programs with the Lifed team, reach the right seekers globally, and run a sustainable, year-round practice — from one simple dashboard.\n\nWhat you gain\n• Be found — global discovery and a curated reputation.\n• Co-creation — we shape each program with you; you stay the expert.\n• The right seekers — matched to your program by genuine fit, not volume.\n• Real tools — a dashboard for listings, bookings, and availability.\n• Transparent terms — 20% on residential, 25% on session-based. Clear payouts.\n\nWho can be a Healthmate\nPractitioners · Centres · Communities · Organisers.\n\nYou're not a listing. You're a partner."
+ },
+ {
+  "id": "A5",
+  "name": "Short video script — \"What is Lifed?\"",
+  "stage": "Enquiry / Lead",
+  "purpose": "A 60-second film that explains Lifed simply and emotionally.",
+  "audience": "Seekers and prospective Healthmates",
+  "channel": "Video",
+  "cta": "End card: Explore programs · Become a Healthmate · lifed.com",
+  "design": "Real footage throughout, minimal text overlays in emerald, slow cuts, warm grade. No animation gimmicks.",
+  "tone": "Cinematic calm, hopeful, grounded.",
+  "avoid": "App-screen montages, \"AI\" framing, before/after health claims, fast hype edits.",
+  "copy": "[0:00 — real footage: a person stepping into a quiet retreat space]\nVO: Most of us only look after our wellbeing after something breaks.\n\n[0:06 — quick cuts: scattered apps, a busy day]\nVO: And when we do look for help, it's scattered — hard to find, hard to trust.\n\n[0:14 — warm footage: a real session, real faces]\nVO: Lifed is a global platform to book and host curated, real-world wellbeing programs — across wellness, functional movement, and recovery.\n\n[0:24 — on-screen text: CURATED, NOT LISTED]\nVO: Every program is co-created with the experts and spaces who host it — shaped for Lifed, genuinely worth your time.\n\n[0:34 — a seeker browsing, then arriving in person]\nVO: Find a program. Book it. Live it — in the real world.\n\n[0:44 — calm close on a landscape]\nVO: And if you'd like help choosing, LEWIS can guide you to the one that fits.\n\n[0:52 — logo + tagline]\nVO: Lifed. Live Well. For Real."
+ },
+ {
+  "id": "A6",
+  "name": "Short video script — \"Who is a Healthmate?\"",
+  "stage": "Enquiry / Lead",
+  "purpose": "A 60-second film that makes a prospective host feel seen and invited.",
+  "audience": "Prospective Healthmates",
+  "channel": "Video",
+  "cta": "End card: Become a Healthmate → lifed.com/healthmates",
+  "design": "Show all four host types as real people. Emerald text cards. Include one quiet shot of co-creation (the partnership idea).",
+  "tone": "Respectful, warm, empowering — never desperate.",
+  "avoid": "\"Earn money fast,\" \"list your services,\" vendor framing, unverifiable income figures.",
+  "copy": "[0:00 — a practitioner closing up an empty studio]\nVO: You're good at what you do. But being found shouldn't depend on the season.\n\n[0:08 — warm footage of real hosts: a teacher, a centre, a community, an organiser]\nVO: Healthmates are the experts and spaces behind every Lifed program — practitioners, centres, communities, and organisers.\n\n[0:18 — on-screen text: PARTNERS, NOT LISTINGS]\nVO: You're not a listing on a marketplace. You're a partner we build programs with.\n\n[0:26 — host and Lifed team sketching a program together]\nVO: We co-create your program with you — you stay the expert — then curate it to a standard worth attending.\n\n[0:36 — bookings arriving on a dashboard; a full room]\nVO: The right seekers find you. Bookings arrive. Your calendar steadies — all year.\n\n[0:46 — transparent-terms card]\nVO: Transparent terms. Secure payouts. A team beside you.\n\n[0:54 — logo]\nVO: Become a Healthmate. Your expertise, finally found."
+ },
+ {
+  "id": "A7",
+  "name": "Partner CTA page copy (web)",
+  "stage": "Enquiry / Lead",
+  "purpose": "The web landing page for the partner path; converts interest into a registration start.",
+  "audience": "Prospective Healthmates",
+  "channel": "Website",
+  "cta": "Primary: Start your registration · Secondary: Watch: Who is a Healthmate?",
+  "design": "Hero with real host photo, four benefit cards, a clean two-step strip, sticky \"Start your registration\" button. Deep-green section dividers.",
+  "tone": "Premium, partner-oriented, confident.",
+  "avoid": "Marketplace/listing language, \"post your services,\" AI claims, clinical promises.",
+  "copy": "— FOR HEALTHMATES\n\n# Host curated wellbeing programs. Reach the right people, globally.\n\nLifed gives experts and spaces a global storefront, a booking system, and a team that co-creates programs with you — so your work reaches the people it can truly help, and your business is sustainable all year.\n\nWhy Healthmates choose Lifed\n• Co-created, curated programs — built with you, shaped for Lifed.\n• Global discovery — search, reputation, and the right-fit seekers.\n• A real dashboard — list, manage bookings, set availability, grow.\n• Transparent terms — 20% residential · 25% session-based.\n\nTwo simple steps to start\n1. Register and get validated by the Lifed team.\n2. Co-create your first program with us, and go live.\n\nCuration is your reputation. On Lifed, quality is findable."
+ },
+ {
+  "id": "A8",
+  "name": "FAQ for interested Healthmates",
+  "stage": "Enquiry / Lead",
+  "purpose": "Remove friction and answer the honest first questions before a call.",
+  "audience": "Prospective Healthmates",
+  "channel": "PDF / Website",
+  "cta": "Still have questions? Book a quick call →",
+  "design": "Two-column FAQ on cream, emerald question headers, generous spacing. Keep to one page if printed.",
+  "tone": "Honest, plain, reassuring.",
+  "avoid": "Over-promising bookings/income, hiding commission, AI or clinical claims.",
+  "copy": "— HEALTHMATE FAQ\n\nWhat is a Healthmate?\nAn expert or space that co-creates and hosts curated wellbeing programs on Lifed. You're a partner, not a listing.\n\nWho can join?\nPractitioners, centres, communities, and organisers across wellness, functional movement, and recovery.\n\nWhat does it cost to join?\nRegistration is free. Lifed earns a commission only when you're booked — 20% on residential, 25% on session-based.\n\nDo I just list what I already offer?\nNo. We co-create each program with you and curate it to a standard, so it's genuinely worth attending — and so it reaches the right seekers.\n\nHow do I get bookings?\nSeekers discover your program through search and reputation. If they use LEWIS, the right-fit seekers are guided to you — based on fit, never paid placement.\n\nWhen do I get paid?\nLifed collects payment securely at booking and pays out to your registered account within 3–7 days of settlement.\n\nHow long does approval take?\nYour Healthmate account is approved within 1 business day. Once you submit a program, review and go-live happen within 1 week.\n\nIs Lifed a medical or therapy service?\nNo. Lifed programs are wellbeing experiences, not treatment, and we keep all language non-clinical."
+ },
+ {
+  "id": "B1",
+  "name": "Call invitation message",
+  "stage": "Pre-Qualify",
+  "purpose": "Book the explainer call simply and warmly.",
+  "audience": "Prospective Healthmate",
+  "channel": "WhatsApp / Email",
+  "cta": "Pick a time → [scheduling link]",
+  "design": "Plain message, two-line spacing, a single link/button.",
+  "tone": "Friendly, low-pressure, peer-to-peer.",
+  "avoid": "\"Sales call,\" urgency, long preamble.",
+  "copy": "Hi [First name] — lovely to connect.\n\nCould we have a short 15–20 minute call to walk you through Lifed and understand your practice? It's a friendly conversation, not a pitch — we want to see how we might co-create a program together.\n\nHere are a few times: [time options] — or pick a slot here: [scheduling link]."
+ },
+ {
+  "id": "B2",
+  "name": "Pre-qualification call script (internal)",
+  "stage": "Pre-Qualify",
+  "purpose": "Give the team a consistent, warm structure to explain Lifed, learn about the host, and spot a first program.",
+  "audience": "Internal — onboarding team",
+  "channel": "Internal",
+  "cta": "\"Shall we move you to registration?\"",
+  "design": "Internal one-pager, numbered sections, time-boxes, prompt questions bulleted.",
+  "tone": "Warm, curious, partner-first; never interrogating.",
+  "avoid": "Promising placement/bookings, quoting timelines you can't keep, clinical or AI claims.",
+  "copy": "1. Open (2 min)\n\"Thanks for making time. This is a relaxed conversation — I'll explain what Lifed is, learn about your work, and we'll see if there's a program we could build together.\"\n\n2. Explain Lifed (3 min)\nUse the anchor: \"Lifed is a global platform to book and host curated, real-world wellbeing programs — across wellness, functional movement, and recovery.\" Emphasise: co-created, not listed; partner, not vendor; the right seekers, not just more.\n\n3. Understand the Healthmate (6 min) — ask:\n• Tell me about your practice / space / community.\n• What do you offer today, and to whom?\n• What's working, and what's hard? (seasonality, being found, bookings)\n• Do you have a venue, capacity, qualifications/licences?\n• Residential, session-based, or both?\n\n4. Identify a program (4 min)\n\"From what you've said, I can see a [format] program around [theme] that could fit Lifed well.\" Confirm interest in co-creating it.\n\n5. Close + next step (2 min)\nExplain registration in one sentence. Confirm the follow-up. Set expectations honestly: your account is approved within 1 business day, and once your program is submitted, review and go-live happen within 1 week."
+ },
+ {
+  "id": "B3",
+  "name": "Healthmate scoring form — Qualification Table (internal)",
+  "stage": "Pre-Qualify",
+  "purpose": "Score fit consistently against the canonical 10-criteria table so prioritisation is fair and repeatable.",
+  "audience": "Internal — onboarding team",
+  "channel": "Internal / Dashboard",
+  "cta": "Set outcome (Proceed / Develop / Hold) and assign next step.",
+  "design": "Clean dashboard table, score chips, a single outcome toggle, threshold key beneath.",
+  "tone": "Objective, fair, internal.",
+  "avoid": "Subjective bias, scoring on income potential alone, overriding a low safety score because the total looks good.",
+  "copy": "Healthmate: [name] · Form: Practitioner / Centre / Community / Organiser · Category: Wellness / Functional Movement / Recovery\n\nCriterion   What to check   Score (1–5)\nProgram relevance   Fits wellness, functional movement, or recovery\nSafety   Non-clinical, non-invasive, suitable for general users\nExperience quality   Meaningful, structured, memorable\nFacilitator credibility   Training, experience, reviews, or visible work\nLocation quality   Venue is safe, accessible, calm, suitable\nVisual appeal   Markets well through photos and video\nBooking readiness   Has date, duration, price, inclusions, capacity\nUniqueness   Adds something different to Lifed\nCorporate potential (internal only)   Could adapt for employee wellbeing\nRepeatability   Can run monthly or quarterly\n\nTotal: /50 · Recommended first program: [format + theme] · Open flags: [credentials, licences, safety, region]\n\nThresholds:\n• 35+ → Proceed (ideal first Healthmate)\n• 25–34 → Develop and re-score\n• Below 25 → Hold\n• Safety scored 1–2 → automatic Hold, whatever the total."
+ },
+ {
+  "id": "B4",
+  "name": "Healthmate fit checklist (internal)",
+  "stage": "Pre-Qualify",
+  "purpose": "A fast yes/no gate before investing in registration.",
+  "audience": "Internal — onboarding team",
+  "channel": "Internal",
+  "cta": "Mark Proceed or Hold.",
+  "design": "Simple checkbox list, core vs. optional clearly separated.",
+  "tone": "Crisp, practical.",
+  "avoid": "Passing borderline cases for volume; skipping safety/credential checks.",
+  "copy": "Proceed to registration only if all core boxes are ticked.\n☐ Genuine wellbeing expertise (one of: practitioner / centre / community / organiser)\n☐ Offering fits wellness, functional movement, or recovery\n☐ A clear first program can be co-created\n☐ Willing to co-create and meet the curation standard\n☐ Honest, non-clinical about what they offer\n☐ Able to provide credentials/licences as relevant\n☐ Venue/capacity adequate (centres, communities, organisers)\n☐ Responsive and professional\n\nIf any core box fails: Hold, and note what's needed to revisit."
+ },
+ {
+  "id": "B5",
+  "name": "Follow-up message after call",
+  "stage": "Pre-Qualify",
+  "purpose": "Reinforce warmth, summarise the program idea, and set the next step.",
+  "audience": "Prospective Healthmate",
+  "channel": "WhatsApp / Email",
+  "cta": "Begin registration → [link] (or: \"I'll call you to start registration\")",
+  "design": "Short, personal, one highlighted \"next step\" line.",
+  "tone": "Appreciative, specific, forward-moving.",
+  "avoid": "Generic \"thanks for your time,\" over-promising, listing-platform language.",
+  "copy": "Hi [First name] — thank you for the conversation today, it was a pleasure to learn about [their practice/space].\n\nHere's what stood out: there's a strong fit for a [format] program around [theme] that we'd love to co-create with you.\n\nNext step: a short registration so we can validate your details and set up your dashboard. I'll send the link and walk you through it.\n\nLooking forward to building this together."
+ },
+ {
+  "id": "B6",
+  "name": "Program idea discovery worksheet",
+  "stage": "Pre-Qualify",
+  "purpose": "Capture the seed of a program during/after the call to feed co-creation later.",
+  "audience": "Internal (filled with the Healthmate's input)",
+  "channel": "Internal / Dashboard",
+  "cta": "Save to Healthmate profile → carry into Prepare stage.",
+  "design": "Worksheet with short fields, format chips, one \"distinctly theirs\" highlight box.",
+  "tone": "Exploratory, encouraging.",
+  "avoid": "Outcome guarantees, clinical wording, forcing a final structure too early.",
+  "copy": "Working program name: [ ]\nCategory: Wellness / Functional Movement / Recovery\nFormat: Residential (fixed / flexible / seasonal) · Session-based (fixed / recurring / intensive / flexi / seasonal)\nWho is it for? (the seeker in plain words) [ ]\nWhat will they experience? (no medical claims) [ ]\nWhat feeling/benefit do they leave with? (non-clinical) [ ]\nDuration & structure (rough): [ ]\nVenue / location: [ ]\nCapacity: [ ]\nWhat makes this distinctly theirs? [ ]\nCo-creation needs: [structure / clarity / safety / pricing]"
+ },
+ {
+  "id": "B7",
+  "name": "Internal notes template",
+  "stage": "Pre-Qualify",
+  "purpose": "A consistent record so any team member can pick up the relationship.",
+  "audience": "Internal — onboarding team",
+  "channel": "Internal / Dashboard",
+  "cta": "Log and set reminder for next step.",
+  "design": "Structured note card; pinned to the Healthmate record.",
+  "tone": "Factual, clear, handover-ready.",
+  "avoid": "Vague notes, personal judgements, undocumented promises.",
+  "copy": "Healthmate: [name] · Date: [ ] · Owner: [team member]\nForm / Category / Archetype: [ ]\nSummary of call: [ ]\nFit score: /50 · Outcome: Proceed (35+) / Develop / Hold\nFirst program identified: [ ]\nOpen flags (credentials, licences, safety, region): [ ]\nAgreed next step + date: [ ]\nFollow-ups scheduled: [ ]"
+ },
+ {
+  "id": "C1",
+  "name": "Registration instruction message",
+  "stage": "Register",
+  "purpose": "Make starting registration feel simple and supported.",
+  "audience": "Prospective Healthmate",
+  "channel": "WhatsApp / Email",
+  "cta": "Start registration → [link]",
+  "design": "Short checklist of what to have ready, single button.",
+  "tone": "Supportive, concrete, calm.",
+  "avoid": "Overwhelming document lists, jargon, \"create your seller account.\"",
+  "copy": "Hi [First name] — let's get you set up as a Healthmate.\n\nRegistration takes about [10] minutes. You'll add:\n• Your details and identity/business registration\n• Relevant qualifications or licences\n• Venue details (if you have a space)\n• Payout (bank/UPI) details\n\nStart here: [registration link]\n\nOnce you submit, we approve Healthmate accounts within 1 business day. I'm on hand if you need anything — just reply here."
+ },
+ {
+  "id": "C2",
+  "name": "Registration page copy (web/dashboard)",
+  "stage": "Register",
+  "purpose": "Guide the host through the form with partner-warm microcopy.",
+  "audience": "Prospective Healthmate",
+  "channel": "Website / Dashboard",
+  "cta": "Submit for validation",
+  "design": "Four clean steps with progress bar, reassuring helper text under each field, deep-green submit button.",
+  "tone": "Trust-building, partner-first, unfussy.",
+  "avoid": "\"Seller onboarding,\" \"list your services,\" cold form language, asking for more than needed.",
+  "copy": "— REGISTER AS A HEALTHMATE\n\n# A few details, and we'll set up your dashboard.\nWe verify every Healthmate — so the people who book can trust what they're stepping into. This protects your reputation too.\n\nStep 1 — About you\nName · form (practitioner / centre / community / organiser) · category · short bio.\n\nStep 2 — Credentials\nIdentity or business registration · qualifications, certifications, or licences for your practice.\n\nStep 3 — Your space (if applicable)\nLocation · facilities · capacity.\n\nStep 4 — Payouts\nBank / UPI details for secure settlements.\n\nWe'll review and validate your details, then set up your personal dashboard. We'll be in touch at every step."
+ },
+ {
+  "id": "C3",
+  "name": "Credential submission checklist",
+  "stage": "Register",
+  "purpose": "Tell the host exactly what to provide, by form type.",
+  "audience": "Prospective Healthmate",
+  "channel": "PDF / Dashboard",
+  "cta": "Upload documents → [link]",
+  "design": "Grouped checkboxes by form type; \"everyone\" first.",
+  "tone": "Practical, helpful.",
+  "avoid": "Over-collecting, demanding region-specific docs that don't apply, intimidating legal tone.",
+  "copy": "What to have ready (confirmed list — region-specific KYC may add to it)\n\nEveryone\n☐ Identity proof (or business registration)\n☐ Short professional bio\n☐ Relevant qualifications / certifications / licences\n\nCentres & communities\n☐ Venue details — location, facilities, capacity\n☐ Any safety provisions and permits, where relevant\n\nOrganisers\n☐ Venue arrangement details for third-party locations\n☐ Relevant permissions / insurance, where relevant\n\nFor payouts\n☐ Bank / UPI details\n\nClear, current documents help us validate you faster."
+ },
+ {
+  "id": "C4",
+  "name": "Bank details validation checklist (internal)",
+  "stage": "Register",
+  "purpose": "Validate payout details accurately and securely before approval.",
+  "audience": "Internal — onboarding / finance",
+  "channel": "Internal",
+  "cta": "Mark payout details Verified or On-hold.",
+  "design": "Internal checklist; security note pinned.",
+  "tone": "Precise, careful.",
+  "avoid": "Approving on partial details; storing sensitive data outside policy.",
+  "copy": "☐ Account holder name matches verified identity / business name\n☐ Bank / UPI details complete and correctly formatted\n☐ Supporting proof received (where required)\n☐ No mismatch between registration name and payout name\n☐ Tax / invoicing details captured (required)\n☐ Details stored securely per data policy\n☐ Verified by: [name] · Date: [ ]\n\nIf mismatch or missing: move account to On-hold (C6) and request correction."
+ },
+ {
+  "id": "C5",
+  "name": "Approval email",
+  "stage": "Register",
+  "purpose": "Welcome the host as an approved Healthmate and open the dashboard.",
+  "audience": "New Healthmate",
+  "channel": "Email",
+  "cta": "Open your dashboard → [link]",
+  "design": "Celebratory but calm; deep-green header, two video cards, single dashboard button.",
+  "tone": "Warm, welcoming, partner-first.",
+  "avoid": "\"Start selling,\" overwhelming next-steps, hype.",
+  "copy": "Subject: Welcome aboard, [First name] — you're a Lifed Healthmate 🌿\n\nHi [First name],\n\nIt's official — your Healthmate account is approved. Welcome to Lifed.\n\nYour personal dashboard is ready. It's where you'll co-create programs, manage bookings, set availability, and grow your practice — with our team alongside you.\n\nTo help you start, two short videos:\n• Your dashboard, in 3 minutes → [link]\n• Building your first program → [link]\n\nNext, we'll book a call to walk through your dashboard and shape your first program together. Once you submit it, review and go-live happen within a week.\n\nWe're glad you're here.\n\nWarmly,\nThe Lifed Team"
+ },
+ {
+  "id": "C6",
+  "name": "Account on-hold email",
+  "stage": "Register",
+  "purpose": "Pause kindly while a detail is corrected — keep the relationship intact.",
+  "audience": "Prospective Healthmate",
+  "channel": "Email",
+  "cta": "Send the missing detail → [link]",
+  "design": "Single clear \"what we need\" block, friendly close.",
+  "tone": "Helpful, respectful, never punitive.",
+  "avoid": "Blame, vague \"issues with your application,\" cold tone.",
+  "copy": "Subject: A quick step before we approve your account\n\nHi [First name],\n\nThanks for registering as a Healthmate — we're almost there.\n\nBefore we approve your account, we need one thing: [specific item — e.g., a clearer copy of your certification / matching payout name].\n\nCould you share that here: [link]? As soon as we have it, we'll complete your approval and open your dashboard.\n\nHappy to help if anything's unclear — just reply.\n\nWarmly,\nThe Lifed Team"
+ },
+ {
+  "id": "C7",
+  "name": "Rejection email",
+  "stage": "Register",
+  "purpose": "Decline with dignity and leave the door open where appropriate.",
+  "audience": "Prospective Healthmate",
+  "channel": "Email",
+  "cta": "(Optional) When things change, reach us here → [link]",
+  "design": "Short, plain, respectful. No CTA pressure.",
+  "tone": "Honest, kind, dignified.",
+  "avoid": "Harsh or vague reasons, false hope, generic rejection boilerplate.",
+  "copy": "Subject: About your Healthmate application\n\nHi [First name],\n\nThank you for your interest in becoming a Lifed Healthmate, and for the time you shared with us.\n\nAfter review, we're not able to move forward at this stage — [brief, honest reason, e.g., the program isn't a fit for our current categories / required credentials couldn't be verified]. This isn't a judgement of your work; it reflects what Lifed is set up to curate right now.\n\nIf [the relevant detail] changes in future, we'd genuinely welcome a fresh conversation.\n\nWith respect and our best wishes,\nThe Lifed Team"
+ },
+ {
+  "id": "C8",
+  "name": "Program builder introduction video script",
+  "stage": "Register",
+  "purpose": "A 2–3 minute walkthrough of how programs are built and co-created.",
+  "audience": "New Healthmate",
+  "channel": "Video",
+  "cta": "End card: Open the Program Builder →",
+  "design": "Screen-record the real builder with clean callouts in emerald; warm host intro/outro.",
+  "tone": "Encouraging, clear, partner-first.",
+  "avoid": "\"List your service,\" promising bookings, AI/clinical framing, treating it as self-serve with no curation.",
+  "copy": "[0:00 — warm welcome, host face on camera or dashboard intro]\nVO: Welcome, Healthmate. Let's look at how you'll build your first program.\n\n[0:10 — open the Program Builder]\nVO: On Lifed, a program isn't just a listing — it's co-created with our team and curated to a standard. The builder is where that begins.\n\n[0:25 — fields: name, category, format]\nVO: Start with the basics — name, category (wellness, functional movement, or recovery), and format: residential or session-based.\n\n[0:45 — objective & structure fields]\nVO: Then the heart of it — your program's objective and structure. Keep it honest and non-clinical: what people will experience, not what it treats.\n\n[1:10 — schedule, inclusions, capacity, pricing]\nVO: Add your schedule, what's included, capacity, and pricing. We'll help you set fair, clear terms.\n\n[1:35 — submit for co-creation/review]\nVO: When you're ready, submit. Our team co-creates and curates with you — refining until it's genuinely worth attending.\n\n[1:55 — close]\nVO: You stay the expert. We make sure it shines. Let's build something real."
+ },
+ {
+  "id": "C9",
+  "name": "Dashboard walkthrough video script",
+  "stage": "Register",
+  "purpose": "A 3-minute tour of the Healthmate dashboard.",
+  "audience": "New Healthmate",
+  "channel": "Video",
+  "cta": "End card: Explore your dashboard →",
+  "design": "Real screen recording, emerald callouts, calm pace.",
+  "tone": "Reassuring, practical, warm.",
+  "avoid": "Promising analytics/outcome data that isn't live (frame any outcome view as rolling out), AI claims.",
+  "copy": "[0:00 — dashboard home]\nVO: This is your dashboard — your workspace on Lifed.\n\n[0:12 — Programs tab]\nVO: Here you'll build, curate, and manage your programs — drafts, live programs, and ones in review.\n\n[0:35 — Bookings tab]\nVO: When a seeker books, it appears here with everything you need. You're notified right away.\n\n[0:55 — Availability/calendar]\nVO: Set your availability and slots so your calendar stays accurate — and you're never overbooked.\n\n[1:20 — Payments/payouts]\nVO: Track earnings and payouts. Terms are transparent — 20% on residential, 25% on session-based — and you're paid out within 3 to 7 days of settlement.\n\n[1:45 — Reviews/reputation]\nVO: Honest reviews build your reputation over time — your curation, made visible.\n\n[2:10 — Support]\nVO: And our team is one click away whenever you need us.\n\n[2:30 — close]\nVO: That's your dashboard. Everything in one place, so hosting stays simple."
+ },
+ {
+  "id": "D1",
+  "name": "Dashboard guide one-pager",
+  "stage": "Prepare",
+  "purpose": "A printable reference for everything the dashboard does.",
+  "audience": "Healthmate",
+  "channel": "PDF / Dashboard",
+  "cta": "Open your dashboard → [link]",
+  "design": "One page, six labelled blocks with simple line icons, footer note on rolling-out features.",
+  "tone": "Clear, calm, supportive.",
+  "avoid": "Claiming live analytics/trend data, vendor language.",
+  "copy": "— YOUR HEALTHMATE DASHBOARD\n\n# Everything in one place.\nYour dashboard does three core jobs — build programs, review all your bookings, and manage them — alongside the tools to grow.\n\n• Programs — build, edit, and track drafts, in-review, and live programs.\n• Bookings — review every booking with the details you need; get notified instantly.\n• Manage — set slots and dates, update programs, keep your calendar accurate.\n• Payouts — track earnings; transparent terms (20% residential · 25% session-based), paid out within 3–7 days of settlement.\n• Reviews — honest feedback that builds your reputation.\n• Support — reach the Lifed team whenever you need.\n\nOutcome insight on your programs is rolling out — you'll see how your work is helping, in aggregate, privacy-respecting form."
+ },
+ {
+  "id": "D2",
+  "name": "Program builder guide one-pager",
+  "stage": "Prepare",
+  "purpose": "A reference that demystifies building a curated program.",
+  "audience": "Healthmate",
+  "channel": "PDF / Dashboard",
+  "cta": "Start building → [link]",
+  "design": "Numbered six-step column; a small \"co-create → curate → go live\" flow strip at the foot.",
+  "tone": "Encouraging, structured.",
+  "avoid": "Implying instant self-publish, outcome promises, clinical claims.",
+  "copy": "— THE PROGRAM BUILDER\n\n# Build a program worth attending.\nOn Lifed, programs are co-created and curated — not just listed. Here's the shape of one:\n\n1. Basics — name, category, format (residential / session-based).\n2. Objective — what the program is for, in honest, non-clinical words.\n3. Structure — sessions, flow, and duration.\n4. Schedule — dates or slots; fixed, flexible, recurring, intensive, flexi, or seasonal.\n5. Inclusions — what's provided (food/stay for residential; materials for sessions).\n6. Capacity & pricing — clear, fair, transparent.\n\nThen: submit. Our team co-creates and curates with you until it clears the standard — then it goes live and bookable."
+ },
+ {
+  "id": "D3",
+  "name": "Program details collection form",
+  "stage": "Prepare",
+  "purpose": "Gather everything needed to assess and curate a program.",
+  "audience": "Healthmate (with team support)",
+  "channel": "Dashboard / PDF",
+  "cta": "Submit details for review",
+  "design": "Logical groups (about / structure / logistics / safety), format chips, helper text reminding \"honest, non-clinical.\"",
+  "tone": "Practical, supportive.",
+  "avoid": "Outcome/medical claims in objective field, forcing fields that don't apply to the format.",
+  "copy": "Program name: [ ]\nCategory: Wellness / Functional Movement / Recovery\nFormat: Residential (fixed / flexible / seasonal) · Session-based (fixed / recurring / intensive / flexi / seasonal)\nWho it's for (the seeker): [ ]\nObjective (non-clinical): [ ]\nWhat participants will experience: [ ]\nStructure & flow: [ ]\nDuration: [ ]\nSchedule / dates / slots: [ ]\nInclusions: [ ]\nVenue / location: [ ]\nCapacity: [ ]\nPrice: [ ]\nSafety provisions: [ ]\nWhat makes it distinctly yours: [ ]"
+ },
+ {
+  "id": "D4",
+  "name": "Ready-to-go-live program checklist (internal)",
+  "stage": "Prepare",
+  "purpose": "Decide quickly whether a submitted program can fast-track to Review or needs co-creation.",
+  "audience": "Internal — onboarding / curation",
+  "channel": "Internal",
+  "cta": "Route to Review or Co-create.",
+  "design": "Checklist with a clear two-way outcome toggle.",
+  "tone": "Objective, efficient.",
+  "avoid": "Fast-tracking weak programs; letting unclear or clinical wording through.",
+  "copy": "Mark Ready-to-Review only if all are true:\n☐ Clear, honest, non-clinical objective\n☐ Sound, complete structure and schedule\n☐ Format and category correctly set\n☐ Inclusions, capacity, and pricing clear and fair\n☐ Venue/safety details adequate\n☐ Genuine fit for the seekers it would reach\n☐ Distinctive enough to be worth attending\n\nOutcome:\n☐ Ready → send to Review (E)\n☐ Co-create → route to D5 worksheet with the team"
+ },
+ {
+  "id": "D5",
+  "name": "Co-create and curate worksheet (internal + Healthmate)",
+  "stage": "Prepare",
+  "purpose": "Structure the collaborative shaping of a program that isn't ready yet.",
+  "audience": "Internal curation team + Healthmate",
+  "channel": "Internal / Dashboard",
+  "cta": "Submit revised program for Review.",
+  "design": "Collaborative worksheet, \"what's strong\" first to keep it warm, agreed-changes box highlighted.",
+  "tone": "Collaborative, respectful — with the host, not to them.",
+  "avoid": "Rewriting their work without input, removing their voice, introducing clinical claims.",
+  "copy": "Program: [name] · Healthmate: [name] · Curator: [team]\n\n1. What's strong already (keep their craft intact): [ ]\n2. What needs shaping:\n• Objective clarity (non-clinical): [ ]\n• Structure & flow: [ ]\n• Schedule & format fit: [ ]\n• Pricing & inclusions: [ ]\n• Safety & venue: [ ]\n3. Healthmate's suggestions: [ ]\n4. Agreed changes: [ ]\n5. Revised version ready? Yes → submit for Review (E) / No → next co-creation session [date]"
+ },
+ {
+  "id": "D6",
+  "name": "Program objective worksheet",
+  "stage": "Prepare",
+  "purpose": "Help the host articulate a sharp, honest, non-clinical objective.",
+  "audience": "Healthmate (with support)",
+  "channel": "Dashboard / PDF",
+  "cta": "Save objective to your program.",
+  "design": "Sentence-completion prompts, a single objective box, a non-clinical check at the foot.",
+  "tone": "Coaching, encouraging.",
+  "avoid": "Medical/therapeutic verbs, vague \"transform your life\" claims, jargon.",
+  "copy": "Finish these lines in plain language:\n• This program is for people who… [ ]\n• Over [duration], they will experience… [ ]\n• They'll leave feeling… (a state, not a cure — e.g., \"more rested,\" \"steadier,\" \"reconnected\") [ ]\n• What makes it different is… [ ]\n\nNow write your objective in one sentence: [ ]\n\nNon-clinical check: Does it avoid promising to treat, cure, or fix anything medical? [ ] Yes"
+ },
+ {
+  "id": "D7",
+  "name": "Program structure worksheet",
+  "stage": "Prepare",
+  "purpose": "Turn the idea into a clear session-by-session structure.",
+  "audience": "Healthmate (with support)",
+  "channel": "Dashboard / PDF",
+  "cta": "Save structure to your program.",
+  "design": "Simple build-out table plus rhythm prompts; works for both formats.",
+  "tone": "Practical, organising.",
+  "avoid": "Over-engineering, clinical scheduling language, ignoring rest/safety.",
+  "copy": "Format: Residential / Session-based · Total duration: [ ]\n\nSession / Day   Focus   What happens   Time\n1\n2\n…\n\nArrival / welcome: [ ]\nDaily rhythm (residential) or session rhythm: [ ]\nClose / send-off: [ ]\nWhat participants need to bring/know: [ ]\nCapacity per session: [ ]"
+ },
+ {
+  "id": "D8",
+  "name": "Follow-up message for program submission",
+  "stage": "Prepare",
+  "purpose": "Gently move a ready program into submission, or confirm the next co-creation step.",
+  "audience": "Healthmate",
+  "channel": "WhatsApp / Email",
+  "cta": "Submit for review → [link] (or confirm co-creation session)",
+  "design": "Single message with the right branch used; one action.",
+  "tone": "Encouraging, momentum-building.",
+  "avoid": "Pressure, vague next steps, \"list it now.\"",
+  "copy": "Hi [First name] — your [program name] is looking great.\n\n(If ready): It's ready to submit for review. Tap Submit for review in your dashboard, and our team will do the final validation. → [link]\n\n(If co-creating): Let's shape it together — I've booked our next session for [date/time] to finalise [the objective / structure / pricing]. We'll have it review-ready after that.\n\nEither way, you're nearly there."
+ },
+ {
+  "id": "E1",
+  "name": "Program review checklist (internal)",
+  "stage": "Review",
+  "purpose": "Validate every program consistently against the standard.",
+  "audience": "Internal — curation team",
+  "channel": "Internal",
+  "cta": "Record decision.",
+  "design": "Checklist with a single decision router at the foot.",
+  "tone": "Rigorous, fair.",
+  "avoid": "Passing clinical language, approving for volume, skipping safety.",
+  "copy": "Program: [name] · Healthmate: [name] · Reviewer: [team] · Date: [ ]\n☐ Clear, honest objective (non-clinical)\n☐ Sound, complete structure and schedule\n☐ Correct category and format\n☐ Inclusions, capacity, pricing accurate and fair\n☐ Venue & safety details adequate\n☐ Language honest and non-clinical throughout (no treat/cure/diagnose)\n☐ Genuine fit for the seekers it will reach (incl. LEWIS fit)\n☐ Distinctive — worth attending, shaped for Lifed\n☐ Photos/description accurate and high-quality\n\nDecision: Approve → E5 · Rectify → E3 + E4 · Reject → E6"
+ },
+ {
+  "id": "E2",
+  "name": "Program validation scorecard (internal)",
+  "stage": "Review",
+  "purpose": "A scored view that supports the pass/rectify/reject decision and tracks quality over time.",
+  "audience": "Internal — curation team",
+  "channel": "Internal / Dashboard",
+  "cta": "Set decision based on score + judgement.",
+  "design": "Scorecard table; thresholds shown but judgement noted as final.",
+  "tone": "Objective, quality-led.",
+  "avoid": "Treating score as the only factor; ignoring a safety red flag despite a high score.",
+  "copy": "Dimension   Score   Notes\nClarity of objective\nStructure & flow\nHonesty & non-clinical language\nSafety & duty of care\nFit for target seekers\nDistinctiveness / curation value\nPricing & inclusions fairness\nPresentation (photos, description)\n\nTotal: /40\nThresholds: ≥ 32 → Approve · 24–31 → Rectify (E3/E4) · < 24 → Reject (E6). Safety & duty of care scored 1–2 → automatic Hold, whatever the total. Review and go-live complete within 1 week of submission."
+ },
+ {
+  "id": "E3",
+  "name": "Rectification-needed email",
+  "stage": "Review",
+  "purpose": "Ask for specific changes warmly, framed as protecting their reputation.",
+  "audience": "Healthmate",
+  "channel": "Email",
+  "cta": "Book the rectification call → [link]",
+  "design": "Numbered, specific refinements; \"let's do it together\" framing.",
+  "tone": "Supportive, specific, collaborative.",
+  "avoid": "Vague \"needs work,\" cold rejection tone, listing-platform language.",
+  "copy": "Subject: Almost ready — a few refinements to [program name]\n\nHi [First name],\n\nWe've reviewed [program name], and it's close. A few refinements will get it over the line — and our curation standard is what keeps every Healthmate's reputation strong, including yours.\n\nWhat to refine:\n1. [Specific point — e.g., reword the objective to keep it non-clinical]\n2. [Specific point — e.g., add the daily rhythm to the structure]\n3. [Specific point — e.g., confirm capacity and safety details]\n\nRather than send this back and forth, let's do it together on a short call — I'll book a time and we'll finish it in one sitting.\n\nYou're nearly live.\n\nWarmly,\nThe Lifed Team"
+ },
+ {
+  "id": "E4",
+  "name": "Rectification call script (internal)",
+  "stage": "Review",
+  "purpose": "Sit with the host and complete the changes in one supportive session.",
+  "audience": "Internal — curation team",
+  "channel": "Internal",
+  "cta": "Re-submit on the call.",
+  "design": "Internal numbered script; strengths-first reminder highlighted.",
+  "tone": "Collaborative, affirming, efficient.",
+  "avoid": "Dictating changes, eroding the host's voice, introducing claims.",
+  "copy": "1. Open warmly (1 min)\n\"Your program's strong — let's polish these few things together so it's ready to go live.\"\n\n2. Affirm what's good (1 min)\nName two genuine strengths first.\n\n3. Work through each point (10–15 min)\nFor each refinement: explain why (clarity / honesty / safety / fit), suggest wording, capture their preference, edit live in the builder together.\n\n4. Non-clinical pass (2 min)\nRead the objective and description aloud; confirm no treat/cure/diagnose language.\n\n5. Confirm & submit (2 min)\nRe-submit for final validation on the call. Set expectation for approval.\n\n6. Close (1 min)\n\"Beautifully done — you're ready. Thank you for shaping this with us.\""
+ },
+ {
+  "id": "E5",
+  "name": "Program approval email",
+  "stage": "Review",
+  "purpose": "Tell the host their program is approved and prepare them to go live.",
+  "audience": "Healthmate",
+  "channel": "Email",
+  "cta": "Review your SOP · Take your program live → [link]",
+  "design": "Celebratory-calm; SOP attachment card; single go-live button.",
+  "tone": "Proud, warm, partner-first.",
+  "avoid": "Promising booking volumes, hype, clinical claims.",
+  "copy": "Subject: It's approved — [program name] is going live 🌿\n\nHi [First name],\n\nWonderful news: [program name] has cleared curation and is approved to go live.\n\nAttached is your SOP for running the program — a short, practical guide to delivering it beautifully and consistently. Please give it a read before your first session.\n\nOnce it's live, we'll help you share it, and we'll check in to make sure your first bookings come through.\n\nCongratulations — this is the standard that makes Lifed worth booking, and you've met it.\n\nWarmly,\nThe Lifed Team"
+ },
+ {
+  "id": "E6",
+  "name": "Program rejection email",
+  "stage": "Review",
+  "purpose": "Decline a program respectfully while keeping the partnership open.",
+  "audience": "Healthmate",
+  "channel": "Email",
+  "cta": "Explore a new program together → [link]",
+  "design": "Short, plain, dignified; one gentle forward CTA.",
+  "tone": "Honest, kind, partnership-preserving.",
+  "avoid": "Vague reasons, harshness, making the host feel rejected as a person.",
+  "copy": "Subject: About [program name]\n\nHi [First name],\n\nThank you for the work you put into [program name]. After full review, we're not able to take this particular program live as it stands — [honest, specific reason, e.g., it overlaps heavily with existing supply / the safety provisions don't yet meet our standard / the objective can't be made non-clinical].\n\nThis is about this program in its current form, not about you as a Healthmate — we'd be glad to co-create a different program with you that fits Lifed well.\n\nShall we set up a short call to explore that?\n\nWith respect,\nThe Lifed Team"
+ },
+ {
+  "id": "E7",
+  "name": "SOP for program conduction",
+  "stage": "Review",
+  "purpose": "A practical guide so every program is delivered to the curated standard.",
+  "audience": "Healthmate",
+  "channel": "PDF",
+  "cta": "Keep this handy for every run.",
+  "design": "Phased one/two-pager (Before / Day / During / Close / After), checkboxes optional.",
+  "tone": "Practical, caring, professional.",
+  "avoid": "Medical/treatment instructions, rigid scripts that erase the host's style.",
+  "copy": "— PROGRAM SOP\n\n# Running [program name] beautifully.\nA short guide to delivering your program to the standard you built it to.\n\nBefore the program\n• Confirm bookings and participant details from your dashboard.\n• Send a warm pre-arrival note (what to bring, where to come, timings).\n• Prepare the space, materials, and any safety provisions.\n\nOn the day / arrival\n• Welcome each participant by name.\n• Set expectations and the rhythm for the time together.\n• Keep language supportive and non-clinical throughout.\n\nDuring the program\n• Follow the structure you curated; hold time and rest well.\n• Watch for participant comfort and safety; adapt with care.\n\nClose\n• End with a clear, calm send-off.\n• Invite honest feedback and a review.\n\nAfter\n• Mark completion in your dashboard.\n• Reply to reviews graciously.\n• Reach the Lifed team if anything needs support."
+ },
+ {
+  "id": "E8",
+  "name": "Quality and safety checklist",
+  "stage": "Review",
+  "purpose": "A pre-run safety and quality gate the host confirms.",
+  "audience": "Healthmate (confirmed) · Internal (held)",
+  "channel": "PDF / Dashboard",
+  "cta": "Confirm and run.",
+  "design": "Checkbox list, sign/date line, safety items grouped.",
+  "tone": "Caring, responsible.",
+  "avoid": "Treating safety as optional; implying clinical/medical capability.",
+  "copy": "Confirm before each program runs:\n☐ Space is clean, safe, and suitable for the activity\n☐ Capacity respected; not overbooked\n☐ Any equipment checked and safe\n☐ Clear arrival, timings, and what-to-bring shared with participants\n☐ First-aid / emergency arrangements in place (as relevant)\n☐ Participant accessibility and comfort considered\n☐ All claims honest and non-clinical — no medical promises\n☐ Permits / insurance valid (where required for the activity or venue)\n☐ Lifed support contact to hand\n\nSigned (Healthmate): [ ] · Date: [ ]"
+ },
+ {
+  "id": "F1",
+  "name": "Program live announcement message",
+  "stage": "Live",
+  "purpose": "Tell the host their program is live and prompt the first share.",
+  "audience": "Healthmate",
+  "channel": "WhatsApp / Email",
+  "cta": "Share your program → [program URL] · Get your share kit → [link]",
+  "design": "Celebratory, program link prominent, link to share kit.",
+  "tone": "Proud, warm, momentum-building.",
+  "avoid": "Promising bookings, pressure, hype.",
+  "copy": "🌿 It's live, [First name] — [program name] is now bookable on Lifed!\n\nHere's your program link: [program URL]\n\nThe fastest way to your first bookings is to share it with your own community — they already trust you. We've prepared ready-to-post captions and a welcome kit to make it easy.\n\nCongratulations — and welcome to a year-round practice."
+ },
+ {
+  "id": "F2",
+  "name": "Healthmate welcome kit content",
+  "stage": "Live",
+  "purpose": "Make the host feel valued and equip them to launch well (digital for all; physical for the first 100).",
+  "audience": "Healthmate",
+  "channel": "PDF (digital) + physical kit",
+  "cta": "Open your share kit → [link]",
+  "design": "Digital PDF in brand style; physical kit minimal and premium — cream stock, deep-green print, emerald foil detail.",
+  "tone": "Warm, generous, partner-first.",
+  "avoid": "Cheap/branded-swag feel, vendor framing, over-stuffing the kit.",
+  "copy": "Welcome note (card):\nWelcome to Lifed, [First name]. You're not a listing — you're a partner, and your expertise now has a global home. We can't wait to see who you'll help. Live Well. For Real.\n\nDigital kit (everyone):\n• Your \"Healthmate Quick-Start\" one-pager\n• Social share kit (captions, story templates, program link)\n• Your SOP and quality & safety checklist\n• Dashboard and program-builder guides\n• Direct support contact\n\nPhysical kit (first 100 Healthmates):\n• A handmade paper welcome card with a handwritten line from the team\n• A Lifed journal\n• A printed Quick-Start guide"
+ },
+ {
+  "id": "F3",
+  "name": "Social sharing caption templates",
+  "stage": "Live",
+  "purpose": "Ready captions the host can post across channels.",
+  "audience": "Healthmate (to post)",
+  "channel": "PDF / Dashboard",
+  "cta": "Copy, add your photo, and post.",
+  "design": "Three copy-ready blocks with copy buttons in dashboard; reminder to add a real photo.",
+  "tone": "Warm, authentic, in the host's voice.",
+  "avoid": "Hype, fake scarcity, medical claims, hashtag spam.",
+  "copy": "Caption 1 — the announcement\nI'm now hosting on Lifed 🌿 My program, [program name], is live and bookable. If you've been meaning to make time for your wellbeing, this one's for you. Book here → [link]\n\nCaption 2 — the invitation\nSomething I've poured care into is finally here. [program name] — a real, in-person [wellness/movement/recovery] experience, now on Lifed. Limited spots each session. → [link]\n\nCaption 3 — the why\nReal change happens in the real world, not on a screen. That's why I've co-created [program name] with Lifed. Come experience it → [link]\n\nTip: add your own photo from your space or a past session."
+ },
+ {
+  "id": "F4",
+  "name": "WhatsApp sharing message (for the host to forward)",
+  "stage": "Live",
+  "purpose": "A personal, forwardable message for the host's contacts.",
+  "audience": "Healthmate's own community (drafted for them)",
+  "channel": "WhatsApp",
+  "cta": "See details & book → [link]",
+  "design": "Plain, personal, one link; one emoji or two max.",
+  "tone": "Personal, warm, low-key.",
+  "avoid": "Salesy tone, mass-broadcast feel, claims.",
+  "copy": "Hi 🌿 I'm excited to share that my new program, [program name], is now live on Lifed — a platform for curated, real-world wellbeing experiences.\n\nIt's an in-person [wellness/movement/recovery] program I've shaped with care. If it sounds like something you (or someone you love) would enjoy, you can see the details and book here: [link]\n\nWould mean a lot to have you there. 💚"
+ },
+ {
+  "id": "F5",
+  "name": "Instagram story copy",
+  "stage": "Live",
+  "purpose": "Quick story frames to announce going live.",
+  "audience": "Healthmate (to post)",
+  "channel": "PDF / Dashboard (story templates)",
+  "cta": "Link sticker → [program URL]",
+  "design": "Vertical 9:16 templates, cream/green brand, large clean type, space for the host's own photo, link sticker on frame 3.",
+  "tone": "Warm, simple, premium.",
+  "avoid": "Busy graphics, hype, clinical claims.",
+  "copy": "Frame 1: It's live. — [program name], now bookable on Lifed 🌿\nFrame 2: A real, in-person [category] experience — shaped with care. (photo of your space/session)\nFrame 3: Spots are limited each session. Tap to book → (link sticker)"
+ },
+ {
+  "id": "F6",
+  "name": "Post-live follow-up message",
+  "stage": "Live",
+  "purpose": "Check in after launch, encourage sharing, and offer support.",
+  "audience": "Healthmate",
+  "channel": "WhatsApp / Email",
+  "cta": "Get your share kit → [link] · Reply for help",
+  "design": "Short, supportive, one helpful tip + one offer.",
+  "tone": "Encouraging, available, kind.",
+  "avoid": "Pressure about bookings, guilt, vendor framing.",
+  "copy": "Hi [First name] — how does it feel to be live? 🌿\n\nA quick nudge: the Healthmates who get booked fastest are the ones who share with their own community first — they already trust you. Your captions and kit are right here if you need them: [link]\n\nIs there anything I can help with — your listing, photos, availability? I'm one message away."
+ },
+ {
+  "id": "F7",
+  "name": "10-day review checklist (internal)",
+  "stage": "Live",
+  "purpose": "A structured check on the program's first ten days before deciding on activation.",
+  "audience": "Internal — onboarding / curation",
+  "channel": "Internal",
+  "cta": "Continue support, or trigger activation.",
+  "design": "Checklist with booking count field and a clear outcome router.",
+  "tone": "Practical, supportive.",
+  "avoid": "Blaming the host; treating zero bookings as failure rather than a prompt to help.",
+  "copy": "Program: [name] · Live date: [ ] · Reviewed on: [day 10]\n☐ Listing is accurate, complete, and high-quality\n☐ Photos and description compelling\n☐ Pricing and availability correct\n☐ Healthmate has shared on their own channels\n☐ Discovery/search placement working\n☐ Any bookings or enquiries so far? #: [ ]\n☐ Reviews/ratings (if any) healthy\n\nOutcome:\n☐ Bookings present → continue support\n☐ No bookings → trigger Sales & Marketing (F8 → F9)"
+ },
+ {
+  "id": "F8",
+  "name": "No-booking-after-10-days internal trigger note",
+  "stage": "Live",
+  "purpose": "A clean handover that briefs Sales & Marketing to step in helpfully.",
+  "audience": "Internal — Sales & Marketing",
+  "channel": "Internal",
+  "cta": "Hand to S&M; assign owner.",
+  "design": "Internal alert card; key facts scannable; one clear ask.",
+  "tone": "Factual, solution-oriented, no blame.",
+  "avoid": "Framing the host as the problem; vague handovers.",
+  "copy": "🔔 Activation trigger — no bookings after 10 days\n\nProgram: [name] · Healthmate: [name] · Form/Category: [ ] · Live date: [ ]\nProgram link: [URL]\n\nStatus: Live, validated, [#] enquiries, 0 bookings in 10 days.\nQuality: Listing reviewed — [accurate & strong / needs improvement: notes]\nHealthmate sharing: [shared / not yet shared]\n\nLikely levers: [discovery/SEO · pricing · photos · audience match · host outreach]\nAsked of S&M: Run the activation checklist (F9) and support this Healthmate to first booking.\nOwner & date: [ ]"
+ },
+ {
+  "id": "F9",
+  "name": "Sales and marketing activation checklist (internal)",
+  "stage": "Live",
+  "purpose": "A repeatable playbook to drive a quiet program's first bookings.",
+  "audience": "Internal — Sales & Marketing",
+  "channel": "Internal",
+  "cta": "Execute, track, and report at next review.",
+  "design": "Grouped checklist, clear ownership and review date.",
+  "tone": "Practical, partner-supportive, accountable.",
+  "avoid": "Paid placement inside LEWIS guidance; over-promising the host; spending on poorly matched audiences.",
+  "copy": "For [program name] — work top to bottom:\n\nListing & discovery\n☐ Improve photos/description with the host if needed\n☐ Check search/SEO placement and tags\n☐ Confirm pricing is competitive and clear\n\nRight-fit demand\n☐ Confirm category/archetype and target seeker\n☐ Ensure LEWIS fit data is accurate (fit-based, never paid placement)\n☐ Feature in relevant Lifed channels/newsletters (where it genuinely fits)\n\nHost-led reach\n☐ Re-send share kit; help the host post\n☐ Suggest an early-bird or intro session if appropriate\n\nTargeted marketing\n☐ Consider a small, well-matched campaign to the right audience\n☐ Track enquiries → bookings\n\nReview at ~3 weeks (first-booking target): bookings achieved? If not, escalate to [owner]."
+ }
+]</script>
+<script>
+(function(){
+  var ASSETS={};
+  try{ JSON.parse(document.getElementById('assetData').textContent).forEach(function(a){ASSETS[a.id]=a;}); }catch(e){}
+
+  var overlay=document.getElementById('overlay'),
+      drawer=document.getElementById('drawer'),
+      body=document.body, lastFocus=null, current=null;
+
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function field(label,val){ if(!val) return ''; return '<div class="dfield"><p class="dfield__h">'+label+'</p><p>'+esc(val)+'</p></div>'; }
+
+  function open(id){
+    var a=ASSETS[id]; if(!a) return;
+    current=a;
+    document.getElementById('dId').textContent=a.id+' · '+(a.stage||'');
+    document.getElementById('dName').textContent=a.name;
+    var metas=[a.channel,a.audience].filter(Boolean).map(function(m){return '<span class="dmeta">'+esc(m)+'</span>';}).join('');
+    document.getElementById('dMetas').innerHTML=metas;
+
+    var html='';
+    html+=field('Purpose',a.purpose);
+    html+='<div class="dfield"><p class="dfield__h">Final copy · deploy this</p><div class="copywrap"><button class="copybtn" data-copy="1">⧉ Copy</button><div class="copybox" id="copybox">'+esc(a.copy)+'</div></div></div>';
+    html+=field('Call to action',a.cta);
+    html+=field('Design / layout',a.design);
+    html+=field('Tone',a.tone);
+    html+=field('What to avoid',a.avoid);
+    document.getElementById('dBody').innerHTML=html;
+    document.getElementById('dBody').scrollTop=0;
+
+    lastFocus=document.activeElement;
+    overlay.classList.add('open'); drawer.classList.add('open'); body.classList.add('locked');
+    drawer.focus();
+  }
+  function close(){
+    overlay.classList.remove('open'); drawer.classList.remove('open'); body.classList.remove('locked');
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function copyText(t,btn){
+    function done(){ if(btn){var o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('done');setTimeout(function(){btn.textContent=o;btn.classList.remove('done');},1600);} showToast(); }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done,function(){fallback(t,done);}); }
+    else fallback(t,done);
+  }
+  function fallback(t,cb){ var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb&&cb(); }
+  var toast=document.getElementById('toast'),tt;
+  function showToast(){ toast.classList.add('show'); clearTimeout(tt); tt=setTimeout(function(){toast.classList.remove('show');},1600); }
+
+  document.querySelectorAll('.chip[data-id]').forEach(function(c){ c.addEventListener('click',function(){open(c.getAttribute('data-id'));}); });
+  document.getElementById('closeBtn').addEventListener('click',close);
+  overlay.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&drawer.classList.contains('open')) close(); });
+  document.getElementById('dBody').addEventListener('click',function(e){ var b=e.target.closest('[data-copy]'); if(b&&current) copyText(current.copy,b); });
+  document.getElementById('deployCopy').addEventListener('click',function(){ if(current) copyText(current.copy,this); });
+
+  // reveal
+  var els=document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});}
+  else{ var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.12,rootMargin:'0px 0px -40px 0px'}); els.forEach(function(e){io.observe(e);}); }
+})();
+</script>
+</body>
+</html>
