@@ -24,6 +24,7 @@ import BookingOperations from './components/dashboard/BookingOperations';
 import ProgramPerformance from './components/dashboard/ProgramPerformance';
 import SalesMarketingDashboard from './components/dashboard/SalesMarketingDashboard';
 import HealthmateSOP from './components/dashboard/HealthmateSOP';
+import KeepNotes from './components/dashboard/KeepNotes';
 import { initAudio, playNotificationSound } from './lib/audio';
 
 
@@ -258,10 +259,10 @@ function Workspace() {
 
   return (
     <Layout activePage={activePage} onNavigate={setActivePage}>
-      {/* Background SSE notifier — only active when not on team_chat */}
       {activePage !== 'team_chat' && <ChatNotifier />}
       {currentPage}
       {selectedHealthmate && <HealthmateModal />}
+      <KeepNotes />
     </Layout>
   );
 }

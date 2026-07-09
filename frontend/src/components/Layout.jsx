@@ -5,6 +5,7 @@ import {
   RefreshCw, BookOpen, Sun, Moon
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
+import useNotesStore from '../store/useNotesStore';
 import logo from '../assets/favicon.svg';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -29,6 +30,7 @@ export default function Layout({ children, activePage, onNavigate }) {
   const notifications = useOpsStore((s) => s.notifications);
   const markNotificationAsRead = useOpsStore((s) => s.markNotificationAsRead);
   const markAllNotificationsAsRead = useOpsStore((s) => s.markAllNotificationsAsRead);
+  const toggleNotes = useNotesStore((s) => s.toggleNotes);
 
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -323,43 +325,63 @@ export default function Layout({ children, activePage, onNavigate }) {
             </div>
           )}
 
+          {/* To-Do List */}
+          <button
+            onClick={toggleNotes}
+            className={`group relative p-1.5 rounded-md transition-colors ${isLightMode
+                ? 'text-slate-500 hover:text-brand-teal hover:bg-slate-100'
+                : 'text-slate-400 hover:text-brand-teal hover:bg-slate-800'
+              }`}
+          >
+            <CheckSquare className="w-5 h-5" />
+            <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-800 text-white text-[11px] font-bold rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+              To-Do List
+            </span>
+          </button>
+
           <button
             onClick={toggleTheme}
-            title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
-            className={`relative p-1.5 rounded-md transition-colors ${isLightMode
+            className={`group relative p-1.5 rounded-md transition-colors ${isLightMode
                 ? 'text-slate-500 hover:text-brand-teal hover:bg-slate-100'
                 : 'text-slate-400 hover:text-brand-teal hover:bg-slate-800'
               }`}
           >
             {isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-800 text-white text-[11px] font-bold rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+              {isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            </span>
           </button>
 
           <button
             onClick={refreshAll}
             disabled={isLoading}
-            title="Refresh Data"
-            className={`relative p-1.5 rounded-md transition-colors disabled:opacity-50 ${isLightMode
+            className={`group relative p-1.5 rounded-md transition-colors disabled:opacity-50 ${isLightMode
                 ? 'text-slate-500 hover:text-brand-teal hover:bg-slate-100'
                 : 'text-slate-400 hover:text-brand-teal hover:bg-slate-800'
               }`}
           >
             <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-800 text-white text-[11px] font-bold rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+              Refresh Data
+            </span>
           </button>
 
           {/* Notifications Bell */}
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-1.5 rounded-md transition-colors ${showNotifications
+              className={`group relative p-1.5 rounded-md transition-colors ${showNotifications
                   ? (isLightMode ? 'bg-slate-100 text-black' : 'bg-slate-800 text-white')
                   : (isLightMode ? 'text-slate-500 hover:text-black hover:bg-slate-100' : 'text-slate-400 hover:text-white hover:bg-slate-800')
                 }`}
-              title="Notifications"
             >
               <Bell className="w-5 h-5" />
               {notifications.some(n => !n.read) && (
                 <span className={`absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 animate-pulse ${isLightMode ? 'border-white' : 'border-[#0f172a]'}`}></span>
               )}
+              <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-800 text-white text-[11px] font-bold rounded shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                Notifications
+              </span>
             </button>
 
             {showNotifications && (
