@@ -80,7 +80,7 @@ graph TD
 * **UI Library:** **React 19** (Component-driven view architecture with optimized virtual DOM synchronization).
 * **State Management:** **Zustand** (Ultra-lightweight, high-performance central state store that avoids unnecessary React re-renders).
 * **Drag-and-Drop Canvas:** **dnd-kit** (Modular, highly customizable, and accessible drag-and-drop primitives).
-* **Styling Framework:** **Tailwind CSS v4** (Utility-first styling for creating responsive, premium, and clean user interfaces).
+* **Styling & Theming:** **Tailwind CSS v4** combined with **Vanilla CSS Variables** to deliver a dynamic, global Dark Mode system, ambient HTML5 canvas backgrounds, and glassmorphic UI elements without component bloat.
 * **Notifications:** **react-hot-toast** (Visual, customizable status indicators for asynchronous actions).
 * **Icon Assets:** **lucide-react** (Scalable vector icons served directly as React components).
 

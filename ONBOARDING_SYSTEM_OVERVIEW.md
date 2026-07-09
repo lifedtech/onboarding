@@ -25,7 +25,7 @@ The platform is designed around a three-tier cloud architecture separating user 
 
 ### Frontend (Client Interface)
 * **React & Vite:** Fast client-side rendering engine with hot module replacement.
-* **TailwindCSS / Vanilla CSS:** Modern styling utilizing fluid custom properties, HSL colors, and smooth animations.
+* **TailwindCSS & Vanilla CSS:** Modern utility-first styling utilizing a robust global CSS override system for seamless Dark Mode switching and glassmorphic aesthetic blending.
 * **Zustand:** Ultra-lightweight and high-performance central state management.
 * **dnd-kit:** Responsive, accessible drag-and-drop primitives mapping card movements.
 
@@ -51,6 +51,12 @@ The platform automates the onboarding lifecycle of healthcare partners (Healthma
 * Visualizes partners across 5 onboarding phases: `PRE_QUALIFY` ➔ `PREPARE` ➔ `REGISTER` ➔ `REVIEW` ➔ `LIVE`.
 * Track and update partner statuses, contacts, and uploaded registry documents.
 * Stage transitions reset stage timers (`daysInPhase`) and notify operations agents.
+* Includes floating glassmorphic phase headers and premium visual aesthetics.
+
+### 🎨 Global Theming & Productivity Tools
+* **Dynamic Dark Mode:** A sophisticated CSS-override-based dark mode system seamlessly transitions the entire app's cards, typography, and borders into dark palettes without component-level clutter.
+* **Animated Ambient Backgrounds:** An interactive HTML5 canvas background (`SoothingBackground`) that reacts to theme changes (switching from soft greens to moody slates/purples) and follows cursor movements with spring physics.
+* **Persistent To-Do KeepNotes:** A globally hovering, draggable floating notes panel (clamped to screen bounds) for agent productivity that sits above all layouts.
 
 ### 👥 Dedicated Service Users CRM
 * A separate, dedicated workspace for operations teams to manage end users (clients) independently from Healthmate partners.
