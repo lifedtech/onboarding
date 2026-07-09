@@ -258,12 +258,14 @@ function Workspace() {
     (PAGES[activePage] ?? PAGES.healthmate_dashboard);
 
   return (
-    <Layout activePage={activePage} onNavigate={setActivePage}>
-      {activePage !== 'team_chat' && <ChatNotifier />}
-      {currentPage}
-      {selectedHealthmate && <HealthmateModal />}
+    <>
+      <Layout activePage={activePage} onNavigate={setActivePage}>
+        {activePage !== 'team_chat' && <ChatNotifier />}
+        {currentPage}
+        {selectedHealthmate && <HealthmateModal />}
+      </Layout>
       <KeepNotes />
-    </Layout>
+    </>
   );
 }
 

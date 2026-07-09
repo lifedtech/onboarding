@@ -58,7 +58,7 @@ export default function SupportDashboard() {
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full flex flex-col">
+    <div className="p-6 md:p-8 space-y-8 bg-transparent w-full h-full flex flex-col">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>

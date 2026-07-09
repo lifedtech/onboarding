@@ -171,10 +171,22 @@ const stages = [
 export default function HealthmateSOP() {
   const [activeAsset, setActiveAsset] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [editedCopies, setEditedCopies] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('lifed-sop-copies') || '{}'); } catch { return {}; }
+  });
+
+  const handleCopyChange = (id, newCopy) => {
+    setEditedCopies(prev => {
+      const next = { ...prev, [id]: newCopy };
+      localStorage.setItem('lifed-sop-copies', JSON.stringify(next));
+      return next;
+    });
+  };
 
   const handleCopy = () => {
     if (!activeAsset) return;
-    navigator.clipboard.writeText(activeAsset.copy);
+    const textToCopy = editedCopies[activeAsset.id] ?? activeAsset.copy;
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -396,8 +408,23 @@ export default function HealthmateSOP() {
                       {copied ? 'Copied' : 'Copy'}
                     </button>
                   </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 whitespace-pre-wrap font-medium">
-                    {activeAsset.copy}
+                  <div className="flex flex-col gap-1">
+                    <textarea
+                      value={editedCopies[activeAsset.id] ?? activeAsset.copy}
+                      onChange={(e) => handleCopyChange(activeAsset.id, e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 whitespace-pre-wrap font-medium outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal resize-y min-h-[150px] transition-colors"
+                      rows={Math.max(5, (editedCopies[activeAsset.id] ?? activeAsset.copy).split('\n').length)}
+                    />
+                    {editedCopies[activeAsset.id] && editedCopies[activeAsset.id] !== activeAsset.copy && (
+                      <div className="flex justify-end pr-1">
+                        <button 
+                          onClick={() => handleCopyChange(activeAsset.id, activeAsset.copy)} 
+                          className="text-[10px] uppercase font-bold tracking-wider text-slate-400 hover:text-rose-500 transition-colors"
+                        >
+                          Reset to default
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

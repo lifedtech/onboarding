@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
-export default function SoothingBackground() {
+export default function SoothingBackground({ isLightMode = true }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -47,8 +47,8 @@ export default function SoothingBackground() {
         x: width * 0.2,
         y: height * 0.25,
         radius: Math.max(width, height) * 0.35,
-        colorStart: 'rgba(120, 198, 82, 0.15)', // Soft Green
-        colorEnd: 'rgba(120, 198, 82, 0)',
+        colorStart: isLightMode ? 'rgba(120, 198, 82, 0.15)' : 'rgba(20, 184, 166, 0.06)', // Soft Green -> Deep Teal
+        colorEnd: isLightMode ? 'rgba(120, 198, 82, 0)' : 'rgba(20, 184, 166, 0)',
         speedX: 0.0007,
         speedY: 0.0005,
         ampX: 120,
@@ -62,8 +62,8 @@ export default function SoothingBackground() {
         x: width * 0.8,
         y: height * 0.75,
         radius: Math.max(width, height) * 0.4,
-        colorStart: 'rgba(0, 176, 155, 0.15)', // Soft Teal
-        colorEnd: 'rgba(0, 176, 155, 0)',
+        colorStart: isLightMode ? 'rgba(0, 176, 155, 0.15)' : 'rgba(16, 185, 129, 0.06)', // Soft Teal -> Emerald
+        colorEnd: isLightMode ? 'rgba(0, 176, 155, 0)' : 'rgba(16, 185, 129, 0)',
         speedX: 0.0006,
         speedY: 0.0008,
         ampX: 150,
@@ -77,8 +77,8 @@ export default function SoothingBackground() {
         x: width * 0.35,
         y: height * 0.7,
         radius: Math.max(width, height) * 0.3,
-        colorStart: 'rgba(44, 62, 80, 0.08)', // Soft Slate/Midnight Blue
-        colorEnd: 'rgba(44, 62, 80, 0)',
+        colorStart: isLightMode ? 'rgba(44, 62, 80, 0.08)' : 'rgba(139, 92, 246, 0.05)', // Soft Slate -> Purple
+        colorEnd: isLightMode ? 'rgba(44, 62, 80, 0)' : 'rgba(139, 92, 246, 0)',
         speedX: 0.0009,
         speedY: 0.0004,
         ampX: 100,
@@ -89,7 +89,7 @@ export default function SoothingBackground() {
     ];
 
     // Floating Particles (Motes) Config
-    const particleCount = 35;
+    const particleCount = 0; // Removed as requested
     const particles = [];
     for (let i = 0; i < particleCount; i++) {
       particles.push({
@@ -158,11 +158,12 @@ export default function SoothingBackground() {
     window.addEventListener('mouseleave', handleMouseLeave);
 
     const draw = (timestamp) => {
-      ctx.clearRect(0, 0, width, height);
-
-      // 1. Base Calm Background Color
-      ctx.fillStyle = '#edf0f2';
-      ctx.fillRect(0, 0, width, height);
+      if (isLightMode) {
+        ctx.clearRect(0, 0, width, height);
+      } else {
+        ctx.fillStyle = '#0a0f1c'; // Moody dark blue-slate background
+        ctx.fillRect(0, 0, width, height);
+      }
 
       // 2. Render Morphing/Drifting Fluid Blobs
       blobs.forEach((blob) => {
@@ -289,7 +290,7 @@ export default function SoothingBackground() {
       window.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isLightMode]);
 
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
 }

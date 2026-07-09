@@ -14,7 +14,7 @@ export default function BookingOperations() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto flex-1">
+    <div className="p-6 md:p-8 space-y-8 bg-transparent w-full h-full overflow-y-auto flex-1">
       
       {/* Header section */}
       <div className="flex flex-col gap-2 mb-2">

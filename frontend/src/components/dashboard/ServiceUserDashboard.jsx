@@ -29,7 +29,7 @@ export default function ServiceUserDashboard() {
   }).length;
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto flex-1">
+    <div className="p-6 md:p-8 space-y-8 bg-transparent w-full h-full overflow-y-auto flex-1">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

@@ -32,7 +32,7 @@ export default function AdminDashboard() {
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto">
+    <div className="p-6 md:p-8 space-y-8 bg-transparent w-full h-full overflow-y-auto">
 
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

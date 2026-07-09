@@ -78,7 +78,7 @@ export default function SalesMarketingDashboard() {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 w-full h-full overflow-y-auto">
+    <div className="p-6 md:p-8 space-y-8 bg-transparent w-full h-full overflow-y-auto">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-black text-text-main mb-2 tracking-tight flex items-center gap-2">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import useNotesStore from '../store/useNotesStore';
+import SoothingBackground from './SoothingBackground';
 import logo from '../assets/favicon.svg';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -46,6 +47,14 @@ export default function Layout({ children, activePage, onNavigate }) {
       return next;
     });
   };
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
+  }, [isLightMode]);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMinimized, setDesktopMinimized] = useState(false);
@@ -144,7 +153,7 @@ export default function Layout({ children, activePage, onNavigate }) {
   };
 
   const SidebarContent = ({ minimized }) => (
-    <div className={`flex flex-col h-full transition-colors duration-200 ${isLightMode ? 'bg-white text-slate-800 border-r border-slate-200' : 'bg-[#1e293b] text-slate-300'}`}>
+    <div className={`flex flex-col h-full transition-colors duration-200 ${isLightMode ? 'bg-white/40 backdrop-blur-md text-slate-800 border-r border-white/20' : 'bg-[#1e293b]/40 backdrop-blur-md text-slate-300 border-r border-white/5'}`}>
       {/* Sidebar Nav */}
       <nav className={`flex-1 ${minimized ? 'px-2' : 'px-3'} py-4 space-y-4 overflow-y-auto min-h-0 custom-scrollbar overflow-x-hidden`}>
         {GROUPS.map(group => (
@@ -224,7 +233,7 @@ export default function Layout({ children, activePage, onNavigate }) {
       </nav>
 
       {/* User Footer */}
-      <div className={`p-4 border-t space-y-2 shrink-0 transition-colors duration-200 ${minimized ? 'px-2 flex flex-col items-center' : ''} ${isLightMode ? 'bg-slate-50 border-slate-200' : 'bg-[#0f172a] border-slate-700/50'}`}>
+      <div className={`p-4 border-t space-y-2 shrink-0 transition-colors duration-200 ${minimized ? 'px-2 flex flex-col items-center' : ''} ${isLightMode ? 'bg-white/30 border-white/20' : 'bg-[#0f172a]/30 border-white/5'}`}>
         <button
           onClick={() => handleNav('profile')}
           className={`w-full flex items-center gap-3 py-2 rounded-md transition-colors text-left group ${minimized ? 'justify-center px-0' : 'px-2'} ${isLightMode ? 'hover:bg-black/5' : 'hover:bg-white/5'}`}
@@ -270,7 +279,7 @@ export default function Layout({ children, activePage, onNavigate }) {
     <div className="flex flex-col h-screen bg-bg-base overflow-hidden">
 
       {/* Top Navigation Bar */}
-      <header className={`h-14 flex items-center justify-between px-4 shrink-0 border-b z-20 transition-colors duration-200 ${isLightMode ? 'bg-white text-black border-slate-200' : 'bg-[#0f172a] text-white border-slate-800'}`}>
+      <header className={`h-14 flex items-center justify-between px-4 shrink-0 border-b z-20 transition-colors duration-200 ${isLightMode ? 'bg-white/40 backdrop-blur-md text-black border-white/20' : 'bg-[#0f172a]/40 backdrop-blur-md text-white border-white/5'}`}>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setMobileOpen(true)}
@@ -502,12 +511,10 @@ export default function Layout({ children, activePage, onNavigate }) {
         )}
 
         {/* Main area */}
-        <main className="flex-1 flex flex-col overflow-x-hidden overflow-y-auto relative bg-slate-50">
+        <main className="flex-1 flex flex-col overflow-x-hidden overflow-y-auto relative bg-transparent">
           {/* Animated Background Layer */}
-          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-[-10%] left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-brand-teal/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"></div>
-            <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] bg-brand-green/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
-            <div className="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] max-w-[700px] max-h-[700px] bg-brand-teal/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-60 animate-blob animation-delay-4000"></div>
+          <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+            <SoothingBackground isLightMode={isLightMode} />
           </div>
 
           <div className="relative z-10 flex-1 flex flex-col">

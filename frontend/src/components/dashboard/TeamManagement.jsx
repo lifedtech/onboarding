@@ -132,7 +132,7 @@ export default function TeamManagement() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 bg-slate-50/50 max-w-7xl mx-auto h-full flex flex-col font-sans">
+    <div className="p-6 md:p-8 space-y-8 bg-transparent max-w-7xl mx-auto h-full flex flex-col font-sans">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>

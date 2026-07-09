@@ -17,6 +17,7 @@ export default function KeepNotes() {
   const [position, setPosition] = useState({ x: window.innerWidth - 420, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef(null);
+  const panelRef = useRef(null);
   const offset = useRef({ x: 0, y: 0 });
 
   const [newNoteTitle, setNewNoteTitle] = useState('');
@@ -33,10 +34,18 @@ export default function KeepNotes() {
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!isDragging) return;
-      setPosition({
-        x: e.clientX - offset.current.x,
-        y: e.clientY - offset.current.y
-      });
+      
+      let newX = e.clientX - offset.current.x;
+      let newY = e.clientY - offset.current.y;
+      
+      const panelWidth = panelRef.current ? panelRef.current.offsetWidth : 400;
+      const panelHeight = panelRef.current ? panelRef.current.offsetHeight : 600;
+      
+      // Clamp within screen boundaries
+      newX = Math.max(0, Math.min(newX, window.innerWidth - panelWidth));
+      newY = Math.max(0, Math.min(newY, window.innerHeight - panelHeight));
+      
+      setPosition({ x: newX, y: newY });
     };
 
     const handleMouseUp = () => setIsDragging(false);
@@ -92,6 +101,7 @@ export default function KeepNotes() {
 
   return (
     <div 
+      ref={panelRef}
       className="fixed z-[100] bg-slate-50 border border-slate-200 rounded-xl shadow-2xl flex flex-col overflow-hidden"
       style={{
         left: position.x,

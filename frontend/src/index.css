@@ -8,7 +8,7 @@
   --color-brand-green: #5fbb46;
   --color-brand-green-hover: #4e9d38;
   --color-bg-mint: #e6f4d0;
-  --color-bg-base: #f4f4f4;
+  --color-bg-base: transparent;
   --color-text-main: #414242;
   --color-text-muted: #767878;
   --color-border-leaf: #d6edea;
@@ -19,7 +19,7 @@
     font-family: "Nunito", sans-serif;
     font-weight: 400;
     line-height: 1.2;
-    background-color: #f4f4f4;
+    background-color: transparent;
     color: #414242;
   }
 
@@ -96,4 +96,61 @@ html {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+/* Dark Mode Global Overrides */
+.dark .bg-white {
+  background-color: #1e293b !important;
+}
+.dark .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+.dark .bg-slate-50\/50 {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+}
+.dark .text-text-main {
+  color: #f1f5f9 !important;
+}
+.dark .text-text-muted {
+  color: #94a3b8 !important;
+}
+.dark .border-border-leaf {
+  border-color: #334155 !important;
+}
+.dark .border-border-leaf\/30 {
+  border-color: rgba(51, 65, 85, 0.3) !important;
+}
+.dark .border-border-leaf\/40 {
+  border-color: rgba(51, 65, 85, 0.4) !important;
+}
+.dark .border-border-leaf\/60 {
+  border-color: rgba(51, 65, 85, 0.6) !important;
+}
+.dark .border-border-leaf\/80 {
+  border-color: rgba(51, 65, 85, 0.8) !important;
+}
+.dark .border-slate-200 {
+  border-color: #334155 !important;
+}
+.dark .border-slate-300 {
+  border-color: #475569 !important;
+}
+.dark .text-slate-500,
+.dark .text-slate-600,
+.dark .text-slate-700,
+.dark .text-slate-800,
+.dark .text-slate-900 {
+  color: #cbd5e1 !important;
+}
+.dark .bg-slate-100 {
+  background-color: #334155 !important;
+}
+.dark .bg-slate-200 {
+  background-color: #475569 !important;
+}
+.dark .hover\:bg-slate-50:hover {
+  background-color: #0f172a !important;
+}
+.dark .hover\:bg-slate-100:hover {
+  background-color: #334155 !important;
 }
