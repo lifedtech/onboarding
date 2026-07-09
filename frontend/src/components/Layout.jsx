@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
-  RefreshCw, BookOpen
+  RefreshCw, BookOpen, Sun, Moon
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
@@ -29,16 +29,30 @@ export default function Layout({ children, activePage, onNavigate }) {
   const notifications = useOpsStore((s) => s.notifications);
   const markNotificationAsRead = useOpsStore((s) => s.markNotificationAsRead);
   const markAllNotificationsAsRead = useOpsStore((s) => s.markAllNotificationsAsRead);
-  
+
   const [showNotifications, setShowNotifications] = useState(false);
-  
+
+  // Theme state: defaults to light mode
+  const [isLightMode, setIsLightMode] = useState(() => {
+    return localStorage.getItem('theme') !== 'dark';
+  });
+
+  const toggleTheme = () => {
+    setIsLightMode(prev => {
+      const next = !prev;
+      localStorage.setItem('theme', next ? 'light' : 'dark');
+      return next;
+    });
+  };
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopMinimized, setDesktopMinimized] = useState(false);
   const [expanded, setExpanded] = useState({
-    healthmates: true,
-    serviceUsers: true,
-    ops: true,
-    admin: true
+    healthmates: false,
+    serviceUsers: false,
+    ops: false,
+    admin: false,
+    sales_marketing: false
   });
 
   const toggleGroup = (group) => {
@@ -128,18 +142,18 @@ export default function Layout({ children, activePage, onNavigate }) {
   };
 
   const SidebarContent = ({ minimized }) => (
-    <div className="flex flex-col h-full bg-[#1e293b] text-slate-300">
+    <div className={`flex flex-col h-full transition-colors duration-200 ${isLightMode ? 'bg-white text-slate-800 border-r border-slate-200' : 'bg-[#1e293b] text-slate-300'}`}>
       {/* Sidebar Nav */}
       <nav className={`flex-1 ${minimized ? 'px-2' : 'px-3'} py-4 space-y-4 overflow-y-auto min-h-0 custom-scrollbar overflow-x-hidden`}>
         {GROUPS.map(group => (
           <div key={group.id} className="space-y-1">
             <button
               onClick={() => !minimized && toggleGroup(group.id)}
-              className={`w-full flex items-center justify-between py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 transition-colors ${minimized ? 'px-0 justify-center' : 'px-2'}`}
+              className={`w-full flex items-center justify-between py-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${minimized ? 'px-0 justify-center' : 'px-2'} ${isLightMode ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200'}`}
               title={minimized ? group.label : undefined}
             >
               {minimized ? (
-                <span className="text-[10px] text-slate-500 font-extrabold truncate w-full text-center tracking-tight leading-tight px-1">
+                <span className={`text-[10px] font-extrabold truncate w-full text-center tracking-tight leading-tight px-1 ${isLightMode ? 'text-slate-400' : 'text-slate-500'}`}>
                   {group.label.slice(0, 3)}
                 </span>
               ) : (
@@ -150,28 +164,46 @@ export default function Layout({ children, activePage, onNavigate }) {
               )}
             </button>
             {(expanded[group.id] || minimized) && (
-              <div className={`space-y-0.5 mt-1 ${minimized ? '' : 'border-l border-slate-700/50 ml-2 pl-2'}`}>
+              <div className={`space-y-0.5 mt-1 ${minimized ? '' : `border-l ml-2 pl-2 ${isLightMode ? 'border-slate-200' : 'border-slate-700/50'}`}`}>
                 {group.items.map(({ label, icon: Icon, href, showDot }) => {
                   const active = activePage === href;
+
+                  // Style logic based on active state and theme
+                  let itemClasses = '';
+                  let iconClasses = '';
+
+                  if (active) {
+                    if (isLightMode) {
+                      itemClasses = 'bg-brand-teal text-white font-bold shadow-md';
+                      iconClasses = 'text-white';
+                    } else {
+                      itemClasses = 'bg-brand-teal text-white font-bold shadow-md';
+                      iconClasses = 'text-white';
+                    }
+                  } else {
+                    if (isLightMode) {
+                      itemClasses = 'text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+                      iconClasses = 'text-slate-400';
+                    } else {
+                      itemClasses = 'text-slate-400 hover:text-slate-200 hover:bg-white/5';
+                      iconClasses = 'text-slate-500';
+                    }
+                  }
+
                   return (
                     <button
                       key={href}
                       onClick={() => handleNav(href)}
                       title={minimized ? label : undefined}
-                      className={`w-full flex items-center gap-3 py-2 rounded-md text-[13px] font-medium transition-all duration-200
-                        ${minimized ? 'px-0 justify-center' : 'px-3'}
-                        ${active
-                          ? 'bg-brand-teal/10 text-brand-teal font-bold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
-                        }`}
+                      className={`w-full flex items-center gap-3 py-2 rounded-md text-[13px] font-medium transition-all duration-200 ${minimized ? 'px-0 justify-center' : 'px-3'} ${itemClasses}`}
                     >
                       <div className="relative flex items-center justify-center">
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-brand-teal' : 'text-slate-500'}`} />
+                        <Icon className={`w-4 h-4 shrink-0 ${iconClasses}`} />
                         {showDot && (
                           <span className={`absolute ${minimized ? '-top-1 -right-1' : 'hidden'} w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 shadow-sm shadow-red-500/50`} />
                         )}
                       </div>
-                      
+
                       {!minimized && (
                         <>
                           <span className="flex-1 text-left truncate">{label}</span>
@@ -190,10 +222,10 @@ export default function Layout({ children, activePage, onNavigate }) {
       </nav>
 
       {/* User Footer */}
-      <div className={`p-4 border-t border-slate-700/50 space-y-2 shrink-0 bg-[#0f172a] ${minimized ? 'px-2 flex flex-col items-center' : ''}`}>
+      <div className={`p-4 border-t space-y-2 shrink-0 transition-colors duration-200 ${minimized ? 'px-2 flex flex-col items-center' : ''} ${isLightMode ? 'bg-slate-50 border-slate-200' : 'bg-[#0f172a] border-slate-700/50'}`}>
         <button
           onClick={() => handleNav('profile')}
-          className={`w-full flex items-center gap-3 py-2 rounded-md hover:bg-white/5 transition-colors text-left group ${minimized ? 'justify-center px-0' : 'px-2'}`}
+          className={`w-full flex items-center gap-3 py-2 rounded-md transition-colors text-left group ${minimized ? 'justify-center px-0' : 'px-2'} ${isLightMode ? 'hover:bg-black/5' : 'hover:bg-white/5'}`}
           title={minimized ? "View Profile" : undefined}
         >
           <div className="relative shrink-0 flex items-center justify-center">
@@ -201,7 +233,7 @@ export default function Layout({ children, activePage, onNavigate }) {
               <img
                 src={UPLOADS_BASE + user.avatar}
                 alt="avatar"
-                className="w-8 h-8 rounded-[12px] object-cover border border-slate-600 shadow-sm"
+                className={`w-8 h-8 rounded-[12px] object-cover border shadow-sm ${isLightMode ? 'border-slate-300' : 'border-slate-600'}`}
               />
             ) : (
               <div className="w-8 h-8 rounded-[12px] bg-[var(--color-brand-green)] flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
@@ -209,13 +241,13 @@ export default function Layout({ children, activePage, onNavigate }) {
               </div>
             )}
             <span
-              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#0f172a]"
+              className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 ${isLightMode ? 'border-slate-50' : 'border-[#0f172a]'}`}
               style={{ backgroundColor: getStatusColor(user?.statusMode) }}
             />
           </div>
           {!minimized && (
             <div className="min-w-0 flex-1">
-              <p className="text-white text-[13px] font-bold truncate group-hover:text-brand-teal transition-colors">{user?.name}</p>
+              <p className={`text-[13px] font-bold truncate transition-colors ${isLightMode ? 'text-black group-hover:text-brand-teal' : 'text-white group-hover:text-brand-teal'}`}>{user?.name}</p>
               <p className="text-slate-500 text-[11px] truncate">{user?.email}</p>
             </div>
           )}
@@ -223,7 +255,7 @@ export default function Layout({ children, activePage, onNavigate }) {
         <button
           onClick={logout}
           title={minimized ? "Sign out" : undefined}
-          className={`w-full flex items-center gap-3 py-2 rounded-md text-[13px] font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors ${minimized ? 'justify-center px-0' : 'px-2'}`}
+          className={`w-full flex items-center gap-3 py-2 rounded-md text-[13px] font-medium transition-colors ${minimized ? 'justify-center px-0' : 'px-2'} ${isLightMode ? 'text-slate-600 hover:text-red-600 hover:bg-red-500/10' : 'text-slate-400 hover:text-red-400 hover:bg-red-500/10'}`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
           {!minimized && <span>Sign out</span>}
@@ -234,39 +266,45 @@ export default function Layout({ children, activePage, onNavigate }) {
 
   return (
     <div className="flex flex-col h-screen bg-bg-base overflow-hidden">
-      
-      {/* Top Navigation Bar (AWS Style) */}
-      <header className="h-14 bg-[#0f172a] text-white flex items-center justify-between px-4 shrink-0 border-b border-slate-800 z-20">
+
+      {/* Top Navigation Bar */}
+      <header className={`h-14 flex items-center justify-between px-4 shrink-0 border-b z-20 transition-colors duration-200 ${isLightMode ? 'bg-white text-black border-slate-200' : 'bg-[#0f172a] text-white border-slate-800'}`}>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setMobileOpen(true)}
-            className="md:hidden text-slate-400 hover:text-white transition-colors"
+            className={`md:hidden transition-colors ${isLightMode ? 'text-slate-500 hover:text-black' : 'text-slate-400 hover:text-white'}`}
           >
             <Menu className="w-5 h-5" />
           </button>
           <button
             onClick={() => setDesktopMinimized(!desktopMinimized)}
-            className="hidden md:block text-slate-400 hover:text-white transition-colors"
+            className={`hidden md:block transition-colors ${isLightMode ? 'text-slate-500 hover:text-black' : 'text-slate-400 hover:text-white'}`}
           >
             <Menu className="w-5 h-5" />
           </button>
-          
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
-              <img src={logo} alt="Lifed Logo" className="w-full h-full object-cover" />
+
+          {/* Logo area */}
+          <div className="flex items-center gap-4 group">
+            <div className="relative overflow-hidden shrink-0 transition-all duration-300 ease-in-out h-11 max-w-[350px]">
+              <img src="/logo.png" alt="Lifed Logo" className="h-full w-auto max-w-none object-left object-cover" />
             </div>
-            <span className="font-extrabold text-sm tracking-wide text-slate-100 hidden sm:inline-block">Lifed Operations</span>
+            <span className={`font-semibold text-[17px] uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 ${isLightMode ? 'text-slate-600' : 'text-slate-400'}`}>
+              OPERATIONS
+            </span>
           </div>
         </div>
 
         {/* Global Search Bar (Mock) */}
         <div className="flex-1 max-w-lg mx-4 hidden md:block">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search resources, services, and docs" 
-              className="w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md pl-9 pr-3 py-1.5 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal transition-all placeholder-slate-500"
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isLightMode ? 'text-slate-500' : 'text-slate-400'}`} />
+            <input
+              type="text"
+              placeholder="Search resources, services, and docs"
+              className={`w-full text-sm rounded-md pl-9 pr-3 py-1.5 focus:outline-none transition-all ${isLightMode
+                  ? 'bg-slate-100 border-transparent focus:border-brand-teal focus:ring-1 focus:ring-brand-teal text-slate-900 placeholder-slate-400'
+                  : 'bg-slate-800 border-slate-700 focus:border-brand-teal focus:ring-1 focus:ring-brand-teal text-slate-200 placeholder-slate-500'
+                }`}
             />
           </div>
         </div>
@@ -279,42 +317,59 @@ export default function Layout({ children, activePage, onNavigate }) {
               SERVER DOWN
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-[10px] font-extrabold bg-brand-teal/10 border border-brand-teal/20 text-brand-teal px-3 py-1 rounded-full shrink-0 shadow-sm mr-2 hidden sm:flex">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-teal shrink-0" />
+            <div className={`flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1 rounded-full shrink-0 shadow-sm mr-2 hidden sm:flex ${isLightMode ? 'bg-brand-teal/10 border-brand-teal/20 text-brand-teal' : 'bg-brand-teal/10 border-brand-teal/20 text-brand-teal'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isLightMode ? 'bg-brand-teal' : 'bg-brand-teal'}`} />
               LIVE
             </div>
           )}
-          <button 
+
+          <button
+            onClick={toggleTheme}
+            title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            className={`relative p-1.5 rounded-md transition-colors ${isLightMode
+                ? 'text-slate-500 hover:text-brand-teal hover:bg-slate-100'
+                : 'text-slate-400 hover:text-brand-teal hover:bg-slate-800'
+              }`}
+          >
+            {isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          </button>
+
+          <button
             onClick={refreshAll}
             disabled={isLoading}
             title="Refresh Data"
-            className="relative p-1.5 text-slate-400 hover:text-brand-teal rounded-md hover:bg-slate-800 transition-colors disabled:opacity-50"
+            className={`relative p-1.5 rounded-md transition-colors disabled:opacity-50 ${isLightMode
+                ? 'text-slate-500 hover:text-brand-teal hover:bg-slate-100'
+                : 'text-slate-400 hover:text-brand-teal hover:bg-slate-800'
+              }`}
           >
             <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
+
           {/* Notifications Bell */}
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-1.5 rounded-md transition-colors ${
-                showNotifications ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
-              }`}
+              className={`relative p-1.5 rounded-md transition-colors ${showNotifications
+                  ? (isLightMode ? 'bg-slate-100 text-black' : 'bg-slate-800 text-white')
+                  : (isLightMode ? 'text-slate-500 hover:text-black hover:bg-slate-100' : 'text-slate-400 hover:text-white hover:bg-slate-800')
+                }`}
               title="Notifications"
             >
               <Bell className="w-5 h-5" />
               {notifications.some(n => !n.read) && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0f172a] animate-pulse"></span>
+                <span className={`absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 animate-pulse ${isLightMode ? 'border-white' : 'border-[#0f172a]'}`}></span>
               )}
             </button>
 
             {showNotifications && (
               <>
                 {/* Overlay for clicking away */}
-                <div 
+                <div
                   className="fixed inset-0 z-40 cursor-default"
                   onClick={() => setShowNotifications(false)}
                 />
-                
+
                 {/* Popover Dropdown */}
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150">
                   {/* Header */}
@@ -325,7 +380,7 @@ export default function Layout({ children, activePage, onNavigate }) {
                     {notifications.some(n => !n.read) && (
                       <button
                         onClick={() => markAllNotificationsAsRead()}
-                        className="text-[10px] font-extrabold text-brand-teal hover:text-brand-teal-hover hover:underline transition-colors bg-transparent border-0 cursor-pointer p-0"
+                        className={`text-[10px] font-extrabold transition-colors bg-transparent border-0 cursor-pointer p-0 hover:underline ${isLightMode ? 'text-brand-teal hover:text-brand-teal-hover' : 'text-brand-teal hover:text-brand-teal-hover'}`}
                       >
                         Mark all as read
                       </button>
@@ -344,16 +399,15 @@ export default function Layout({ children, activePage, onNavigate }) {
                           switch (p?.toUpperCase()) {
                             case 'HIGH': return 'text-red-500 bg-red-50 border-red-100';
                             case 'MEDIUM': return 'text-amber-500 bg-amber-50 border-amber-100';
-                            default: return 'text-brand-teal bg-brand-teal/10 border-brand-teal/20';
+                            default: return isLightMode ? 'text-brand-teal bg-brand-teal/10 border-brand-teal/20' : 'text-brand-teal bg-brand-teal/10 border-brand-teal/20';
                           }
                         };
-                        
+
                         return (
                           <div
                             key={notif.id}
-                            className={`px-4 py-3 flex flex-col gap-1 hover:bg-slate-50 transition-colors cursor-pointer text-left ${
-                              !notif.read ? 'bg-brand-teal/5 font-medium' : ''
-                            }`}
+                            className={`px-4 py-3 flex flex-col gap-1 hover:bg-slate-50 transition-colors cursor-pointer text-left ${!notif.read ? (isLightMode ? 'bg-brand-teal/5 font-medium' : 'bg-brand-teal/5 font-medium') : ''
+                              }`}
                             onClick={() => {
                               markNotificationAsRead(notif.id);
                               // Navigate based on type
@@ -391,10 +445,10 @@ export default function Layout({ children, activePage, onNavigate }) {
               </>
             )}
           </div>
-          
-          <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-slate-700">
-            <span className="text-[12px] font-semibold text-slate-300">{user?.name}</span>
-            <div className="w-6 h-6 rounded-[12px] bg-[var(--color-brand-teal)] text-white flex items-center justify-center text-[10px] font-extrabold">
+
+          <div className={`hidden sm:flex items-center gap-2 pl-3 border-l ${isLightMode ? 'border-slate-200' : 'border-slate-700'}`}>
+            <span className={`text-[12px] font-semibold ${isLightMode ? 'text-slate-700' : 'text-slate-300'}`}>{user?.name}</span>
+            <div className={`w-6 h-6 rounded-[12px] text-white flex items-center justify-center text-[10px] font-extrabold ${isLightMode ? 'bg-[var(--color-brand-teal)]' : 'bg-[var(--color-brand-teal)]'}`}>
               {initials}
             </div>
           </div>
@@ -416,7 +470,7 @@ export default function Layout({ children, activePage, onNavigate }) {
             />
             <aside className="absolute left-0 top-0 bottom-0 w-64 z-50 shadow-2xl">
               <div className="absolute top-4 right-4 z-50">
-                <button onClick={() => setMobileOpen(false)} className="text-slate-400 hover:text-white">
+                <button onClick={() => setMobileOpen(false)} className={`transition-colors ${isLightMode ? 'text-slate-500 hover:text-black' : 'text-slate-400 hover:text-white'}`}>
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -426,8 +480,17 @@ export default function Layout({ children, activePage, onNavigate }) {
         )}
 
         {/* Main area */}
-        <main className="flex-1 flex flex-col overflow-x-hidden overflow-y-auto bg-slate-50">
-          {children}
+        <main className="flex-1 flex flex-col overflow-x-hidden overflow-y-auto relative bg-slate-50">
+          {/* Animated Background Layer */}
+          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            <div className="absolute top-[-10%] left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-brand-teal/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob"></div>
+            <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] bg-brand-green/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000"></div>
+            <div className="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] max-w-[700px] max-h-[700px] bg-brand-teal/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-60 animate-blob animation-delay-4000"></div>
+          </div>
+
+          <div className="relative z-10 flex-1 flex flex-col">
+            {children}
+          </div>
         </main>
       </div>
     </div>
