@@ -48,6 +48,9 @@ app.use(cors({
 // Easter egg header
 app.use((req, res, next) => {
   res.setHeader('X-Built-By', 'axshh');
+  res.setHeader('X-Location', 'Kochi-Kerala-India');
+  res.setHeader('X-Company', 'Holobiont Pvt-Ltd');
+  res.setHeader('X-Version', 'v1.0');
   next();
 });
 
