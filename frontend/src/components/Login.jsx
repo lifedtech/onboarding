@@ -134,9 +134,14 @@ export default function Login() {
         </div>
 
         {/* Footer note */}
-        <p className="text-center text-text-muted/70 text-xs mt-5 font-semibold">
-          Access is restricted to authorised operations staff.
-        </p>
+        <div className="mt-5 text-center flex flex-col gap-1">
+          <p className="text-text-muted/70 text-xs font-semibold">
+            Access is restricted to authorised operations staff.
+          </p>
+          <p className="text-text-muted/60 text-xs font-medium">
+            &copy; 2024 - 2026 Holobiont Pvt Ltd. All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
   );
