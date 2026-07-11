@@ -29,13 +29,16 @@ app.use(cors({
 
     const configuredOrigin = process.env.CLIENT_ORIGIN;
 
-    // Check if origin matches configured origin, is localhost, 127.0.0.1, or is a workers.dev domain
+    // Check if origin matches configured origin, is localhost, 127.0.0.1, local network IP, or is a workers.dev domain
     if (
       origin === configuredOrigin ||
       origin === 'http://localhost:5173' ||
       origin === 'http://localhost:5174' ||
       origin.startsWith('http://localhost:') ||
       origin.startsWith('http://127.0.0.1:') ||
+      origin.startsWith('http://192.168.') ||
+      origin.startsWith('http://10.') ||
+      (origin.startsWith('http://172.') && origin.match(/^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\./)) ||
       origin.endsWith('.workers.dev')
     ) {
       return callback(null, true);
