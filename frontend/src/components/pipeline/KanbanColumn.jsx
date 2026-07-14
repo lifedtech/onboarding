@@ -6,39 +6,39 @@ import HealthmateCard from './HealthmateCard';
 
 const PHASE_CONFIG = {
   PRE_QUALIFY: {
-    label:    'Pre-Qualify',
-    number:   '01',
-    accent:   'border-slate-300',
-    dot:      'bg-slate-400',
-    countBg:  'bg-slate-100 text-slate-600 border border-slate-200',
+    label: 'Pre-Qualify',
+    number: '01',
+    accent: 'border-slate-300',
+    dot: 'bg-slate-400',
+    countBg: 'bg-slate-100 text-slate-600 border border-slate-200',
   },
   PREPARE: {
-    label:    'Prepare',
-    number:   '03',
-    accent:   'border-amber-400',
-    dot:      'bg-amber-500',
-    countBg:  'bg-amber-50 text-amber-600 border border-amber-200',
+    label: 'Prepare',
+    number: '03',
+    accent: 'border-amber-400',
+    dot: 'bg-amber-500',
+    countBg: 'bg-amber-50 text-amber-600 border border-amber-200',
   },
   REGISTER: {
-    label:    'Register',
-    number:   '02',
-    accent:   'border-brand-teal',
-    dot:      'bg-brand-teal',
-    countBg:  'bg-brand-teal/10 text-brand-teal border border-brand-teal/20',
+    label: 'Register',
+    number: '02',
+    accent: 'border-brand-teal',
+    dot: 'bg-brand-teal',
+    countBg: 'bg-brand-teal/10 text-brand-teal border border-brand-teal/20',
   },
   REVIEW: {
-    label:    'Review',
-    number:   '04',
-    accent:   'border-purple-400',
-    dot:      'bg-purple-500',
-    countBg:  'bg-purple-50 text-purple-600 border border-purple-200',
+    label: 'Review',
+    number: '04',
+    accent: 'border-purple-400',
+    dot: 'bg-purple-500',
+    countBg: 'bg-purple-50 text-purple-600 border border-purple-200',
   },
   LIVE: {
-    label:    'Live',
-    number:   '05',
-    accent:   'border-brand-green',
-    dot:      'bg-brand-green',
-    countBg:  'bg-brand-green/10 text-brand-green border border-brand-green/20',
+    label: 'Live',
+    number: '05',
+    accent: 'border-brand-green',
+    dot: 'bg-brand-green',
+    countBg: 'bg-brand-green/10 text-brand-green border border-brand-green/20',
   },
 };
 
@@ -46,7 +46,7 @@ const PHASE_CONFIG = {
 
 export default function KanbanColumn({ phase, healthmates }) {
   const config = PHASE_CONFIG[phase] ?? PHASE_CONFIG.PRE_QUALIFY;
-  const ids    = healthmates.map((hm) => hm.id);
+  const ids = healthmates.map((hm) => hm.id);
 
   const { setNodeRef, isOver } = useDroppable({ id: phase });
 

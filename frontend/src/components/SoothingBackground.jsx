@@ -110,34 +110,6 @@ export default function SoothingBackground({ isLightMode = true }) {
       });
     }
 
-    // Ripple click rings
-    let ripples = [];
-
-    const handleClick = (e) => {
-      // Spawn two offset rings for extra liquidity
-      ripples.push({
-        x: e.clientX,
-        y: e.clientY,
-        radius: 0,
-        maxRadius: Math.max(width, height) * 0.45,
-        speed: 3.5,
-        opacity: 0.75,
-        decay: 0.982,
-        color: '0, 176, 155', // Teal
-        lineWidth: 3,
-      });
-      ripples.push({
-        x: e.clientX,
-        y: e.clientY,
-        radius: 0,
-        maxRadius: Math.max(width, height) * 0.35,
-        speed: 2.5,
-        opacity: 0.5,
-        decay: 0.978,
-        color: '120, 198, 82', // Green warm glow secondary ring
-        lineWidth: 2,
-      });
-    };
 
     const handleMouseMove = (e) => {
       mouse.targetX = e.clientX;
@@ -153,7 +125,6 @@ export default function SoothingBackground({ isLightMode = true }) {
       mouse.active = false;
     };
 
-    window.addEventListener('click', handleClick);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseleave', handleMouseLeave);
 
@@ -262,21 +233,6 @@ export default function SoothingBackground({ isLightMode = true }) {
         ctx.shadowBlur = 0; // reset
       });
 
-      // 5. Update and Draw Click Ripples
-      ripples = ripples.filter((ripple) => {
-        ripple.radius += ripple.speed;
-        ripple.opacity *= ripple.decay;
-
-        if (ripple.opacity > 0.01) {
-          ctx.beginPath();
-          ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(${ripple.color}, ${ripple.opacity})`;
-          ctx.lineWidth = ripple.lineWidth * ripple.opacity;
-          ctx.stroke();
-          return true;
-        }
-        return false;
-      });
 
       animationFrameId = requestAnimationFrame(draw);
     };
@@ -285,7 +241,6 @@ export default function SoothingBackground({ isLightMode = true }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('click', handleClick);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
