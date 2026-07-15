@@ -31,7 +31,7 @@ const PHASE_LABELS = {
 };
 
 const PHASE_COLORS = {
-  PRE_QUALIFY: 'text-slate-600 bg-slate-100 border-slate-200/50',
+  PRE_QUALIFY: 'text-slate-600 bg-slate-100/50',
   PREPARE:     'text-brand-teal bg-brand-teal/10 border-brand-teal/20',
   REGISTER:    'text-amber-700 bg-amber-50 border-amber-200/50',
   REVIEW:      'text-purple-700 bg-purple-50 border-purple-200/50',
@@ -551,7 +551,7 @@ export default function CalendarView() {
           <div className="flex flex-wrap items-center gap-3">
             
              {/* Filter by Assignee (Ops vs Admin) */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/50 p-1 rounded-xl">
+            <div className="flex items-center gap-1 bg-slate-50/50 p-1 rounded-xl">
               <button
                 onClick={() => setAssigneeFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
@@ -575,7 +575,7 @@ export default function CalendarView() {
             </div>
 
              {/* Filter by Type */}
-            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/50 p-1 rounded-xl">
+            <div className="flex items-center gap-1 bg-slate-50/50 p-1 rounded-xl">
               <button
                 onClick={() => setTypeFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wide transition-all cursor-pointer ${
@@ -622,7 +622,7 @@ export default function CalendarView() {
             <select
               value={phaseFilter}
               onChange={(e) => setPhaseFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200/50 text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-teal"
+              className="bg-slate-50/50 text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-teal"
             >
               <option value="all">All Phases</option>
               {Object.entries(PHASE_LABELS).map(([k, label]) => (
@@ -699,7 +699,7 @@ export default function CalendarView() {
                             className={`p-1 text-[9px] rounded-lg border font-bold flex items-center justify-between gap-1 transition-all hover:scale-102 ${
                               ev.type === 'TASK'
                                 ? ev.completed
-                                  ? 'bg-slate-50 text-slate-400 border-slate-200/50 line-through'
+                                  ? 'bg-slate-50 text-slate-400/50 line-through'
                                   : `${PHASE_COLORS[ev.phase]} border-current/20`
                                 : ev.type === 'RECALL'
                                 ? 'bg-red-50 text-red-700 border-red-200/60'
@@ -769,7 +769,7 @@ export default function CalendarView() {
                     }`}
                   >
                     {/* Header: Day number + weekday */}
-                    <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-1.5 shrink-0">
+                    <div className="flex items-center justify-between mb-3 pb-1.5 shrink-0">
                       <span className="text-[10px] font-extrabold uppercase tracking-wide text-text-muted">
                         {date.toLocaleDateString(undefined, { day: 'numeric' })}
                       </span>
@@ -793,7 +793,7 @@ export default function CalendarView() {
                             className={`p-2.5 rounded-xl border flex flex-col gap-1.5 transition-all hover:border-brand-teal/30 hover:shadow-xs hover:bg-white/80 ${
                               ev.type === 'TASK'
                                 ? ev.completed
-                                  ? 'bg-slate-50/60 text-slate-400 border-slate-200/50 line-through'
+                                  ? 'bg-slate-50/60 text-slate-400/50 line-through'
                                   : `${PHASE_COLORS[ev.phase]} border-current/25`
                                 : ev.type === 'RECALL'
                                 ? 'bg-red-50 text-red-700 border-red-200/60'
@@ -841,7 +841,7 @@ export default function CalendarView() {
           <div className="flex-1 overflow-auto p-6 bg-white space-y-4">
             {allEvents.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center p-8 space-y-4 max-w-md mx-auto">
-                <div className="w-14 h-14 rounded-full bg-slate-50 border border-slate-200/50 flex items-center justify-center text-slate-400">
+                <div className="w-14 h-14 rounded-full bg-slate-50/50 flex items-center justify-center text-slate-400">
                   <CalendarDays className="w-7 h-7" />
                 </div>
                 <div>
@@ -971,7 +971,7 @@ export default function CalendarView() {
           {/* Drawer container */}
           <div className="fixed inset-y-0 right-0 w-full sm:w-96 bg-white shadow-2xl z-50 p-6 flex flex-col border-l border-border-leaf/60 animate-in slide-in-from-right duration-250">
             {/* Header */}
-            <div className="flex items-start justify-between mb-6 border-b border-slate-100 pb-4 shrink-0">
+            <div className="flex items-start justify-between mb-6 pb-4 shrink-0">
               <div>
                 <h3 className="text-text-main font-extrabold text-sm tracking-wide">
                   Schedule Details
@@ -1000,7 +1000,7 @@ export default function CalendarView() {
               {/* Event Editor Form (if an event is selected for edit) */}
               {editingEvent ? (
                 <div className="bg-[#fafdfb] border border-border-leaf/40 rounded-2xl p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <div className="flex items-center justify-between pb-2">
                     <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider flex items-center gap-1">
                       {editingEvent.type === 'TASK' ? (
                         <>
@@ -1108,7 +1108,7 @@ export default function CalendarView() {
               ) : showAddTaskForm ? (
                 /* Add Task Form */
                 <div className="bg-[#fafdfb] border border-border-leaf/40 rounded-2xl p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <div className="flex items-center justify-between pb-2">
                     <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider flex items-center gap-1">
                       <PlusCircle className="w-3.5 h-3.5" /> Add Custom Task
                     </span>
@@ -1121,7 +1121,7 @@ export default function CalendarView() {
                   </div>
 
                   {activePartnersForSelect.length === 0 ? (
-                    <div className="p-3 text-center border border-dashed border-slate-200 rounded-xl">
+                    <div className="p-3 text-center border border-dashed rounded-xl">
                       <span className="text-[10px] font-bold text-slate-400 italic">
                         No active onboarding partners found to assign tasks to.
                       </span>
@@ -1231,7 +1231,7 @@ export default function CalendarView() {
                           className={`p-3.5 rounded-2xl border flex flex-col gap-2 transition-all relative group bg-white shadow-xs hover:border-slate-300 ${
                             isTask
                               ? ev.completed
-                                ? 'bg-slate-50/50 border-slate-200/50 text-slate-400 line-through'
+                                ? 'bg-slate-50/50/50 text-slate-400 line-through'
                                 : 'border-border-leaf/40'
                               : ev.type === 'ENQUIRY_CALLBACK'
                               ? 'bg-violet-50/30 border-violet-200/50 text-violet-700'
@@ -1325,7 +1325,7 @@ export default function CalendarView() {
                     })}
 
                     {getEventsForDate(selectedDay).length === 0 && (
-                      <div className="flex flex-col items-center justify-center p-8 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                      <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-2xl bg-slate-50/50">
                         <CalendarDays className="w-6 h-6 text-slate-300 mb-2" />
                         <span className="text-[10px] font-bold text-slate-400 italic">
                           No events scheduled for this day.

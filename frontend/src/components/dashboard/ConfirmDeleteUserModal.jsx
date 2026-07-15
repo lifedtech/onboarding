@@ -45,7 +45,7 @@ export default function ConfirmDeleteUserModal({ isOpen, onClose, userId, userNa
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 shrink-0 bg-white">
+          <div className="flex items-center justify-between px-6 py-5 shrink-0 bg-white">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center border border-rose-100">
                 <AlertTriangle className="w-4.5 h-4.5 text-rose-500" />
@@ -92,7 +92,7 @@ export default function ConfirmDeleteUserModal({ isOpen, onClose, userId, userNa
             </button>
             <button
               onClick={onClose}
-              className="flex-1 bg-white hover:bg-slate-100 text-text-main border border-slate-200 font-bold rounded-xl py-2.5 text-sm transition-all cursor-pointer"
+              className="flex-1 bg-white hover:bg-slate-100 text-text-main font-bold rounded-xl py-2.5 text-sm transition-all cursor-pointer"
             >
               Cancel
             </button>

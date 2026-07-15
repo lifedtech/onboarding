@@ -307,11 +307,11 @@ export default function ServiceUsersList() {
       case 'ACTIVE':
         return 'text-emerald-700 bg-emerald-50 border-emerald-200';
       case 'INACTIVE':
-        return 'text-slate-500 bg-slate-50 border-slate-200';
+        return 'text-slate-500 bg-slate-50';
       case 'SUSPENDED':
         return 'text-rose-700 bg-rose-50 border-rose-200';
       default:
-        return 'text-slate-500 bg-slate-50 border-slate-200';
+        return 'text-slate-500 bg-slate-50';
     }
   };
 
@@ -352,7 +352,7 @@ export default function ServiceUsersList() {
         {/* Card 1: Active Users */}
         <div 
           onClick={() => setActiveTile(activeTile === 'ACTIVE_USERS' ? null : 'ACTIVE_USERS')}
-          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'ACTIVE_USERS' ? 'bg-emerald-50/50 border-emerald-400 ring-2 ring-emerald-400/20' : 'bg-white border-slate-200/60 hover:border-emerald-200'}`}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'ACTIVE_USERS' ? 'bg-emerald-50/50 border-emerald-400 ring-2 ring-emerald-400/20' : 'bg-white hover:border-emerald-200'}`}
         >
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
             <User className="w-5 h-5" />
@@ -367,7 +367,7 @@ export default function ServiceUsersList() {
         {/* Card 2: Today's Bookings */}
         <div 
           onClick={() => setActiveTile(activeTile === 'UPCOMING_BOOKINGS' ? null : 'UPCOMING_BOOKINGS')}
-          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'UPCOMING_BOOKINGS' ? 'bg-teal-50/50 border-brand-teal ring-2 ring-brand-teal/20' : 'bg-white border-slate-200/60 hover:border-brand-teal/50'}`}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'UPCOMING_BOOKINGS' ? 'bg-teal-50/50 border-brand-teal ring-2 ring-brand-teal/20' : 'bg-white hover:border-brand-teal/50'}`}
         >
           <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-brand-teal">
             <Calendar className="w-5 h-5" />
@@ -383,7 +383,7 @@ export default function ServiceUsersList() {
         {isAdmin && (
           <div 
             onClick={() => setActiveTile(activeTile === 'REVENUE_COLLECTED' ? null : 'REVENUE_COLLECTED')}
-            className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'REVENUE_COLLECTED' ? 'bg-amber-50/50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-white border-slate-200/60 hover:border-amber-200'}`}
+            className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'REVENUE_COLLECTED' ? 'bg-amber-50/50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-white hover:border-amber-200'}`}
           >
             <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
               <IndianRupee className="w-5 h-5" />
@@ -399,7 +399,7 @@ export default function ServiceUsersList() {
         {/* Card 4: Open Tickets */}
         <div 
           onClick={() => setActiveTile(activeTile === 'OPEN_TICKETS' ? null : 'OPEN_TICKETS')}
-          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'OPEN_TICKETS' ? 'bg-rose-50/50 border-rose-400 ring-2 ring-rose-400/20' : 'bg-white border-slate-200/60 hover:border-rose-200'}`}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'OPEN_TICKETS' ? 'bg-rose-50/50 border-rose-400 ring-2 ring-rose-400/20' : 'bg-white hover:border-rose-200'}`}
         >
           <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
             <LifeBuoy className="w-5 h-5" />
@@ -413,14 +413,14 @@ export default function ServiceUsersList() {
       </div>
 
       {/* Filters & Search Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm shrink-0">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white p-4 rounded-2xl shadow-sm shrink-0">
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search service users by name, email, phone..."
-            className="w-full bg-slate-50 border border-slate-200 focus:border-brand-teal/80 text-text-main rounded-xl py-2.5 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
+            className="w-full bg-slate-50 focus:border-brand-teal/80 text-text-main rounded-xl py-2.5 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
         </div>
@@ -434,7 +434,7 @@ export default function ServiceUsersList() {
             <select
               value={filterTier}
               onChange={(e) => setFilterTier(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
+              className="bg-slate-50 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
             >
               <option value="ALL">All Tiers</option>
               <option value="PLATINUM">Platinum</option>
@@ -451,7 +451,7 @@ export default function ServiceUsersList() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
+              className="bg-slate-50 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
             >
               <option value="ALL">All Statuses</option>
               <option value="ACTIVE">Active</option>
@@ -463,10 +463,10 @@ export default function ServiceUsersList() {
       </div>
 
       {/* Main Grid/Table */}
-      <div className="flex-1 bg-white border border-slate-200/60 rounded-3xl shadow-sm overflow-hidden flex flex-col min-h-[300px]">
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+      <div className="flex-1 bg-white rounded-3xl shadow-sm overflow-hidden flex flex-col min-h-[300px]">
+        <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50/50">
           <h3 className="text-text-main font-extrabold text-sm tracking-wide">Registered Accounts List</h3>
-          <span className="text-[10px] font-bold text-text-muted bg-slate-200/50 border border-slate-200/80 px-2.5 py-0.5 rounded-full">
+          <span className="text-[10px] font-bold text-text-muted bg-slate-200/50/80 px-2.5 py-0.5 rounded-full">
             {filteredUsers.length} user(s) matching
           </span>
         </div>
@@ -485,7 +485,7 @@ export default function ServiceUsersList() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/30 border-b border-slate-100 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
+                <tr className="bg-slate-50/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
                   <th className="px-6 py-4">User Name</th>
                   <th className="px-6 py-4">Email & Phone</th>
                   <th className="px-6 py-4">Account Tier</th>
@@ -572,7 +572,7 @@ export default function ServiceUsersList() {
       {/* Manual Add User Modal */}
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full shadow-2xl p-6 relative flex flex-col space-y-4 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl p-6 relative flex flex-col space-y-4 animate-in fade-in zoom-in duration-200">
             <button
               onClick={() => setShowAddUserModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-50 transition-colors"
@@ -594,7 +594,7 @@ export default function ServiceUsersList() {
                   placeholder="e.g. John Doe"
                   value={userForm.name}
                   onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                  className="w-full bg-slate-50 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                 />
               </div>
 
@@ -606,7 +606,7 @@ export default function ServiceUsersList() {
                   placeholder="john.doe@example.com"
                   value={userForm.email}
                   onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                  className="w-full bg-slate-50 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                 />
               </div>
 
@@ -617,7 +617,7 @@ export default function ServiceUsersList() {
                   placeholder="+61 400 000 000"
                   value={userForm.phone}
                   onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                  className="w-full bg-slate-50 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                 />
               </div>
 
@@ -627,7 +627,7 @@ export default function ServiceUsersList() {
                   <select
                     value={userForm.tier}
                     onChange={(e) => setUserForm({ ...userForm, tier: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                    className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                   >
                     <option value="SILVER">Silver</option>
                     <option value="GOLD">Gold</option>
@@ -640,7 +640,7 @@ export default function ServiceUsersList() {
                   <select
                     value={userForm.status}
                     onChange={(e) => setUserForm({ ...userForm, status: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                    className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                   >
                     <option value="ACTIVE">Active</option>
                     <option value="INACTIVE">Inactive</option>
@@ -656,7 +656,7 @@ export default function ServiceUsersList() {
                   placeholder="Record client medical focus, preferences, or referral context..."
                   value={userForm.notes}
                   onChange={(e) => setUserForm({ ...userForm, notes: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none resize-none"
+                  className="w-full bg-slate-50 focus:border-brand-teal/80 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none resize-none"
                 />
               </div>
 
@@ -682,7 +682,7 @@ export default function ServiceUsersList() {
           {/* Drawer body */}
           <div className="relative w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-300">
             {/* Drawer Header */}
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+            <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50/50">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-brand-teal/10 flex items-center justify-center text-brand-teal text-xs font-extrabold">
                   {selectedUser.name?.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'SU'}
@@ -701,7 +701,7 @@ export default function ServiceUsersList() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex border-b border-slate-100 px-6 shrink-0 gap-6 bg-slate-50/30">
+            <div className="flex px-6 shrink-0 gap-6 bg-slate-50/30">
               {[
                 { id: 'profile', label: 'Details', icon: User },
                 { id: 'bookings', label: 'Bookings', icon: Calendar },
@@ -733,7 +733,7 @@ export default function ServiceUsersList() {
               {activeTab === 'profile' && (
                 <div className="space-y-6">
                   {/* Account Metrics Grid */}
-                  <div className={`grid ${isAdmin ? 'grid-cols-3' : 'grid-cols-2'} gap-4 bg-slate-50/75 p-4 border border-slate-100 rounded-2xl`}>
+                  <div className={`grid ${isAdmin ? 'grid-cols-3' : 'grid-cols-2'} gap-4 bg-slate-50/75 p-4 rounded-2xl`}>
                     {isAdmin && (
                       <div className="text-center space-y-0.5">
                         <p className="text-[9px] text-slate-400 font-extrabold uppercase">Total Paid</p>
@@ -742,7 +742,7 @@ export default function ServiceUsersList() {
                         </p>
                       </div>
                     )}
-                    <div className={`text-center ${isAdmin ? 'border-x border-slate-200/50' : 'border-r border-slate-200/50'} space-y-0.5`}>
+                    <div className={`text-center ${isAdmin ? 'border-x/50' : 'border-r/50'} space-y-0.5`}>
                       <p className="text-[9px] text-slate-400 font-extrabold uppercase">Bookings Count</p>
                       <p className="text-text-main font-extrabold text-base">{selectedUser.bookings?.length || 0}</p>
                     </div>
@@ -763,7 +763,7 @@ export default function ServiceUsersList() {
                           type="text"
                           value={selectedUser.name || ''}
                           onChange={(e) => handleUpdateUserDetails({ name: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                       <div className="space-y-1">
@@ -773,7 +773,7 @@ export default function ServiceUsersList() {
                           value={isMarketingOnly ? '***@***.***' : (selectedUser.email || '')}
                           onChange={(e) => handleUpdateUserDetails({ email: e.target.value })}
                           disabled={isMarketingOnly}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none disabled:opacity-50"
+                          className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none disabled:opacity-50"
                         />
                       </div>
                     </div>
@@ -786,7 +786,7 @@ export default function ServiceUsersList() {
                           value={isMarketingOnly ? '+** **** ****' : (selectedUser.phone || '')}
                           onChange={(e) => handleUpdateUserDetails({ phone: e.target.value })}
                           disabled={isMarketingOnly}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none disabled:opacity-50"
+                          className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none disabled:opacity-50"
                         />
                       </div>
                       <div className="space-y-1">
@@ -794,7 +794,7 @@ export default function ServiceUsersList() {
                         <select
                           value={selectedUser.tier || 'SILVER'}
                           onChange={(e) => handleUpdateUserDetails({ tier: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="SILVER">Silver</option>
                           <option value="GOLD">Gold</option>
@@ -806,7 +806,7 @@ export default function ServiceUsersList() {
                         <select
                           value={selectedUser.status || 'ACTIVE'}
                           onChange={(e) => handleUpdateUserDetails({ status: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-slate-50 text-text-main text-xs font-bold py-2 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="ACTIVE">Active</option>
                           <option value="INACTIVE">Inactive</option>
@@ -821,7 +821,7 @@ export default function ServiceUsersList() {
                         rows={6}
                         value={selectedUser.notes || ''}
                         onChange={(e) => handleUpdateUserDetails({ notes: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 text-text-main text-xs font-bold py-2.5 px-3 rounded-xl focus:outline-none resize-none"
+                        className="w-full bg-slate-50 text-text-main text-xs font-bold py-2.5 px-3 rounded-xl focus:outline-none resize-none"
                         placeholder="Add client medical history or slot requirements..."
                       />
                     </div>
@@ -845,7 +845,7 @@ export default function ServiceUsersList() {
               {activeTab === 'bookings' && (
                 <div className="space-y-6">
                   {/* Create Booking Form */}
-                  <form onSubmit={handleAddBooking} className="bg-slate-50/75 p-5 border border-slate-100 rounded-2xl space-y-4">
+                  <form onSubmit={handleAddBooking} className="bg-slate-50/75 p-5 rounded-2xl space-y-4">
                     <h4 className="text-text-main font-extrabold text-xs flex items-center gap-1.5">
                       <Calendar className="w-4 h-4 text-brand-teal" /> Schedule New Booking
                     </h4>
@@ -858,7 +858,7 @@ export default function ServiceUsersList() {
                           placeholder="e.g. Physiotherapy Consult"
                           value={bookingForm.serviceName}
                           onChange={(e) => setBookingForm({ ...bookingForm, serviceName: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                       <div className="space-y-1">
@@ -869,7 +869,7 @@ export default function ServiceUsersList() {
                           placeholder="e.g. Dr. Jenkins"
                           value={bookingForm.providerName}
                           onChange={(e) => setBookingForm({ ...bookingForm, providerName: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                     </div>
@@ -882,7 +882,7 @@ export default function ServiceUsersList() {
                           required
                           value={bookingForm.bookingDate}
                           onChange={(e) => setBookingForm({ ...bookingForm, bookingDate: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                       <div className="space-y-1">
@@ -892,7 +892,7 @@ export default function ServiceUsersList() {
                           placeholder="0.00"
                           value={bookingForm.amount}
                           onChange={(e) => setBookingForm({ ...bookingForm, amount: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                       <div className="space-y-1">
@@ -900,7 +900,7 @@ export default function ServiceUsersList() {
                         <select
                           value={bookingForm.paymentStatus}
                           onChange={(e) => setBookingForm({ ...bookingForm, paymentStatus: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="UNPAID">Unpaid</option>
                           <option value="PAID">Paid</option>
@@ -927,7 +927,7 @@ export default function ServiceUsersList() {
                         {selectedUser.bookings.map((booking) => (
                           <div
                             key={booking.id}
-                            className="border border-slate-200/80 p-4 rounded-2xl bg-white hover:border-brand-teal/30 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                            className="border/80 p-4 rounded-2xl bg-white hover:border-brand-teal/30 transition-all flex flex-col justify-between gap-3 shadow-sm"
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div>
@@ -978,7 +978,7 @@ export default function ServiceUsersList() {
                               )}
                               <button
                                 onClick={() => handleDeleteBooking(booking.id)}
-                                className="text-[8px] font-extrabold px-2 py-1 rounded border border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center gap-1"
+                                className="text-[8px] font-extrabold px-2 py-1 rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center gap-1"
                                 title="Delete Log Record"
                               >
                                 <Trash2 className="w-3 h-3" /> Delete Log
@@ -996,7 +996,7 @@ export default function ServiceUsersList() {
               {activeTab === 'payments' && (
                 <div className="space-y-6">
                   {/* Log Payment Form */}
-                  <form onSubmit={handleAddPayment} className="bg-slate-50/75 p-5 border border-slate-100 rounded-2xl space-y-4">
+                  <form onSubmit={handleAddPayment} className="bg-slate-50/75 p-5 rounded-2xl space-y-4">
                     <h4 className="text-text-main font-extrabold text-xs flex items-center gap-1.5">
                       <IndianRupee className="w-4 h-4 text-brand-teal" /> Record Financial Statement
                     </h4>
@@ -1009,7 +1009,7 @@ export default function ServiceUsersList() {
                           placeholder="0.00"
                           value={paymentForm.amount}
                           onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                       <div className="space-y-1">
@@ -1017,7 +1017,7 @@ export default function ServiceUsersList() {
                         <select
                           value={paymentForm.status}
                           onChange={(e) => setPaymentForm({ ...paymentForm, status: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="PAID">Paid</option>
                           <option value="PENDING">Pending</option>
@@ -1033,7 +1033,7 @@ export default function ServiceUsersList() {
                         <select
                           value={paymentForm.method}
                           onChange={(e) => setPaymentForm({ ...paymentForm, method: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="CREDIT_CARD">Credit Card</option>
                           <option value="UPI">UPI</option>
@@ -1048,7 +1048,7 @@ export default function ServiceUsersList() {
                           placeholder="e.g. txn_918239"
                           value={paymentForm.transactionId}
                           onChange={(e) => setPaymentForm({ ...paymentForm, transactionId: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                       <div className="space-y-1">
@@ -1057,7 +1057,7 @@ export default function ServiceUsersList() {
                           type="date"
                           value={paymentForm.billingDate}
                           onChange={(e) => setPaymentForm({ ...paymentForm, billingDate: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         />
                       </div>
                     </div>
@@ -1069,7 +1069,7 @@ export default function ServiceUsersList() {
                         placeholder="Membership invoice payment or specific class fee details..."
                         value={paymentForm.description}
                         onChange={(e) => setPaymentForm({ ...paymentForm, description: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                        className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                       />
                     </div>
 
@@ -1091,7 +1091,7 @@ export default function ServiceUsersList() {
                         {selectedUser.payments.map((payment) => (
                           <div
                             key={payment.id}
-                            className="border border-slate-200/80 p-4 rounded-2xl bg-white hover:border-brand-teal/30 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                            className="border/80 p-4 rounded-2xl bg-white hover:border-brand-teal/30 transition-all flex flex-col justify-between gap-3 shadow-sm"
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex items-center gap-3">
@@ -1113,7 +1113,7 @@ export default function ServiceUsersList() {
                             </div>
 
                             {payment.description && (
-                              <p className="text-slate-500 text-xs font-medium leading-relaxed bg-slate-50/50 p-2 rounded-lg border border-slate-100/50">
+                              <p className="text-slate-500 text-xs font-medium leading-relaxed bg-slate-50/50 p-2 rounded-lg/50">
                                 {payment.description}
                               </p>
                             )}
@@ -1138,7 +1138,7 @@ export default function ServiceUsersList() {
                               )}
                               <button
                                 onClick={() => handleDeletePayment(payment.id)}
-                                className="text-[8px] font-extrabold px-2 py-1 rounded border border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center gap-1"
+                                className="text-[8px] font-extrabold px-2 py-1 rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center gap-1"
                               >
                                 <Trash2 className="w-3 h-3" /> Remove Record
                               </button>
@@ -1155,7 +1155,7 @@ export default function ServiceUsersList() {
               {activeTab === 'support' && (
                 <div className="space-y-6">
                   {/* File Support Ticket Form */}
-                  <form onSubmit={handleAddTicket} className="bg-slate-50/75 p-5 border border-slate-100 rounded-2xl space-y-4">
+                  <form onSubmit={handleAddTicket} className="bg-slate-50/75 p-5 rounded-2xl space-y-4">
                     <h4 className="text-text-main font-extrabold text-xs flex items-center gap-1.5">
                       <LifeBuoy className="w-4 h-4 text-brand-teal" /> Log Support Ticket
                     </h4>
@@ -1167,7 +1167,7 @@ export default function ServiceUsersList() {
                         placeholder="e.g. Mobile portal fails login authorization"
                         value={ticketForm.title}
                         onChange={(e) => setTicketForm({ ...ticketForm, title: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                        className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                       />
                     </div>
 
@@ -1177,7 +1177,7 @@ export default function ServiceUsersList() {
                         <select
                           value={ticketForm.category}
                           onChange={(e) => setTicketForm({ ...ticketForm, category: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="GENERAL">General Query</option>
                           <option value="BOOKING">Booking Issue</option>
@@ -1191,7 +1191,7 @@ export default function ServiceUsersList() {
                         <select
                           value={ticketForm.severity}
                           onChange={(e) => setTicketForm({ ...ticketForm, severity: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="LOW">Low (Question)</option>
                           <option value="MEDIUM">Medium (Degradation)</option>
@@ -1204,7 +1204,7 @@ export default function ServiceUsersList() {
                         <select
                           value={ticketForm.status}
                           onChange={(e) => setTicketForm({ ...ticketForm, status: e.target.value })}
-                          className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
+                          className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none"
                         >
                           <option value="OPEN">Open</option>
                           <option value="IN_PROGRESS">In Progress</option>
@@ -1220,7 +1220,7 @@ export default function ServiceUsersList() {
                         placeholder="Detail the error logs or user conversation context..."
                         value={ticketForm.description}
                         onChange={(e) => setTicketForm({ ...ticketForm, description: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none resize-none"
+                        className="w-full bg-white text-text-main text-xs font-bold py-1.5 px-3 rounded-xl focus:outline-none resize-none"
                       />
                     </div>
 
@@ -1242,13 +1242,13 @@ export default function ServiceUsersList() {
                         {selectedUser.supportTickets.map((ticket) => (
                           <div
                             key={ticket.id}
-                            className="border border-slate-200/80 p-4 rounded-2xl bg-white hover:border-brand-teal/30 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                            className="border/80 p-4 rounded-2xl bg-white hover:border-brand-teal/30 transition-all flex flex-col justify-between gap-3 shadow-sm"
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div>
                                 <span className="text-[9px] font-extrabold text-brand-teal tracking-wide">{ticket.id}</span>
                                 <span className="text-slate-400 text-[10px] font-bold mx-1.5">·</span>
-                                <span className="text-[8px] font-semibold text-slate-500 bg-slate-100 border border-slate-200/50 px-2 py-0.5 rounded">
+                                <span className="text-[8px] font-semibold text-slate-500 bg-slate-100/50 px-2 py-0.5 rounded">
                                   {ticket.category}
                                 </span>
                                 <h5 className="text-text-main font-extrabold text-xs mt-1.5">{ticket.title}</h5>
@@ -1263,7 +1263,7 @@ export default function ServiceUsersList() {
                             </div>
 
                             {ticket.description && (
-                              <p className="text-slate-500 text-xs font-medium leading-relaxed bg-slate-50/50 p-2 rounded-lg border border-slate-100/50">
+                              <p className="text-slate-500 text-xs font-medium leading-relaxed bg-slate-50/50 p-2 rounded-lg/50">
                                 {ticket.description}
                               </p>
                             )}
@@ -1303,7 +1303,7 @@ export default function ServiceUsersList() {
                               )}
                               <button
                                 onClick={() => handleDeleteTicket(ticket.id)}
-                                className="text-[8px] font-extrabold px-2 py-1 rounded border border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center gap-1"
+                                className="text-[8px] font-extrabold px-2 py-1 rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center gap-1"
                               >
                                 <Trash2 className="w-3 h-3" /> Remove Record
                               </button>

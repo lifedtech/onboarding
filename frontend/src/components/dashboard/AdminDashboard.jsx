@@ -42,7 +42,7 @@ export default function AdminDashboard() {
             A single operating view for performance metrics and system logs.
           </p>
         </div>
-        <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+        <div className="flex bg-white p-1 rounded-xl shadow-sm">
           <button
             onClick={() => setActiveTab('OVERVIEW')}
             className={`px-5 py-2 text-[13px] font-bold rounded-lg transition-colors ${activeTab === 'OVERVIEW' ? 'bg-brand-teal text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
             ].map((kpi, idx) => {
               const Icon = kpi.icon;
               return (
-                <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[120px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm flex flex-col justify-between min-h-[120px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
                   <div className="flex justify-between items-start mb-3">
                     <p className="text-[12px] font-bold text-slate-500 leading-tight">{kpi.label}</p>
                     <div className={`w-8 h-8 rounded-xl ${kpi.bg} flex items-center justify-center ${kpi.color}`}>
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
                   ].map((item, idx) => {
                     const Icon = item.icon;
                     return (
-                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
                         <div className="flex justify-between items-start mb-3">
                           <p className="text-[13px] font-bold text-slate-500 leading-tight">{item.label}</p>
                           <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500">
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
                   ].map((item, idx) => {
                     const Icon = item.icon;
                     return (
-                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
                         <div className="flex justify-between items-start mb-3">
                           <p className="text-[13px] font-bold text-slate-500 leading-tight">{item.label}</p>
                           <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500">
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
                   ].map((item, idx) => {
                     const Icon = item.icon;
                     return (
-                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm border border-slate-200 flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
+                      <div key={idx} className="bg-white rounded-[20px] p-5 shadow-sm flex flex-col justify-between min-h-[130px] hover:shadow-md hover:border-brand-teal/30 transition-all cursor-default">
                         <div className="flex justify-between items-start mb-3">
                           <p className="text-[13px] font-bold text-slate-500 leading-tight">{item.label}</p>
                           <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500">
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
                 ].map((bar, idx) => (
                   <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group">
                     <div
-                      className="w-full bg-slate-50 border border-slate-100 rounded-t-2xl flex flex-col items-center justify-end pb-4 transition-all hover:bg-brand-teal/10 hover:border-brand-teal/30 cursor-pointer"
+                      className="w-full bg-slate-50 rounded-t-2xl flex flex-col items-center justify-end pb-4 transition-all hover:bg-brand-teal/10 hover:border-brand-teal/30 cursor-pointer"
                       style={{ height: bar.height === '0%' ? '50px' : bar.height }}
                     >
                       <p className="font-black text-slate-700 text-lg md:text-xl group-hover:text-brand-teal transition-colors">{bar.value}</p>
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
 
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex-1 border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center p-6 text-center bg-slate-50/50">
-                  <div className="w-12 h-12 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-3">
+                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
                     <Target className="w-6 h-6 text-slate-400" />
                   </div>
                   <p className="text-[14px] font-bold text-slate-600 mb-1">Boost WhatsApp Starts</p>
@@ -296,13 +296,13 @@ export default function AdminDashboard() {
           </div>
         </>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+        <div className="bg-white rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+          <div className="p-6 flex justify-between items-center bg-slate-50/50">
             <div>
               <h2 className="text-[18px] font-black text-text-main">User Access Logs</h2>
               <p className="text-[13px] font-medium text-text-muted mt-1">Automatic 7-day retention of login/logout sessions.</p>
             </div>
-            <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+            <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg shadow-sm">
               <AlertCircle className="w-3.5 h-3.5 text-brand-teal" />
               Logs auto-delete after 7 days
             </div>

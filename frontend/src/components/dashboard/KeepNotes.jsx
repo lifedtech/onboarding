@@ -102,7 +102,7 @@ export default function KeepNotes() {
   return (
     <div 
       ref={panelRef}
-      className="fixed z-[100] bg-slate-50 border border-slate-200 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+      className="fixed z-[100] bg-slate-50 rounded-xl shadow-2xl flex flex-col overflow-hidden"
       style={{
         left: position.x,
         top: position.y,
@@ -119,7 +119,7 @@ export default function KeepNotes() {
       <div 
         ref={dragRef}
         onMouseDown={handleMouseDown}
-        className="flex items-center justify-between p-3 bg-white border-b border-slate-200 cursor-grab active:cursor-grabbing select-none"
+        className="flex items-center justify-between p-3 bg-white border-b cursor-grab active:cursor-grabbing select-none"
       >
         <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
           <GripHorizontal className="w-4 h-4 text-slate-400" />
@@ -141,7 +141,7 @@ export default function KeepNotes() {
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50" onMouseDown={(e) => e.stopPropagation()}>
         
         {/* Add Note Area */}
-        <div className="bg-white rounded-lg border border-slate-200 shadow-sm mb-6 overflow-hidden transition-all">
+        <div className="bg-white rounded-lg shadow-sm mb-6 overflow-hidden transition-all">
           {isAdding ? (
             <div className="p-3">
               <input
@@ -279,7 +279,7 @@ function NoteCard({ note, togglePin, deleteNote, changeColor, toggleListItem }) 
           </button>
           
           {showPalette && (
-            <div className="absolute top-full left-0 mt-1 p-1.5 bg-white border border-slate-200 rounded-lg shadow-xl flex gap-1 z-10">
+            <div className="absolute top-full left-0 mt-1 p-1.5 bg-white rounded-lg shadow-xl flex gap-1 z-10">
               {COLORS.map(c => (
                 <button
                   key={c.id}

@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import useNotesStore from '../store/useNotesStore';
-import SoothingBackground from './SoothingBackground';
 import logo from '../assets/favicon.svg';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -153,7 +152,7 @@ export default function Layout({ children, activePage, onNavigate }) {
   };
 
   const SidebarContent = ({ minimized }) => (
-    <div className={`flex flex-col h-full transition-colors duration-200 ${isLightMode ? 'bg-transparent text-slate-800 border-r border-slate-200/50' : 'bg-[#1e293b]/40 backdrop-blur-md text-slate-300 border-r border-white/5'}`}>
+    <div className={`flex flex-col h-full transition-colors duration-200 z-10 relative ${isLightMode ? 'bg-white text-slate-800 border-r border-slate-200/50' : 'bg-[#131c2f] text-slate-300 border-r border-white/5'}`}>
       {/* Sidebar Nav */}
       <nav className={`flex-1 ${minimized ? 'px-2' : 'px-3'} py-4 space-y-4 overflow-y-auto min-h-0 custom-scrollbar overflow-x-hidden`}>
         {GROUPS.map(group => (
@@ -233,7 +232,7 @@ export default function Layout({ children, activePage, onNavigate }) {
       </nav>
 
       {/* User Footer */}
-      <div className={`p-4 border-t space-y-2 shrink-0 transition-colors duration-200 ${minimized ? 'px-2 flex flex-col items-center' : ''} ${isLightMode ? 'bg-transparent border-slate-200' : 'bg-[#0f172a]/30 border-white/5'}`}>
+      <div className={`p-4 border-t space-y-2 shrink-0 transition-colors duration-200 ${minimized ? 'px-2 flex flex-col items-center' : ''} ${isLightMode ? 'bg-white border-slate-200' : 'bg-[#131c2f] border-white/5'}`}>
         <button
           onClick={() => handleNav('profile')}
           className={`w-full flex items-center gap-3 py-2 rounded-md transition-colors text-left group ${minimized ? 'justify-center px-0' : 'px-2'} ${isLightMode ? 'hover:bg-black/5' : 'hover:bg-white/5'}`}
@@ -276,10 +275,10 @@ export default function Layout({ children, activePage, onNavigate }) {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-bg-base overflow-hidden">
+    <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-300 ${isLightMode ? 'bg-slate-50' : 'bg-[#0a0f1c]'}`}>
 
       {/* Top Navigation Bar */}
-      <header className={`h-14 flex items-center justify-between px-4 shrink-0 border-b z-20 transition-colors duration-200 ${isLightMode ? 'bg-transparent text-black border-slate-200/50' : 'bg-[#0f172a]/40 backdrop-blur-md text-white border-white/5'}`}>
+      <header className={`h-14 flex items-center justify-between px-4 shrink-0 border-b z-20 transition-colors duration-200 relative ${isLightMode ? 'bg-white text-black border-slate-200/50' : 'bg-[#131c2f] text-white border-white/5'}`}>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setMobileOpen(true)}
@@ -510,13 +509,7 @@ export default function Layout({ children, activePage, onNavigate }) {
           </div>
         )}
 
-        {/* Main area */}
         <main className="flex-1 flex flex-col overflow-x-hidden overflow-y-auto relative bg-transparent">
-          {/* Animated Background Layer */}
-          <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-            <SoothingBackground isLightMode={isLightMode} />
-          </div>
-
           <div className="relative z-10 flex-1 flex flex-col">
             {children}
           </div>

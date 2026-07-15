@@ -60,7 +60,7 @@ export default function HealthmatesList() {
         return 'text-indigo-700 bg-indigo-50 border-indigo-200';
       case 'PRE_QUALIFY':
       default:
-        return 'text-slate-600 bg-slate-50 border-slate-200';
+        return 'text-slate-600 bg-slate-50';
     }
   };
 
@@ -86,7 +86,7 @@ export default function HealthmatesList() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 shrink-0">
         {/* Card 1: Total Pipeline */}
-        <div className="bg-white p-5 rounded-2xl flex items-center gap-4 shadow-sm border border-slate-200/60">
+        <div className="bg-white p-5 rounded-2xl flex items-center gap-4 shadow-sm">
           <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-brand-teal">
             <Activity className="w-5 h-5" />
           </div>
@@ -98,7 +98,7 @@ export default function HealthmatesList() {
         </div>
 
         {/* Card 2: Pending Review */}
-        <div className="bg-white p-5 rounded-2xl flex items-center gap-4 shadow-sm border border-slate-200/60">
+        <div className="bg-white p-5 rounded-2xl flex items-center gap-4 shadow-sm">
           <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
             <Clock className="w-5 h-5" />
           </div>
@@ -110,7 +110,7 @@ export default function HealthmatesList() {
         </div>
 
         {/* Card 3: Live */}
-        <div className="bg-white p-5 rounded-2xl flex items-center gap-4 shadow-sm border border-slate-200/60">
+        <div className="bg-white p-5 rounded-2xl flex items-center gap-4 shadow-sm">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
             <CheckCircle2 className="w-5 h-5" />
           </div>
@@ -123,14 +123,14 @@ export default function HealthmatesList() {
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm shrink-0">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white p-4 rounded-2xl shadow-sm shrink-0">
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by name, email, or phone..."
-            className="w-full bg-slate-50 border border-slate-200 focus:border-brand-teal/80 text-text-main rounded-xl py-2.5 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
+            className="w-full bg-slate-50 focus:border-brand-teal/80 text-text-main rounded-xl py-2.5 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
         </div>
@@ -142,7 +142,7 @@ export default function HealthmatesList() {
           <select
             value={filterPhase}
             onChange={(e) => setFilterPhase(e.target.value)}
-            className="bg-slate-50 border border-slate-200 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
+            className="bg-slate-50 text-text-main text-[11px] font-bold py-1.5 px-3 rounded-lg focus:outline-none"
           >
             <option value="ALL">All Phases</option>
             <option value="PRE_QUALIFY">Pre-Qualify</option>
@@ -155,10 +155,10 @@ export default function HealthmatesList() {
       </div>
 
       {/* Main Table */}
-      <div className="bg-white border border-slate-200/60 rounded-3xl shadow-sm overflow-hidden flex flex-col">
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+      <div className="bg-white rounded-3xl shadow-sm overflow-hidden flex flex-col">
+        <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-slate-50/50">
           <h3 className="text-text-main font-extrabold text-sm tracking-wide">Healthmates List</h3>
-          <span className="text-[10px] font-bold text-text-muted bg-slate-200/50 border border-slate-200/80 px-2.5 py-0.5 rounded-full">
+          <span className="text-[10px] font-bold text-text-muted bg-slate-200/50/80 px-2.5 py-0.5 rounded-full">
             {filteredHealthmates.length} found
           </span>
         </div>
@@ -177,7 +177,7 @@ export default function HealthmatesList() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/30 border-b border-slate-100 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
+                <tr className="bg-slate-50/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
                   <th className="px-6 py-4">Healthmate Profile</th>
                   <th className="px-6 py-4">Contact Details</th>
                   <th className="px-6 py-4">Pipeline Phase</th>

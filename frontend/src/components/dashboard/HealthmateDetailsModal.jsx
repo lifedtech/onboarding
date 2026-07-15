@@ -22,14 +22,14 @@ export default function HealthmateDetailsModal({ isOpen, onClose, healthmate }) 
       case 'REVIEW': return 'text-amber-600 bg-amber-50 border-amber-200';
       case 'REGISTER': return 'text-blue-700 bg-blue-50 border-blue-200';
       case 'PREPARE': return 'text-indigo-700 bg-indigo-50 border-indigo-200';
-      default: return 'text-slate-600 bg-slate-50 border-slate-200';
+      default: return 'text-slate-600 bg-slate-50';
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-3xl w-full max-w-2xl shadow-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]"
+        className="bg-white rounded-3xl w-full max-w-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -85,7 +85,7 @@ export default function HealthmateDetailsModal({ isOpen, onClose, healthmate }) 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Contact Info */}
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+            <div className="bg-slate-50 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <PhoneCall className="w-4 h-4 text-brand-teal" />
                 <span className="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Contact Details</span>
@@ -111,7 +111,7 @@ export default function HealthmateDetailsModal({ isOpen, onClose, healthmate }) 
             </div>
 
             {/* Location */}
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+            <div className="bg-slate-50 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin className="w-4 h-4 text-brand-teal" />
                 <span className="text-xs font-extrabold uppercase text-slate-400 tracking-wider">Location</span>
@@ -119,7 +119,7 @@ export default function HealthmateDetailsModal({ isOpen, onClose, healthmate }) 
               <p className="text-sm font-bold text-text-main mt-0.5">
                 {[healthmate.city, healthmate.state, healthmate.country].filter(Boolean).join(', ') || <span className="text-slate-400 italic">Location not provided</span>}
               </p>
-              <div className="mt-4 flex items-center gap-2 border-t border-slate-200 pt-3">
+              <div className="mt-4 flex items-center gap-2 border-t pt-3">
                  <Activity className="w-4 h-4 text-slate-400" />
                  <span className="text-xs font-extrabold text-slate-500 uppercase">Days in Phase:</span>
                  <span className="text-xs font-black text-text-main">{healthmate.daysInPhase || 0} days</span>

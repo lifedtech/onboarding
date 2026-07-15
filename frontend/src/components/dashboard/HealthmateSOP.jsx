@@ -236,7 +236,7 @@ export default function HealthmateSOP() {
                 </div>
 
                 {/* Card */}
-                <div className="flex-1 bg-white border border-slate-200 rounded-[16px] p-6 md:p-8 shadow-sm">
+                <div className="flex-1 bg-white rounded-[16px] p-6 md:p-8 shadow-sm">
                   <div className="flex items-center gap-3 text-[11px] font-bold tracking-[0.18em] uppercase text-brand-teal mb-2.5">
                     <span className="w-6 h-0.5 bg-brand-teal"></span>
                     STAGE {stage.id}
@@ -254,7 +254,7 @@ export default function HealthmateSOP() {
                   {stage.forks && (
                     <div className="flex flex-col sm:flex-row gap-4 mb-6">
                       {stage.forks.map((fork, fidx) => (
-                        <div key={fidx} className={`flex-1 p-4 rounded-xl border ${fork.active ? 'border-brand-teal bg-brand-teal/10' : 'border-dashed border-slate-200 bg-white'}`}>
+                        <div key={fidx} className={`flex-1 p-4 rounded-xl border ${fork.active ? 'border-brand-teal bg-brand-teal/10' : 'border-dashed bg-white'}`}>
                           <h5 className="text-[15px] font-bold text-slate-800 mb-1">{fork.title}</h5>
                           <p className="text-[13.5px] text-slate-500 m-0">
                             {fork.desc.split('→').map((part, i, arr) => (
@@ -289,7 +289,7 @@ export default function HealthmateSOP() {
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-teal mb-3">ASSETS · TAP TO DEPLOY</h4>
                       <div className="flex flex-wrap gap-2">
                         {stage.assets.map(asset => (
-                          <button key={asset.id} onClick={() => setActiveAsset(sopAssets.find(a => a.id === asset.id))} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 hover:border-brand-teal hover:shadow-md hover:-translate-y-[1px] transition-all rounded-[8px] text-[12px] font-semibold text-slate-800 cursor-pointer group">
+                          <button key={asset.id} onClick={() => setActiveAsset(sopAssets.find(a => a.id === asset.id))} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white hover:border-brand-teal hover:shadow-md hover:-translate-y-[1px] transition-all rounded-[8px] text-[12px] font-semibold text-slate-800 cursor-pointer group">
                             <span className="text-brand-teal font-extrabold">{asset.id}</span>
                             {asset.label}
                             <ArrowUpRight className="w-3 h-3 text-slate-300 group-hover:text-brand-teal ml-0.5" strokeWidth={3} />
@@ -301,7 +301,7 @@ export default function HealthmateSOP() {
 
                   {/* Scorecard Table (Stage 1) */}
                   {stage.scorecard && (
-                    <div className="mt-2 mb-6 border border-slate-200 rounded-xl overflow-hidden bg-white">
+                    <div className="mt-2 mb-6 rounded-xl overflow-hidden bg-white">
                       <div className="bg-slate-800 text-white px-4.5 py-3.5 flex justify-between items-center flex-wrap gap-2">
                         <h5 className="text-[16px] font-bold m-0 pl-4">Healthmate Qualification — score each 1–5</h5>
                         <span className="text-[12.5px] text-teal-400 font-semibold pr-4">Ideal first Healthmate: 35+ / 50</span>
@@ -309,7 +309,7 @@ export default function HealthmateSOP() {
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-[14px] border-collapse min-w-[500px]">
                           <thead>
-                            <tr className="border-b border-slate-200">
+                            <tr className="border-b">
                               <th className="py-2.5 px-4.5 text-[11px] font-bold tracking-[0.08em] uppercase text-slate-500 pl-4">CRITERION</th>
                               <th className="py-2.5 px-4.5 text-[11px] font-bold tracking-[0.08em] uppercase text-slate-500">WHAT TO CHECK</th>
                               <th className="py-2.5 px-4.5 text-[11px] font-bold tracking-[0.08em] uppercase text-slate-500 text-center w-16 pr-4">SCORE</th>
@@ -344,7 +344,7 @@ export default function HealthmateSOP() {
                   )}
 
                   {/* Stage Footer Meta */}
-                  <div className="flex flex-wrap gap-x-10 gap-y-4 pt-4.5 border-t border-slate-200">
+                  <div className="flex flex-wrap gap-x-10 gap-y-4 pt-4.5 border-t">
                     <div className="text-[13.5px] text-slate-700">
                       <b className="block font-bold text-[11.5px] tracking-[0.08em] uppercase text-slate-500 mb-0.5">OWNER</b>
                       {stage.owner}
@@ -372,7 +372,7 @@ export default function HealthmateSOP() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" onClick={() => setActiveAsset(null)}>
           <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
             {/* Modal Header */}
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
+            <div className="flex items-start justify-between p-6">
               <div>
                 <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.1em] uppercase text-brand-teal mb-2">
                   <span>{activeAsset.id}</span>
@@ -412,7 +412,7 @@ export default function HealthmateSOP() {
                     <textarea
                       value={editedCopies[activeAsset.id] ?? activeAsset.copy}
                       onChange={(e) => handleCopyChange(activeAsset.id, e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 whitespace-pre-wrap font-medium outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal resize-y min-h-[150px] transition-colors"
+                      className="w-full bg-slate-50 rounded-xl p-5 text-sm text-slate-800 whitespace-pre-wrap font-medium outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal resize-y min-h-[150px] transition-colors"
                       rows={Math.max(5, (editedCopies[activeAsset.id] ?? activeAsset.copy).split('\n').length)}
                     />
                     {editedCopies[activeAsset.id] && editedCopies[activeAsset.id] !== activeAsset.copy && (

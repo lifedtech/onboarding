@@ -21,7 +21,7 @@ const PHASE_LABELS = {
 };
 
 const PHASE_COLORS = {
-  PRE_QUALIFY: 'text-slate-600 bg-slate-100 border-slate-200/50',
+  PRE_QUALIFY: 'text-slate-600 bg-slate-100/50',
   PREPARE:     'text-brand-teal bg-brand-teal/10 border-brand-teal/20',
   REGISTER:    'text-amber-700 bg-amber-50 border-amber-200/50',
   REVIEW:      'text-purple-700 bg-purple-50 border-purple-200/50',
