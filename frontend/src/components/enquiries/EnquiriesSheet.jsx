@@ -355,7 +355,7 @@ export default function EnquiriesSheet({ enquiryType }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search enquiries by name, contact, remarks..."
-            className="w-full bg-white border border-transparent text-text-main placeholder-text-muted/40 rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+            className="w-full bg-white border border-slate-200/60 dark:border-white/5 shadow-sm text-text-main placeholder-text-muted/40 rounded-xl pl-10 pr-4 py-2 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
           />
         </div>
 
@@ -368,7 +368,7 @@ export default function EnquiriesSheet({ enquiryType }) {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="bg-white border border-transparent text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
+                className="bg-white border border-slate-200/60 dark:border-white/5 shadow-sm text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
               >
                 <option value="ALL">All Types</option>
                 <option value="HEALTH_PARTNER">Partners</option>
@@ -383,7 +383,7 @@ export default function EnquiriesSheet({ enquiryType }) {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white border border-transparent text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
+              className="bg-white border border-slate-200/60 dark:border-white/5 shadow-sm text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
             >
               <option value="ALL">All Status</option>
               <option value="CONTACTED">Contacted</option>
@@ -397,7 +397,7 @@ export default function EnquiriesSheet({ enquiryType }) {
             <select
               value={reminderFilter}
               onChange={(e) => setReminderFilter(e.target.value)}
-              className="bg-white border border-transparent text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
+              className="bg-white border border-slate-200/60 dark:border-white/5 shadow-sm text-text-main text-[10px] font-extrabold uppercase tracking-wider rounded-xl py-1.5 px-3 focus:outline-none"
             >
               <option value="ALL">All Dates</option>
               <option value="TODAY">Today's Callback</option>
@@ -410,7 +410,7 @@ export default function EnquiriesSheet({ enquiryType }) {
       {/* Excel Sheet Content */}
       <div className="flex-1 overflow-auto p-6">
         {filteredEnquiries.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center border border-dashed border-slate-200 rounded-3xl bg-white p-8">
+          <div className="flex flex-col items-center justify-center h-full text-center border border-slate-200 shadow-sm rounded-3xl bg-white p-8">
             <div className="w-14 h-14 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 mb-3">
               <FileSpreadsheet className="w-7 h-7" />
             </div>
