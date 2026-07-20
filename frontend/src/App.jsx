@@ -25,6 +25,7 @@ import ProgramPerformance from './components/dashboard/ProgramPerformance';
 import SalesMarketingDashboard from './components/dashboard/SalesMarketingDashboard';
 import HealthmateSOP from './components/dashboard/HealthmateSOP';
 import KeepNotes from './components/dashboard/KeepNotes';
+import Diary from './components/dashboard/Diary';
 import { initAudio, playNotificationSound } from './lib/audio';
 
 
@@ -52,6 +53,7 @@ const PAGES = {
   support_dashboard: <SupportDashboard />,
   promotions: <div className="p-8 text-center text-text-muted">Promotions functionality coming soon.</div>,
   healthmate_sop: <HealthmateSOP />,
+  diary: <Diary />,
 };
 
 

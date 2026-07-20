@@ -62,7 +62,8 @@ export default function ServiceUsersList() {
   // Modal / Drawer open states
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const selectedUser = useOpsStore((s) => s.selectedServiceUser);
+  const setSelectedUser = useOpsStore((s) => s.setSelectedServiceUser);
   const [activeTab, setActiveTab] = useState('profile'); // 'profile', 'bookings', 'payments', 'support'
   const [activeTile, setActiveTile] = useState(null);
 

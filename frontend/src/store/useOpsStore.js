@@ -82,6 +82,12 @@ const useOpsStore = create((set, get) => ({
     set({ selectedHealthmate: fresh });
   },
 
+  setSelectedServiceUser: (user) => {
+    if (!user) { set({ selectedServiceUser: null }); return; }
+    const fresh = get().serviceUsers.find((u) => u.id === user.id) ?? user;
+    set({ selectedServiceUser: fresh });
+  },
+
   // ── Enquiry Actions ────────────────────────────────────────────────────────
 
   fetchEnquiries: async (page = 1, limit = 100) => {

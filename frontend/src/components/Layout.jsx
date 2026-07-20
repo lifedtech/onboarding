@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import {
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
-  RefreshCw, BookOpen, Sun, Moon
+  RefreshCw, BookOpen, Sun, Moon, Sparkles
 } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import useNotesStore from '../store/useNotesStore';
+import LewisChat from './dashboard/LewisChat';
 import logo from '../assets/favicon.svg';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -32,7 +33,15 @@ export default function Layout({ children, activePage, onNavigate }) {
   const markAllNotificationsAsRead = useOpsStore((s) => s.markAllNotificationsAsRead);
   const toggleNotes = useNotesStore((s) => s.toggleNotes);
 
+  const healthmates = useOpsStore(s => s.healthmates);
+  const serviceUsers = useOpsStore(s => s.serviceUsers);
+  const setSelectedHealthmate = useOpsStore((s) => s.setSelectedHealthmate);
+  const setSelectedServiceUser = useOpsStore((s) => s.setSelectedServiceUser);
+
   const [showNotifications, setShowNotifications] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [isLewisOpen, setIsLewisOpen] = useState(false);
 
   // Theme state: defaults to light mode
   const [isLightMode, setIsLightMode] = useState(() => {
@@ -142,6 +151,7 @@ export default function Layout({ children, activePage, onNavigate }) {
     items: [
       { label: 'Team Chat', icon: MessageSquare, href: 'team_chat', showDot: chatHasUnread },
       { label: 'Stress Buster', icon: Activity, href: 'deflector' },
+      { label: 'Ops Journey', icon: BookOpen, href: 'diary' },
       { label: 'System Support', icon: LifeBuoy, href: 'system_support' },
     ]
   });
@@ -150,6 +160,48 @@ export default function Layout({ children, activePage, onNavigate }) {
     onNavigate(href);
     setMobileOpen(false);
   };
+
+  // Group formatting logic for search results
+  const searchPages = () => {
+    if (!searchQuery) return [];
+    return GROUPS.flatMap(g => g.items)
+      .filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase()))
+      .map(item => ({ ...item, type: 'PAGE' }));
+  };
+
+  const searchHealthmates = () => {
+    if (!searchQuery) return [];
+    return healthmates
+      .filter(hm => hm.name?.toLowerCase().includes(searchQuery.toLowerCase()) || hm.email?.toLowerCase().includes(searchQuery.toLowerCase()))
+      .map(hm => ({ ...hm, type: 'HEALTHMATE' }));
+  };
+
+  const searchServiceUsers = () => {
+    if (!searchQuery) return [];
+    return serviceUsers
+      .filter(su => su.name?.toLowerCase().includes(searchQuery.toLowerCase()) || su.email?.toLowerCase().includes(searchQuery.toLowerCase()) || (su.phone && su.phone.includes(searchQuery)))
+      .map(su => ({ ...su, type: 'SERVICE_USER' }));
+  };
+
+  const handleSearchResultClick = (result) => {
+    setShowSearchDropdown(false);
+    setSearchQuery('');
+    
+    if (result.type === 'PAGE') {
+      onNavigate(result.href);
+    } else if (result.type === 'HEALTHMATE') {
+      setSelectedHealthmate(result);
+      onNavigate('healthmates_list');
+    } else if (result.type === 'SERVICE_USER') {
+      setSelectedServiceUser(result);
+      onNavigate('service_users');
+    }
+  };
+
+  const pageResults = searchPages();
+  const hmResults = searchHealthmates();
+  const suResults = searchServiceUsers();
+  const hasSearchResults = pageResults.length > 0 || hmResults.length > 0 || suResults.length > 0;
 
   const SidebarContent = ({ minimized }) => (
     <div className={`flex flex-col h-full transition-colors duration-200 z-10 relative ${isLightMode ? 'bg-white text-slate-800 border-r border-slate-200/50' : 'bg-[#131c2f] text-slate-300 border-r border-white/5'}`}>
@@ -273,7 +325,6 @@ export default function Layout({ children, activePage, onNavigate }) {
       </div>
     </div>
   );
-
   return (
     <div className={`flex flex-col h-screen overflow-hidden transition-colors duration-300 ${isLightMode ? 'bg-slate-50' : 'bg-[#0a0f1c]'}`}>
 
@@ -304,19 +355,126 @@ export default function Layout({ children, activePage, onNavigate }) {
           </div>
         </div>
 
-        {/* Global Search Bar (Mock) */}
-        <div className="flex-1 max-w-lg mx-4 hidden md:block">
-          <div className="relative">
+        {/* Global Omni-Search Bar */}
+        <div className="flex-1 max-w-xl mx-4 hidden md:flex items-center gap-3">
+          <div className="relative flex-1">
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isLightMode ? 'text-slate-500' : 'text-slate-400'}`} />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchDropdown(e.target.value.length > 0);
+              }}
+              onFocus={() => {
+                if (searchQuery.length > 0) setShowSearchDropdown(true);
+              }}
               placeholder="Search resources, services, and docs"
               className={`w-full text-sm rounded-md pl-9 pr-3 py-1.5 focus:outline-none transition-all ${isLightMode
                   ? 'bg-slate-100 border-transparent focus:border-brand-teal focus:ring-1 focus:ring-brand-teal text-slate-900 placeholder-slate-400'
                   : 'bg-slate-800 border-slate-700 focus:border-brand-teal focus:ring-1 focus:ring-brand-teal text-slate-200 placeholder-slate-500'
                 }`}
             />
+
+            {/* Search Dropdown Overlay */}
+            {showSearchDropdown && (
+              <>
+                <div
+                  className="fixed inset-0 z-40 cursor-default"
+                  onClick={() => setShowSearchDropdown(false)}
+                />
+                <div className={`absolute left-0 right-0 mt-2 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 border ${isLightMode ? 'bg-white border-slate-200 text-slate-700' : 'bg-[#131c2f] border-white/5 text-slate-300'}`}>
+                  
+                  {!hasSearchResults && searchQuery ? (
+                    <div className="p-4 text-center text-sm font-semibold opacity-70">
+                      No results found for "{searchQuery}"
+                    </div>
+                  ) : (
+                    <div className="max-h-96 overflow-y-auto custom-scrollbar">
+                      
+                      {/* Pages Section */}
+                      {pageResults.length > 0 && (
+                        <div className="py-2">
+                          <div className={`px-4 py-1 text-[10px] font-extrabold uppercase tracking-wider ${isLightMode ? 'text-slate-400 bg-slate-50' : 'text-slate-500 bg-white/5'}`}>
+                            Pages & Tabs
+                          </div>
+                          {pageResults.map((page, idx) => (
+                            <button
+                              key={`page-${idx}`}
+                              onClick={() => handleSearchResultClick(page)}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors text-left ${isLightMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
+                            >
+                              <div className={`w-6 h-6 rounded flex items-center justify-center shrink-0 ${isLightMode ? 'bg-slate-100 text-slate-500' : 'bg-slate-800 text-slate-400'}`}>
+                                <page.icon className="w-3.5 h-3.5" />
+                              </div>
+                              <span>{page.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Healthmates Section */}
+                      {hmResults.length > 0 && (
+                        <div className="py-2">
+                          <div className={`px-4 py-1 text-[10px] font-extrabold uppercase tracking-wider ${isLightMode ? 'text-slate-400 bg-slate-50' : 'text-slate-500 bg-white/5'}`}>
+                            HealthMates (Partners)
+                          </div>
+                          {hmResults.map((hm, idx) => (
+                            <button
+                              key={`hm-${idx}`}
+                              onClick={() => handleSearchResultClick(hm)}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors text-left ${isLightMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
+                            >
+                              <div className="w-6 h-6 rounded-full bg-brand-teal/10 flex items-center justify-center text-brand-teal text-[10px] font-extrabold shrink-0 border border-brand-teal/20">
+                                {hm.name?.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'HM'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="truncate font-bold">{hm.name}</p>
+                                <p className={`truncate text-[10px] ${isLightMode ? 'text-slate-500' : 'text-slate-400'}`}>{hm.email}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Service Users Section */}
+                      {suResults.length > 0 && (
+                        <div className="py-2">
+                          <div className={`px-4 py-1 text-[10px] font-extrabold uppercase tracking-wider ${isLightMode ? 'text-slate-400 bg-slate-50' : 'text-slate-500 bg-white/5'}`}>
+                            Service Users
+                          </div>
+                          {suResults.map((su, idx) => (
+                            <button
+                              key={`su-${idx}`}
+                              onClick={() => handleSearchResultClick(su)}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors text-left ${isLightMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'}`}
+                            >
+                              <div className="w-6 h-6 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500 text-[10px] font-extrabold shrink-0 border border-indigo-500/20">
+                                {su.name?.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'SU'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="truncate font-bold">{su.name}</p>
+                                <p className={`truncate text-[10px] ${isLightMode ? 'text-slate-500' : 'text-slate-400'}`}>{su.email}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
+          
+          <button 
+            onClick={() => setIsLewisOpen(true)}
+            className="flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-full bg-brand-teal text-white shadow-md shadow-brand-teal/20 hover:bg-brand-teal-hover hover:scale-105 active:scale-95 transition-all shrink-0"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Ask Lewis !
+          </button>
         </div>
 
         {/* Top Right Actions */}
@@ -515,6 +673,9 @@ export default function Layout({ children, activePage, onNavigate }) {
           </div>
         </main>
       </div>
+
+      {/* Lewis AI Chatbot Overlay */}
+      <LewisChat isOpen={isLewisOpen} onClose={() => setIsLewisOpen(false)} />
     </div>
   );
 }
