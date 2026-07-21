@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
+import {  
   Users,
   Search,
   ChevronRight,
@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   Filter
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import HealthmateModal from '../pipeline/HealthmateModal';
 

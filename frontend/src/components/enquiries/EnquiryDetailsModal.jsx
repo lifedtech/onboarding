@@ -1,4 +1,4 @@
-import { X, Calendar, MapPin, PhoneCall, FileText, User } from 'lucide-react';
+import {   X, Calendar, MapPin, PhoneCall, FileText, User   } from 'lucide-react';
 
 export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
   if (!isOpen || !enquiry) return null;

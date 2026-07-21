@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useOpsStore from '../../store/useOpsStore';
-import { Target, Users, Megaphone, TrendingUp, DollarSign, Activity, Search, ChevronRight, Heart, Mail } from 'lucide-react';
+import {   Target, Users, Megaphone, TrendingUp, DollarSign, Activity, Search, ChevronRight, Heart, Mail   } from 'lucide-react';
 
 export default function SalesMarketingDashboard() {
   const [activeKpi, setActiveKpi] = useState(null);

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import {
+import {  
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
   RefreshCw, BookOpen, Sun, Moon, Sparkles
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import useNotesStore from '../store/useNotesStore';
 import LewisChat from './dashboard/LewisChat';

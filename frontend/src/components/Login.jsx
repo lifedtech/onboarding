@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Lock, Loader2, AlertCircle, Activity } from 'lucide-react';
+import {   Mail, Lock, Loader2, AlertCircle, Activity   } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import logo from '../assets/favicon.svg';
 import SoothingBackground from './SoothingBackground';

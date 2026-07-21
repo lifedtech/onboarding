@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import {
+import {  
   X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
   Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User,
   Calendar, Layers, BookOpen, CheckCircle2, FileText, AlertTriangle
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import CategorySelector from './CategorySelector';

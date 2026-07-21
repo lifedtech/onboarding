@@ -13,7 +13,7 @@ import HealthmateCard from './HealthmateCard';
 import AddHealthmateModal from './AddHealthmateModal';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
-import { GitBranch, RefreshCw, Plus, Clock, BookOpen, X } from 'lucide-react';
+import {   GitBranch, RefreshCw, Plus, Clock, BookOpen, X   } from 'lucide-react';
 import HealthmateSOP from '../dashboard/HealthmateSOP';
 const PHASES = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
 

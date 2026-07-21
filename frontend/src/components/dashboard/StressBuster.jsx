@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Zap, Gamepad2, X } from 'lucide-react';
+import {   Shield, Zap, Gamepad2, X   } from 'lucide-react';
 import TicketDeflector from './TicketDeflector';
 import ServerTugOfWar from './ServerTugOfWar';
 

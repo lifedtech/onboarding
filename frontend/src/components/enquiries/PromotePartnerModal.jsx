@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Loader2, ArrowRight } from 'lucide-react';
+import {   X, Loader2, ArrowRight   } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import CategorySelector from '../pipeline/CategorySelector';

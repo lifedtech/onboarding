@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, X, Copy, CheckCircle2 } from 'lucide-react';
+import {   ArrowUpRight, X, Copy, CheckCircle2   } from 'lucide-react';
 import { sopAssets } from '../../data/sopAssets';
 
 const stages = [

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar, MapPin, PhoneCall, User, ShieldCheck, Clock, Activity } from 'lucide-react';
+import {   X, Calendar, MapPin, PhoneCall, User, ShieldCheck, Clock, Activity   } from 'lucide-react';
 
 export default function HealthmateDetailsModal({ isOpen, onClose, healthmate }) {
   if (!isOpen || !healthmate) return null;

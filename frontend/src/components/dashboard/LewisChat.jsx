@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, X, Minimize2, Send, Bot } from 'lucide-react';
+import {   Sparkles, X, Minimize2, Send, Bot   } from 'lucide-react';
 
 export default function LewisChat({ isOpen, onClose }) {
   const [isMinimized, setIsMinimized] = useState(false);

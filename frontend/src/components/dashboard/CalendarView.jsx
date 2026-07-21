@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
+import {  
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +18,7 @@ import {
   Layers,
   CalendarDays,
   FileText
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 

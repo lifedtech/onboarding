@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
+import {  
   Users,
   AlertTriangle,
   CheckCircle,
@@ -9,7 +9,7 @@ import {
   TrendingUp,
   Briefcase,
   Zap
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 
 const PHASE_LABELS = {

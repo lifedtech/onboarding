@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import {
+import {  
   CheckSquare,
   Clock,
   Calendar,
@@ -7,7 +7,7 @@ import {
   Inbox,
   Smile,
   ShieldAlert
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 

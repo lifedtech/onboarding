@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Pin, Trash2, Palette, GripHorizontal, Plus, CheckSquare as CheckSquareIcon } from 'lucide-react';
+import {   X, Pin, Trash2, Palette, GripHorizontal, Plus, CheckSquare as CheckSquareIcon   } from 'lucide-react';
 import useNotesStore from '../../store/useNotesStore';
 
 const COLORS = [

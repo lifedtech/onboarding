@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Clock, Tag, User, CalendarDays } from 'lucide-react';
+import {   Clock, Tag, User, CalendarDays   } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 
 // ─── Type badge config ────────────────────────────────────────────────────────

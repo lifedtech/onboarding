@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
+import {  
   FileSpreadsheet,
   Plus,
   RefreshCw,
@@ -14,7 +14,7 @@ import {
   Check,
   X,
   Edit2
-} from 'lucide-react';
+  } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import AddEnquiryModal from './AddEnquiryModal';
 import PromotePartnerModal from './PromotePartnerModal';
