@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {   Book, Save, Calendar as CalendarIcon, ChevronLeft, ChevronRight, PenTool, CalendarDays, Trash2   } from 'lucide-react';
+import {   Book, Save, Calendar as CalendarIcon, ChevronLeft, ChevronRight, PenTool, CalendarDays, Trash2, Tag, UserPlus, X, Plus   } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useOpsStore from '../../store/useOpsStore';
 
+const emptyClientTag = () => ({ name: '', contact: '', email: '', location: '', social: [''] });
+
 export default function Diary() {
   const user = useOpsStore((s) => s.user);
+  const setEnquiryPrefill = useOpsStore((s) => s.setEnquiryPrefill);
   const userId = user?.id || 'guest';
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [noteContent, setNoteContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  
+
+  // Client tags (add-on to the note, separate from the rough notes themselves).
+  // One diary entry can carry tags for several clients, each with its own socials.
+  const [showTags, setShowTags] = useState(false);
+  const [clientTags, setClientTags] = useState([emptyClientTag()]);
+
   // Archive Calendar state
   const [showCalendar, setShowCalendar] = useState(false);
   const [archiveMonth, setArchiveMonth] = useState(new Date());
-  
+
   // Modal state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -21,6 +29,8 @@ export default function Diary() {
   const getStorageKey = (date) => {
     return `diary_${userId}_${date.getFullYear()}_${date.getMonth() + 1}_${date.getDate()}`;
   };
+
+  const getTagsStorageKey = (date) => `${getStorageKey(date)}_tags`;
 
   const formatDateLabel = (date) => {
     return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -44,17 +54,37 @@ export default function Diary() {
   };
 
   useEffect(() => {
-    // Load note for the selected date
+    // Load note + client tags for the selected date
     const key = getStorageKey(selectedDate);
     const savedNote = localStorage.getItem(key);
     setNoteContent(savedNote || '');
+
+    const savedTags = localStorage.getItem(getTagsStorageKey(selectedDate));
+    if (savedTags) {
+      const parsed = JSON.parse(savedTags);
+      // Back-compat: pre-multi-client versions stored a single tag object (social as a string).
+      const list = Array.isArray(parsed) ? parsed : [parsed];
+      setClientTags(list.map((t) => {
+        const social = Array.isArray(t.social) ? t.social : [t.social || ''];
+        return { ...emptyClientTag(), ...t, social: social.length ? social : [''] };
+      }));
+    } else {
+      setClientTags([emptyClientTag()]);
+    }
   }, [selectedDate, userId]);
 
   const handleSave = () => {
     setIsSaving(true);
     const key = getStorageKey(selectedDate);
     localStorage.setItem(key, noteContent);
-    
+
+    const tagsKey = getTagsStorageKey(selectedDate);
+    const cleaned = clientTags
+      .map((t) => ({ ...t, social: t.social.map((s) => s.trim()).filter(Boolean) }))
+      .filter((t) => t.social.length || ['name', 'contact', 'email', 'location'].some((f) => t[f].trim()));
+    if (cleaned.length) localStorage.setItem(tagsKey, JSON.stringify(cleaned));
+    else localStorage.removeItem(tagsKey);
+
     // Simulate slight delay for saving animation
     setTimeout(() => {
       setIsSaving(false);
@@ -70,9 +100,52 @@ export default function Diary() {
   const confirmDelete = () => {
     const key = getStorageKey(selectedDate);
     localStorage.removeItem(key);
+    localStorage.removeItem(getTagsStorageKey(selectedDate));
     setNoteContent('');
+    setClientTags([emptyClientTag()]);
     setShowDeleteConfirm(false);
     toast.success('Diary entry deleted.');
+  };
+
+  const handleTagChange = (tagIndex, field) => (e) => {
+    const value = e.target.value;
+    setClientTags((prev) => prev.map((t, i) => (i === tagIndex ? { ...t, [field]: value } : t)));
+  };
+
+  const handleSocialChange = (tagIndex, socialIndex, value) => {
+    setClientTags((prev) => prev.map((t, i) =>
+      i === tagIndex ? { ...t, social: t.social.map((s, si) => (si === socialIndex ? value : s)) } : t
+    ));
+  };
+
+  const addSocialField = (tagIndex) => {
+    setClientTags((prev) => prev.map((t, i) => (i === tagIndex ? { ...t, social: [...t.social, ''] } : t)));
+  };
+
+  const removeSocialField = (tagIndex, socialIndex) => {
+    setClientTags((prev) => prev.map((t, i) => {
+      if (i !== tagIndex) return t;
+      return { ...t, social: t.social.length > 1 ? t.social.filter((_, si) => si !== socialIndex) : [''] };
+    }));
+  };
+
+  const addClientTag = () => {
+    setClientTags((prev) => [...prev, emptyClientTag()]);
+  };
+
+  const removeClientTag = (tagIndex) => {
+    setClientTags((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== tagIndex) : [emptyClientTag()]));
+  };
+
+  const handleAddToEnquiry = (tagIndex) => {
+    const t = clientTags[tagIndex];
+    if (!t.name.trim() && !t.contact.trim() && !t.email.trim()) {
+      toast.error('Fill at least a name, contact or email tag first.');
+      return;
+    }
+    const social = t.social.map((s) => s.trim()).filter(Boolean).join(', ');
+    setEnquiryPrefill({ ...t, social });
+    toast.success('Tag details sent to the Add Enquiry form.');
   };
 
   const changeDate = (days) => {
@@ -183,6 +256,19 @@ export default function Diary() {
           </div>
           
           <div className="flex items-center gap-3">
+            {!showCalendar && (
+              <button
+                onClick={() => setShowTags(!showTags)}
+                className={`flex items-center justify-center gap-2 border px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 ${
+                  showTags
+                    ? 'bg-brand-teal/10 border-brand-teal/30 text-brand-teal'
+                    : 'bg-white dark:bg-[#131c2f] border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 hover:text-brand-teal'
+                }`}
+              >
+                <Tag className="w-5 h-5" />
+                Add
+              </button>
+            )}
             <button
               onClick={() => {
                 setShowCalendar(!showCalendar);
@@ -356,6 +442,127 @@ export default function Diary() {
                 </button>
               </div>
             </div>
+
+            {/* Client Tags Panel — rough add-ons for clients mentioned in today's note */}
+            {showTags && (
+              <div className="mb-6 bg-white dark:bg-[#131c2f] p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 animate-in fade-in slide-in-from-top-2 duration-200 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-extrabold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-brand-teal" />
+                    Client Tags
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={addClientTag}
+                      className="flex items-center gap-1 text-brand-teal hover:text-brand-teal-hover text-xs font-extrabold px-2 py-1 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add Client
+                    </button>
+                    <button
+                      onClick={() => setShowTags(false)}
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg transition-colors"
+                      aria-label="Hide client tags"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {clientTags.map((t, tagIndex) => (
+                  <div
+                    key={tagIndex}
+                    className="p-3 sm:p-4 bg-slate-50/60 dark:bg-white/[0.03] rounded-xl border border-slate-200/70 dark:border-white/5"
+                  >
+                    {clientTags.length > 1 && (
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                          Client {tagIndex + 1}
+                        </span>
+                        <button
+                          onClick={() => removeClientTag(tagIndex)}
+                          className="text-slate-400 hover:text-red-500 p-1 rounded-lg transition-colors"
+                          aria-label="Remove this client"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-start">
+                      {[
+                        { field: 'name', label: 'Name', placeholder: 'e.g. Liam Parker' },
+                        { field: 'contact', label: 'Contact', placeholder: 'e.g. 9967328040' },
+                        { field: 'email', label: 'Email', placeholder: 'e.g. liam@example.com' },
+                        { field: 'location', label: 'Location', placeholder: 'e.g. Mumbai' },
+                      ].map(({ field, label, placeholder }) => (
+                        <div key={field}>
+                          <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
+                            {label}
+                          </label>
+                          <input
+                            type="text"
+                            value={t[field]}
+                            onChange={handleTagChange(tagIndex, field)}
+                            placeholder={placeholder}
+                            className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                          />
+                        </div>
+                      ))}
+
+                      {/* Social — repeatable, one row per handle */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                            Social
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => addSocialField(tagIndex)}
+                            className="text-brand-teal hover:text-brand-teal-hover p-0.5 rounded transition-colors"
+                            aria-label="Add another social"
+                            title="Add another social"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="space-y-1.5">
+                          {t.social.map((val, socialIndex) => (
+                            <div key={socialIndex} className="flex items-center gap-1">
+                              <input
+                                type="text"
+                                value={val}
+                                onChange={(e) => handleSocialChange(tagIndex, socialIndex, e.target.value)}
+                                placeholder="e.g. @liam.parker"
+                                className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-600 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                              />
+                              {t.social.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeSocialField(tagIndex, socialIndex)}
+                                  className="shrink-0 text-slate-400 hover:text-red-500 p-1.5 rounded-lg transition-colors"
+                                  aria-label="Remove social"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-end mt-3">
+                      <button
+                        onClick={() => handleAddToEnquiry(tagIndex)}
+                        className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal-hover text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm shadow-brand-teal/20 transition-all active:scale-95"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                        Add to Enquiry
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Editor Area */}
             <div className="flex-1 bg-white dark:bg-[#131c2f] rounded-3xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col relative group transition-colors focus-within:border-brand-teal/50 focus-within:ring-4 focus-within:ring-brand-teal/10 min-h-[300px] animate-in fade-in duration-200">

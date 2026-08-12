@@ -1,18 +1,38 @@
 import { useState } from 'react';
-import {   X, Loader2, UserPlus, Calendar, PhoneCall   } from 'lucide-react';
+import {   X, Loader2, UserPlus, Calendar, PhoneCall, Plus, AtSign   } from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import LocationSelector from '../LocationSelector';
 
-export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
+const QUALIFICATION_CRITERIA = [
+  { key: 'scoreRelevance', label: 'Program relevance', desc: 'Does it fit wellness, functional movement, or recovery?' },
+  { key: 'scoreSafety', label: 'Safety', desc: 'Is it non-clinical, non-invasive, and suitable for general users?' },
+  { key: 'scoreExperience', label: 'Experience quality', desc: 'Does the program feel meaningful, structured, and memorable?' },
+  { key: 'scoreCredibility', label: 'Facilitator credibility', desc: 'Do they have training, experience, reviews, or visible work?' },
+  { key: 'scoreLocation', label: 'Location quality', desc: 'Is the venue safe, accessible, calm, and suitable?' },
+  { key: 'scoreVisual', label: 'Visual appeal', desc: 'Can it be marketed well through photos and videos?' },
+  { key: 'scoreBooking', label: 'Booking readiness', desc: 'Can they give date, duration, price, inclusions, capacity?' },
+  { key: 'scoreUniqueness', label: 'Uniqueness', desc: 'Does it add something different to Lifed?' },
+  { key: 'scoreCorporate', label: 'Corporate potential', desc: 'Can this be adapted for employee wellbeing?' },
+  { key: 'scoreRepeatability', label: 'Repeatability', desc: 'Can this program run monthly or quarterly?' },
+];
+
+export default function AddEnquiryModal({ isOpen, onClose, defaultType, initialData }) {
   const createEnquiry = useOpsStore((s) => s.createEnquiry);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  // Diary "Add to Enquiry" tags map onto the fields that exist here; location has no
+  // dedicated free-text field so it's dropped into remarks as a reference note.
+  const prefillRemarks = initialData?.location ? `Location: ${initialData.location}` : '';
+  // Diary sends social as one comma-joined string — split back into individual rows.
+  const initialSocials = (initialData?.social || '').split(',').map((s) => s.trim()).filter(Boolean);
+
+  const [name, setName] = useState(initialData?.name || '');
+  const [email, setEmail] = useState(initialData?.email || '');
   const [contactCode, setContactCode] = useState('+91');
-  const [contactPhone, setContactPhone] = useState('');
+  const [contactPhone, setContactPhone] = useState((initialData?.contact || '').replace(/\D/g, '').slice(-10));
   const [altContactCode, setAltContactCode] = useState('+91');
   const [altContactPhone, setAltContactPhone] = useState('');
+  const [socialLinks, setSocialLinks] = useState(initialSocials.length ? initialSocials : ['']);
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
@@ -24,13 +44,25 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
   const [capacity, setCapacity] = useState('');
   const [clientType, setClientType] = useState(defaultType || 'HEALTH_PARTNER'); // 'HEALTH_PARTNER' or 'SERVICE_USER'
   const [contacted, setContacted] = useState(false);
-  const [remarks, setRemarks] = useState('');
+  const [remarks, setRemarks] = useState(prefillRemarks);
   const [callbackLater, setCallbackLater] = useState(false);
   const [reminderDate, setReminderDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [qScores, setQScores] = useState({});
 
   if (!isOpen) return null;
+
+  const totalScore = Object.values(qScores).reduce((sum, val) => sum + (Number(val) || 0), 0);
+
+  const handleSocialChange = (index, value) => {
+    setSocialLinks((prev) => prev.map((s, i) => (i === index ? value : s)));
+  };
+
+  const addSocialField = () => setSocialLinks((prev) => [...prev, '']);
+
+  const removeSocialField = (index) => {
+    setSocialLinks((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : ['']));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +81,12 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
     }
 
     setSaving(true);
+    // No dedicated "social" column on Enquiry — fold cleaned handles into remarks, same as location.
+    const cleanSocials = socialLinks.map((s) => s.trim()).filter(Boolean);
+    const fullRemarks = [remarks.trim(), cleanSocials.length ? `Social: ${cleanSocials.join(', ')}` : '']
+      .filter(Boolean)
+      .join('\n');
+
     const payload = {
       name: name.trim(),
       email: email.trim() || null,
@@ -65,7 +103,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       capacity: capacity.trim() || null,
       clientType,
       contacted,
-      remarks: remarks.trim() || null,
+      remarks: fullRemarks || null,
       callbackLater: clientType === 'HEALTH_PARTNER' ? callbackLater : false,
       reminderDate: (clientType === 'HEALTH_PARTNER' && callbackLater && reminderDate)
         ? new Date(reminderDate).toISOString()
@@ -85,6 +123,7 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
       setContactPhone('');
       setAltContactCode('+91');
       setAltContactPhone('');
+      setSocialLinks(['']);
       setCity('');
       setState('');
       setCountry('');
@@ -235,6 +274,49 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
               </div>
             </div>
 
+            {/* Social — repeatable, one handle per row */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-text-main text-xs font-extrabold uppercase">
+                  Social
+                </label>
+                <button
+                  type="button"
+                  onClick={addSocialField}
+                  className="flex items-center gap-1 text-brand-teal hover:text-brand-teal-hover text-xs font-extrabold px-1.5 py-0.5 rounded-lg transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add
+                </button>
+              </div>
+              <div className="space-y-2">
+                {socialLinks.map((val, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted/50" />
+                      <input
+                        type="text"
+                        value={val}
+                        onChange={(e) => handleSocialChange(index, e.target.value)}
+                        placeholder="e.g. instagram.com/liam.parker"
+                        className="w-full bg-slate-50 border border-border-leaf/80 text-text-main placeholder-text-muted/40 rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal transition-all"
+                      />
+                    </div>
+                    {socialLinks.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSocialField(index)}
+                        className="shrink-0 text-text-muted hover:text-red-500 p-2 rounded-lg transition-colors"
+                        aria-label="Remove social"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Location */}
             <LocationSelector
               city={city}
@@ -311,59 +393,59 @@ export default function AddEnquiryModal({ isOpen, onClose, defaultType }) {
               <div className="space-y-5">
 
 
-                {/* Qualification Table */}
-                <div className="p-4 bg-slate-50/50 rounded-2xl border border-border-leaf/35 overflow-hidden">
-                  <div className="flex items-center justify-between mb-3">
+                {/* Qualification Score */}
+                <div className="p-4 sm:p-5 bg-slate-50/50 rounded-2xl border border-border-leaf/35 overflow-hidden">
+                  <div className="flex items-center justify-between gap-3">
                     <div>
-                      <h4 className="text-text-main text-xs font-extrabold uppercase">Qualification Score</h4>
-                      <p className="text-[10px] text-text-muted mt-0.5">Score 1-5. Ideal: 35+ / 50.</p>
+                      <h4 className="text-text-main text-xs font-extrabold uppercase tracking-wide">Qualification Score</h4>
+                      <p className="text-[10px] text-text-muted mt-0.5">Tap a score per criterion. Ideal: 35+ / 50.</p>
                     </div>
-                    <div className="bg-brand-teal/10 border border-brand-teal/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
-                      <span className="text-[10px] font-extrabold text-brand-teal uppercase tracking-wider">Total:</span>
-                      <span className="text-sm font-black text-brand-teal">
-                        {Object.values(qScores).reduce((sum, val) => sum + (Number(val) || 0), 0)}
+                    <div className="text-right shrink-0">
+                      <span className={`text-2xl font-black leading-none ${totalScore >= 35 ? 'text-brand-green' : 'text-brand-teal'}`}>
+                        {totalScore}
                       </span>
+                      <span className="text-xs font-bold text-text-muted">/50</span>
                     </div>
                   </div>
-                  
-                  <div className="max-h-[300px] overflow-y-auto border border-border-leaf/40 rounded-xl">
-                    <table className="w-full text-left border-collapse table-fixed bg-white">
-                      <tbody className="divide-y divide-border-leaf/35 text-[10px] text-text-main font-bold">
-                        {[
-                          { key: 'scoreRelevance', label: 'Program relevance', desc: 'Does it fit wellness, functional movement, or recovery?' },
-                          { key: 'scoreSafety', label: 'Safety', desc: 'Is it non-clinical, non-invasive, and suitable for general users?' },
-                          { key: 'scoreExperience', label: 'Experience quality', desc: 'Does the program feel meaningful, structured, and memorable?' },
-                          { key: 'scoreCredibility', label: 'Facilitator credibility', desc: 'Do they have training, experience, reviews, or visible work?' },
-                          { key: 'scoreLocation', label: 'Location quality', desc: 'Is the venue safe, accessible, calm, and suitable?' },
-                          { key: 'scoreVisual', label: 'Visual appeal', desc: 'Can it be marketed well through photos and videos?' },
-                          { key: 'scoreBooking', label: 'Booking readiness', desc: 'Can they give date, duration, price, inclusions, capacity?' },
-                          { key: 'scoreUniqueness', label: 'Uniqueness', desc: 'Does it add something different to Lifed?' },
-                          { key: 'scoreCorporate', label: 'Corporate potential', desc: 'Can this be adapted for employee wellbeing?' },
-                          { key: 'scoreRepeatability', label: 'Repeatability', desc: 'Can this program run monthly or quarterly?' },
-                        ].map((item) => (
-                          <tr key={item.key} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-2 px-3 w-[70%]">
-                              <div className="text-[11px]">{item.label}</div>
+
+                  <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden mt-3 mb-4">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${totalScore >= 35 ? 'bg-brand-green' : 'bg-brand-teal'}`}
+                      style={{ width: `${Math.min(100, (totalScore / 50) * 100)}%` }}
+                    />
+                  </div>
+
+                  <div className="max-h-[300px] overflow-y-auto -mr-1 pr-1 custom-scrollbar">
+                    <div className="bg-white border border-border-leaf/40 rounded-xl divide-y divide-border-leaf/35">
+                      {QUALIFICATION_CRITERIA.map((item) => {
+                        const value = qScores[item.key] || 0;
+                        return (
+                          <div key={item.key} className="flex items-center justify-between gap-3 py-2.5 px-3.5 hover:bg-slate-50 transition-colors">
+                            <div className="min-w-0">
+                              <div className="text-[11px] font-extrabold text-text-main">{item.label}</div>
                               <div className="text-[9px] text-text-muted font-semibold truncate" title={item.desc}>{item.desc}</div>
-                            </td>
-                            <td className="py-2 px-3 w-[30%]">
-                              <input
-                                type="number"
-                                min="0"
-                                max="5"
-                                value={qScores[item.key] || ''}
-                                onChange={(e) => {
-                                  const val = Math.min(5, Math.max(0, parseInt(e.target.value) || 0));
-                                  setQScores(prev => ({ ...prev, [item.key]: val }));
-                                }}
-                                className="w-full text-center bg-white border border-border-leaf/80 rounded-lg py-1 focus:outline-none focus:ring-1 focus:ring-brand-teal"
-                                placeholder="0"
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {[0, 1, 2, 3, 4, 5].map((n) => (
+                                <button
+                                  key={n}
+                                  type="button"
+                                  onClick={() => setQScores((prev) => ({ ...prev, [item.key]: n }))}
+                                  aria-pressed={value === n}
+                                  className={`w-7 h-7 rounded-lg text-[10px] font-extrabold transition-all ${
+                                    value === n
+                                      ? 'bg-brand-teal text-white shadow-sm shadow-brand-teal/30'
+                                      : 'bg-slate-50 border border-border-leaf/60 text-text-muted hover:border-brand-teal/50 hover:text-brand-teal'
+                                  }`}
+                                >
+                                  {n}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 

@@ -18,6 +18,7 @@ import ChatBoxTab from './components/dashboard/ChatBoxTab';
 import ProfilePage from './components/profile/ProfilePage';
 import StressBuster from './components/dashboard/StressBuster';
 import EnquiriesSheet from './components/enquiries/EnquiriesSheet';
+import AddEnquiryModal from './components/enquiries/AddEnquiryModal';
 import ServiceUsersList from './components/dashboard/ServiceUsersList';
 import AdminDashboard from './components/dashboard/AdminDashboard';
 import BookingOperations from './components/dashboard/BookingOperations';
@@ -95,6 +96,8 @@ function Workspace() {
   
   const [activePage, setActivePage] = useState(defaultPage);
   const selectedHealthmate = useOpsStore((s) => s.selectedHealthmate);
+  const enquiryPrefill = useOpsStore((s) => s.enquiryPrefill);
+  const setEnquiryPrefill = useOpsStore((s) => s.setEnquiryPrefill);
   const [gameSession, setGameSession] = useState(null);
   const token = useOpsStore((s) => s.token);
   const logout = useOpsStore((s) => s.logout);
@@ -265,6 +268,13 @@ function Workspace() {
         {activePage !== 'team_chat' && <ChatNotifier />}
         {currentPage}
         {selectedHealthmate && <HealthmateModal />}
+        {enquiryPrefill && (
+          <AddEnquiryModal
+            isOpen
+            initialData={enquiryPrefill}
+            onClose={() => setEnquiryPrefill(null)}
+          />
+        )}
       </Layout>
       <KeepNotes />
     </>

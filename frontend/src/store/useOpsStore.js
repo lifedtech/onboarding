@@ -37,6 +37,7 @@ const useOpsStore = create((set, get) => ({
   serviceUsers:        [],
   selectedHealthmate: null,
   selectedServiceUser: null,
+  enquiryPrefill:     null,
   summaryMetrics:     null,
   adminMetrics:       null,
   tickets:            [],
@@ -87,6 +88,9 @@ const useOpsStore = create((set, get) => ({
     const fresh = get().serviceUsers.find((u) => u.id === user.id) ?? user;
     set({ selectedServiceUser: fresh });
   },
+
+  // Prefill data (e.g. from Diary tags) to open the Add Enquiry modal with, from anywhere in the app.
+  setEnquiryPrefill: (data) => set({ enquiryPrefill: data }),
 
   // ── Enquiry Actions ────────────────────────────────────────────────────────
 
