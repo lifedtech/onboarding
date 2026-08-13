@@ -5,6 +5,19 @@ const helmet = require('helmet');
 
 const app = express();
 
+// ─── Trust Proxy ──────────────────────────────────────────────────────────────
+// Per-IP rate limiting (see middleware/rateLimit.middleware.js) relies on
+// req.ip. If this API sits behind a reverse proxy / load balancer, Express
+// must be told to trust its X-Forwarded-For header, or every request will
+// appear to come from the proxy's IP and share a single rate-limit bucket.
+// Left unset, Express's default (no proxy trusted) applies — safe for a
+// directly-exposed deployment, but set this to the number of trusted hops
+// (e.g. "1") or a specific proxy IP/CIDR when running behind one.
+if (process.env.TRUST_PROXY) {
+  const trustProxy = process.env.TRUST_PROXY;
+  app.set('trust proxy', trustProxy === 'true' ? true : trustProxy);
+}
+
 // ─── Crash Resilience ─────────────────────────────────────────────────────────
 // A single unhandled rejection/exception anywhere (background worker, SSE broadcast,
 // presence tracking) would otherwise terminate the whole Node process by default,
@@ -58,9 +71,15 @@ app.use((req, res, next) => {
 });
 
 const path = require('path');
+const { authenticate } = require('./src/middleware/auth.middleware');
 
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Uploaded files (registration documents, avatars) are internal business
+// records, not public assets — require a valid session to fetch any of
+// them. <img>/<a> tags can't send an Authorization header, so authenticate
+// falls back to a ?token= query param for this path specifically (see
+// middleware/auth.middleware.js).
+app.use('/uploads', authenticate, express.static(path.join(__dirname, 'uploads')));
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 
@@ -73,11 +92,19 @@ app.get('/api/health', (req, res) => {
 app.use('/api', require('./src/routes/api.routes'));
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
+// Catch-all safety net for anything a route/controller didn't handle itself
+// (every controller already catches its own errors and responds with a
+// generic message — see e.g. controllers/*.js). Full detail always goes to
+// the server log; the client only ever sees a generic message for 5xx, since
+// error.message can carry a raw DB error, a file path, or other internals.
+// A deliberately-thrown 4xx (err.status < 500) is assumed to carry a
+// message written for the client, so that one is passed through.
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    message: err.message || 'Internal Server Error',
+  const status = err.status || 500;
+  console.error(`[${req.method} ${req.originalUrl}]`, err.stack || err);
+  res.status(status).json({
+    message: status < 500 && err.message ? err.message : 'Internal server error.',
   });
 });
 

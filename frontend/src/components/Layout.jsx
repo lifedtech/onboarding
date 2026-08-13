@@ -6,7 +6,6 @@ import {
   } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import useNotesStore from '../store/useNotesStore';
-import LewisChat from './dashboard/LewisChat';
 import logo from '../assets/favicon.svg';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -23,6 +22,7 @@ const getStatusColor = (mode) => {
 
 export default function Layout({ children, activePage, onNavigate }) {
   const user = useOpsStore((s) => s.user);
+  const token = useOpsStore((s) => s.token);
   const logout = useOpsStore((s) => s.logout);
   const chatHasUnread = useOpsStore((s) => s.chatHasUnread);
   const error = useOpsStore((s) => s.error);
@@ -41,7 +41,6 @@ export default function Layout({ children, activePage, onNavigate }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
-  const [isLewisOpen, setIsLewisOpen] = useState(false);
 
   // Theme state: defaults to light mode
   const [isLightMode, setIsLightMode] = useState(() => {
@@ -118,7 +117,7 @@ export default function Layout({ children, activePage, onNavigate }) {
   if (showHealthmates) {
     GROUPS.push({
       id: 'healthmates',
-      label: 'HealthMates - SuperHeros',
+      label: 'HealthMates',
       items: [
         { label: 'Dashboard', icon: LayoutDashboard, href: 'healthmate_dashboard' },
         { label: 'Healthmates List', icon: Users, href: 'healthmates_list' },
@@ -293,7 +292,7 @@ export default function Layout({ children, activePage, onNavigate }) {
           <div className="relative shrink-0 flex items-center justify-center">
             {user?.avatar ? (
               <img
-                src={UPLOADS_BASE + user.avatar}
+                src={UPLOADS_BASE + user.avatar + '?token=' + token}
                 alt="avatar"
                 className={`w-8 h-8 rounded-[12px] object-cover border shadow-sm ${isLightMode ? 'border-slate-300' : 'border-slate-600'}`}
               />
@@ -467,14 +466,6 @@ export default function Layout({ children, activePage, onNavigate }) {
               </>
             )}
           </div>
-          
-          <button 
-            onClick={() => setIsLewisOpen(true)}
-            className="flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-full bg-brand-teal text-white shadow-md shadow-brand-teal/20 hover:bg-brand-teal-hover hover:scale-105 active:scale-95 transition-all shrink-0"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            Ask Lewis !
-          </button>
         </div>
 
         {/* Top Right Actions */}
@@ -673,9 +664,6 @@ export default function Layout({ children, activePage, onNavigate }) {
           </div>
         </main>
       </div>
-
-      {/* Lewis AI Chatbot Overlay */}
-      <LewisChat isOpen={isLewisOpen} onClose={() => setIsLewisOpen(false)} />
     </div>
   );
 }

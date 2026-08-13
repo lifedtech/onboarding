@@ -1,0 +1,90 @@
+{
+  "system": "Lifed Operations Analytics & Management Engine",
+  "version": "1.0.0",
+  "integrations": {
+    "lifedhealth_website": {
+      "platform": "Laravel",
+      "webhooks": [
+        {
+          "endpoint": "POST /api/webhooks/traffic/ping",
+          "description": "Live website traffic telemetry",
+          "payload_fields": ["path", "sessionId", "referrer", "userAgent", "ip", "device"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/enquiries/created",
+          "description": "New lead or inquiry form submission",
+          "payload_fields": ["name", "contact", "email", "clientType", "platformFound", "city"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/payment/success",
+          "description": "Successful booking payment",
+          "payload_fields": ["bookingId", "userId", "amount", "serviceName", "transactionId"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/whatsapp/event",
+          "description": "WhatsApp chat initiation",
+          "payload_fields": ["phone", "sourcePage", "startedAt", "sessionId"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/reviews/submitted",
+          "description": "Program review submission",
+          "payload_fields": ["programId", "rating", "reviewText", "authorName"]
+        }
+      ],
+      "apis": [
+        {
+          "endpoint": "GET /api/analytics/traffic",
+          "description": "Fetches aggregated live traffic metrics for God View"
+        },
+        {
+          "endpoint": "GET /api/analytics/funnel",
+          "description": "Fetches customer journey funnel metrics"
+        },
+        {
+          "endpoint": "GET /api/analytics/user-growth",
+          "description": "Fetches user signups, LEWIS completions, and MAU stats"
+        }
+      ]
+    },
+    "healthmate_dashboard": {
+      "platform": "R&D / Partner Portal",
+      "security": "HMAC-SHA256 (Header: X-RD-Signature)",
+      "webhooks": [
+        {
+          "endpoint": "POST /api/webhooks/registration-submitted",
+          "description": "Partner onboarding form submission",
+          "payload_fields": ["healthmateId", "type", "category", "contactName", "contactPhone"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/verification-completed",
+          "description": "Credentials verification completion",
+          "payload_fields": ["healthmateId", "remark", "verifiedAt"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/program-submitted",
+          "description": "New program submission for review",
+          "payload_fields": ["healthmateId", "programTitle", "programStartDate", "programEndDate"]
+        },
+        {
+          "endpoint": "POST /api/webhooks/program-status",
+          "description": "Program review approval/correction status",
+          "payload_fields": ["healthmateId", "status", "approvedMessage"]
+        }
+      ],
+      "apis": [
+        {
+          "endpoint": "GET /api/healthmates",
+          "description": "Retrieves partner onboarding records and phases"
+        },
+        {
+          "endpoint": "POST /api/rnd/verify-credentials",
+          "description": "Triggers partner credential generation and dispatch"
+        },
+        {
+          "endpoint": "PATCH /api/healthmates/:id/phase",
+          "description": "Updates partner onboarding phase"
+        }
+      ]
+    }
+  }
+}

@@ -20,13 +20,27 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchAdminSummary();
     fetchSessionLogs();
+
+    // Auto-refresh metrics every 5 seconds for live traffic tracking
+    const interval = setInterval(() => {
+      fetchAdminSummary();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [fetchAdminSummary, fetchSessionLogs]);
 
   const stats = {
     qualifiedLeads: adminMetrics?.qualifiedLeads || 0,
     totalBookings: adminMetrics?.totalBookings || 0,
     grossBookingValue: adminMetrics?.grossBookingValue || 0,
-    lifedCommission: adminMetrics?.lifedCommission || 0
+    lifedCommission: adminMetrics?.lifedCommission || 0,
+    websiteTraffic: adminMetrics?.websiteTraffic || 0,
+    activeUsersNow: adminMetrics?.activeUsersNow || 0,
+    topChannels: (adminMetrics?.topChannels || []).map(ch => ({
+      name: ch.name,
+      value: ch.count,
+      width: `${Math.min(100, Math.round((ch.count / Math.max(1, adminMetrics?.websiteTraffic || 1)) * 100))}%`
+    }))
   };
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
@@ -66,7 +80,7 @@ export default function AdminDashboard() {
           {/* Top KPIs Section */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             {[
-              { label: 'Website Traffic', value: '0', icon: Globe, color: 'text-blue-500', bg: 'bg-blue-50' },
+              { label: 'Website Traffic', value: stats.websiteTraffic.toString(), icon: Globe, color: 'text-blue-500', bg: 'bg-blue-50' },
               { label: 'Total Users', value: '0', icon: Users, color: 'text-brand-teal', bg: 'bg-brand-teal/10' },
               { label: 'Total Booking', value: stats.totalBookings.toString(), icon: CalendarCheck, color: 'text-purple-500', bg: 'bg-purple-50' },
               { label: 'Gross Revenue', value: formatCurrency(stats.grossBookingValue), icon: Wallet, color: 'text-green-600', bg: 'bg-green-50' },
@@ -262,7 +276,7 @@ export default function AdminDashboard() {
             {[
               { title: 'Top audience', data: [] },
               { title: 'Top programs', data: [] },
-              { title: 'Top channels', data: [] }
+              { title: 'Top channels', data: stats.topChannels || [] }
             ].map((block, idx) => (
               <div key={idx} className="bg-white rounded-[24px] p-7 shadow-sm border border-border-leaf flex flex-col">
                 <div className="flex justify-between items-center mb-6">

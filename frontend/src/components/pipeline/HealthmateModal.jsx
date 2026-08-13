@@ -9,6 +9,9 @@ import toast from 'react-hot-toast';
 import CategorySelector from './CategorySelector';
 import LocationSelector from '../LocationSelector';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const UPLOADS_BASE = API_BASE.replace('/api', '');
+
 // ─── Phase config ─────────────────────────────────────────────────────────────
 
 const PHASES = ['PRE_QUALIFY', 'REGISTER', 'PREPARE', 'REVIEW', 'LIVE'];
@@ -73,6 +76,7 @@ const DEFAULT_TASKS = {
 
 export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseViewOnly = null }) {
   const selectedHealthmate    = useOpsStore((s) => s.selectedHealthmate);
+  const token                 = useOpsStore((s) => s.token);
   const setSelectedHealthmate = useOpsStore((s) => s.setSelectedHealthmate);
   const updateNotes           = useOpsStore((s) => s.updateNotes);
   const updateHealthmate      = useOpsStore((s) => s.updateHealthmate);
@@ -1587,7 +1591,7 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                                       {hm.regDocUrl ? (
                                         <>
                                           <a
-                                            href={`http://localhost:3001${hm.regDocUrl}`}
+                                            href={`${UPLOADS_BASE}${hm.regDocUrl}?token=${token}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1 text-[10px] font-extrabold text-brand-teal hover:text-brand-teal-hover bg-brand-teal/5 hover:bg-brand-teal/10 px-2.5 py-1.5 rounded-lg border border-brand-teal/20 transition-all"

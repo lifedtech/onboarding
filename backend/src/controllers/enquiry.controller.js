@@ -8,9 +8,8 @@ const ServiceUserService = require('../services/serviceUser.service');
  */
 const getAllEnquiries = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const rawLimit = parseInt(req.query.limit) || 100;
-    const limit = Math.min(rawLimit, 500); // hard cap at 500
+    // page/limit are already validated & bounded by validateQuery(paginationQuery)
+    const { page, limit } = req.validatedQuery;
     const skip = (page - 1) * limit;
 
     const [total, enquiries] = await prisma.$transaction([

@@ -47,7 +47,7 @@ const createTicket = async (req, res) => {
     res.status(201).json(ticket);
   } catch (error) {
     console.error('Error creating ticket:', error);
-    res.status(500).json({ message: 'Failed to create ticket', error: error.message });
+    res.status(500).json({ message: 'Failed to create ticket.' });
   }
 };
 

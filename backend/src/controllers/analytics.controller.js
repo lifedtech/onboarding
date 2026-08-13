@@ -129,12 +129,19 @@ const getAdminSummary = async (req, res) => {
     // 3. Lifed Commission (Assuming 15%)
     const lifedCommission = grossBookingValue * 0.15;
 
+    // 4. Live Website Traffic metrics
+    const TrafficService = require('../services/traffic.service');
+    const trafficSummary = TrafficService.getTrafficSummary();
+
     return res.status(200).json({
       metrics: {
         qualifiedLeads: totalEnquiries,
         totalBookings,
         grossBookingValue,
-        lifedCommission
+        lifedCommission,
+        websiteTraffic: trafficSummary.totalTraffic,
+        activeUsersNow: trafficSummary.activeUsersNow,
+        topChannels: trafficSummary.topChannels
       }
     });
   } catch (error) {

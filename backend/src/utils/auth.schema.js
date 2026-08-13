@@ -7,16 +7,19 @@ const registerSchema = z.object({
   email: z
     .string({ required_error: 'Email is required.' })
     .min(1, 'Email is required.')
+    .max(254, 'Email is too long.')
     .email('Invalid email address format.'),
   password: z
     .string({ required_error: 'Password is required.' })
-    .min(8, 'Password must be at least 8 characters long.'),
+    .min(8, 'Password must be at least 8 characters long.')
+    .max(200, 'Password is too long.'),
   name: z
     .string({ required_error: 'Name is required.' })
+    .trim()
     .min(1, 'Name is required.')
     .max(100, 'Name cannot exceed 100 characters.'),
   role: z.enum(['admin', 'ops', 'support']).optional(),
-});
+}).strict();
 
 /**
  * Zod schema for validating user login inputs.
@@ -25,11 +28,13 @@ const loginSchema = z.object({
   email: z
     .string({ required_error: 'Email is required.' })
     .min(1, 'Email is required.')
+    .max(254, 'Email is too long.')
     .email('Invalid email address format.'),
   password: z
     .string({ required_error: 'Password is required.' })
-    .min(1, 'Password is required.'),
-});
+    .min(1, 'Password is required.')
+    .max(200, 'Password is too long.'),
+}).strict();
 
 module.exports = {
   registerSchema,

@@ -12,8 +12,15 @@ const authenticate = async (req, res, next) => {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.split(' ')[1];
   } else if (req.query && req.query.token) {
-    const isChatStream = req.path === '/chat/stream' || (req.originalUrl && req.originalUrl.split('?')[0] === '/api/chat/stream');
-    if (isChatStream) {
+    // Browser-native requests that can't set custom headers (SSE via
+    // EventSource, and <img>/<a> tags loading uploaded files) fall back to
+    // a query-string token. Restricted to these specific paths only — every
+    // other route still requires a real Authorization header.
+    const path = (req.originalUrl || req.path || '').split('?')[0];
+    const allowsQueryToken =
+      path === '/chat/stream' || path === '/api/chat/stream' ||
+      path.startsWith('/uploads/');
+    if (allowsQueryToken) {
       token = req.query.token;
     }
   }

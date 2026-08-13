@@ -65,6 +65,7 @@ const UPLOADS_BASE = API_BASE.replace('/api', '');
 
 export default function ProfilePage({ onClose }) {
   const storeUser = useOpsStore((s) => s.user);
+  const token     = useOpsStore((s) => s.token);
   const setUser   = (u) => useOpsStore.setState({ user: u });
 
   const [profile, setProfile]     = useState(null);
@@ -79,7 +80,7 @@ export default function ProfilePage({ onClose }) {
     api.get('/users/me').then(({ data }) => {
       setProfile(data);
       setStatus(data.statusMode || 'online');
-      if (data.avatar) setAvatarPreview(UPLOADS_BASE + data.avatar);
+      if (data.avatar) setAvatarPreview(UPLOADS_BASE + data.avatar + '?token=' + token);
     }).catch(() => {
       setProfile(storeUser);
       setStatus(storeUser?.statusMode || 'online');
@@ -126,7 +127,7 @@ export default function ProfilePage({ onClose }) {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setProfile(data);
-      setAvatarPreview(UPLOADS_BASE + data.avatar);
+      setAvatarPreview(UPLOADS_BASE + data.avatar + '?token=' + token);
       setUser({ ...storeUser, avatar: data.avatar });
       toast.success('Profile picture updated!');
     } catch {
