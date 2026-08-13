@@ -70,7 +70,8 @@ export default function Layout({ children, activePage, onNavigate }) {
     serviceUsers: false,
     ops: false,
     admin: false,
-    sales_marketing: false
+    sales_marketing: false,
+    support: false
   });
 
   const toggleGroup = (group) => {
@@ -123,7 +124,6 @@ export default function Layout({ children, activePage, onNavigate }) {
         { label: 'Healthmates List', icon: Users, href: 'healthmates_list' },
         { label: 'Enquiries', icon: FileSpreadsheet, href: 'healthmate_enquiries' },
         { label: 'Pipeline', icon: GitBranch, href: 'pipeline' },
-        { label: 'Healthmate Support', icon: LifeBuoy, href: 'healthmate_support' },
         { label: 'Calendar', icon: Calendar, href: 'healthmate_calendar' },
         { label: 'SOP - Standard Operation Protocol', icon: BookOpen, href: 'healthmate_sop' },
       ]
@@ -138,11 +138,25 @@ export default function Layout({ children, activePage, onNavigate }) {
         { label: 'Dashboard', icon: LayoutDashboard, href: 'service_user_dashboard' },
         { label: 'Users List', icon: HeartHandshake, href: 'service_users' },
         { label: 'Enquiries', icon: FileSpreadsheet, href: 'service_user_enquiries' },
-        { label: 'User Support', icon: LifeBuoy, href: 'service_user_support' },
         { label: 'Promotions', icon: Megaphone, href: 'promotions' },
       ]
     });
   }
+
+  const supportItems = [];
+  if (showHealthmates) {
+    supportItems.push({ label: 'Healthmate Support', icon: LifeBuoy, href: 'healthmate_support' });
+  }
+  if (showServiceUsers) {
+    supportItems.push({ label: 'User Support', icon: LifeBuoy, href: 'service_user_support' });
+  }
+  supportItems.push({ label: 'Lewis Support', icon: LifeBuoy, href: 'lewis_support' });
+
+  GROUPS.push({
+    id: 'support',
+    label: 'Support',
+    items: supportItems
+  });
 
   GROUPS.push({
     id: 'ops',

@@ -25,7 +25,7 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
   const isAdmin = currentUser?.role?.toLowerCase() === 'admin';
   const isSuperAdmin = currentUser?.email === 'tech@lifedhealth.com' || currentUser?.role === 'SUPER_ADMIN';
 
-  const activeTab = supportType;
+  const activeTab = supportType === 'LEWIS' ? 'SYSTEM' : supportType;
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [resolvingTicketId, setResolvingTicketId] = useState(null);
@@ -34,15 +34,15 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
   const [ticketForm, setTicketForm] = useState({
     title: '',
     description: '',
-    type: supportType,
+    type: activeTab,
     priority: 'MEDIUM',
     healthmateId: '',
     serviceUserEmail: ''
   });
 
   useEffect(() => {
-    setTicketForm(p => ({ ...p, type: supportType }));
-  }, [supportType]);
+    setTicketForm(p => ({ ...p, type: activeTab }));
+  }, [supportType, activeTab]);
 
   useEffect(() => {
     fetchTickets();
@@ -156,10 +156,12 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-2xl font-black text-text-main tracking-tight flex items-center gap-2">
-            <LifeBuoy className="w-6 h-6 text-brand-teal" /> {supportType === 'SYSTEM' ? 'System Support' : supportType === 'HEALTHMATE' ? 'Healthmate Support' : 'User Support'}
+            <LifeBuoy className="w-6 h-6 text-brand-teal" /> {supportType === 'LEWIS' ? 'Lewis Support' : supportType === 'SYSTEM' ? 'System Support' : supportType === 'HEALTHMATE' ? 'Healthmate Support' : 'User Support'}
           </h1>
           <p className="text-sm font-semibold text-text-muted mt-0.5">
-            {supportType === 'SYSTEM' 
+            {supportType === 'LEWIS' 
+              ? 'Manage and resolve tickets regarding Lewis AI and intelligence support.'
+              : supportType === 'SYSTEM' 
               ? (isSuperAdmin ? 'Manage all System-level technical issues.' : 'Raise System-level technical issues directly to the Super Admin.')
               : supportType === 'HEALTHMATE' ? 'Manage and resolve tickets raised by Healthmates.'
               : 'Manage and resolve tickets raised by Service Users.'}
@@ -170,15 +172,15 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-8">
         
               {/* Left Panel: Ticket Form */}
-        {(!isSuperAdmin || supportType !== 'SYSTEM') && (
+        {(!isSuperAdmin || (supportType !== 'SYSTEM' && supportType !== 'LEWIS')) && (
           <div className="lg:col-span-1 bg-white border border-border-leaf rounded-[24px] p-6 shadow-sm flex flex-col justify-start space-y-5 h-fit">
             <div className="space-y-1.5 border-b border-border-leaf pb-4 shrink-0">
               <div className="flex items-center gap-2 text-brand-teal">
                 <LifeBuoy className="w-5 h-5 animate-spin" style={{ animationDuration: '8s' }} />
-                <h3 className="font-black text-text-main text-sm tracking-wide">Raise {supportType === 'SYSTEM' ? 'System' : supportType === 'HEALTHMATE' ? 'Healthmate' : 'Service User'} Ticket</h3>
+                <h3 className="font-black text-text-main text-sm tracking-wide">Raise {supportType === 'LEWIS' ? 'Lewis' : supportType === 'SYSTEM' ? 'System' : supportType === 'HEALTHMATE' ? 'Healthmate' : 'Service User'} Ticket</h3>
               </div>
               <p className="text-slate-500 text-[11px] font-semibold">
-                {supportType === 'SYSTEM' ? 'Submit technical issues directly to the Super Admin.' : `Log a ticket for a ${supportType === 'HEALTHMATE' ? 'partner' : 'user'}.`}
+                {supportType === 'LEWIS' || supportType === 'SYSTEM' ? 'Submit technical issues directly to the Super Admin.' : `Log a ticket for a ${supportType === 'HEALTHMATE' ? 'partner' : 'user'}.`}
               </p>
             </div>
 
@@ -189,7 +191,7 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
                   required
                   type="text"
                   value={ticketForm.title}
-                  onChange={(e) => setTicketForm((p) => ({ ...p, title: e.target.value, type: supportType }))}
+                  onChange={(e) => setTicketForm((p) => ({ ...p, title: e.target.value, type: activeTab }))}
                   placeholder="Short title..."
                   className="w-full bg-slate-50 border border-border-leaf focus:border-brand-teal/80 text-text-main rounded-[16px] py-2 px-3 text-sm font-semibold transition-all focus:outline-none"
                 />
@@ -263,14 +265,14 @@ export default function SystemSupport({ supportType = 'SYSTEM' }) {
         )}
 
         {/* Right Panel: Ticket List */}
-        <div className={`${(!isSuperAdmin || supportType !== 'SYSTEM') ? 'lg:col-span-3' : 'lg:col-span-4'} bg-white border border-border-leaf rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]`}>
+        <div className={`${(!isSuperAdmin || (supportType !== 'SYSTEM' && supportType !== 'LEWIS')) ? 'lg:col-span-3' : 'lg:col-span-4'} bg-white border border-border-leaf rounded-[24px] shadow-sm overflow-hidden flex flex-col min-h-[500px]`}>
           <div className="px-6 py-4 border-b border-border-leaf flex items-center justify-between shrink-0 bg-slate-50/50 flex-wrap gap-4">
             <div className="relative flex-1 min-w-[200px] max-w-sm">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Search ${supportType.toLowerCase()} tickets...`}
+                placeholder={`Search ${supportType === 'LEWIS' ? 'lewis' : supportType.toLowerCase()} tickets...`}
                 className="w-full bg-white border border-border-leaf focus:border-brand-teal/80 text-text-main rounded-[12px] py-2 px-3 pl-9 text-xs font-bold transition-all focus:outline-none"
               />
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />

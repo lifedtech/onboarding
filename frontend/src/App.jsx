@@ -51,6 +51,7 @@ const PAGES = {
   healthmate_support:   <SystemSupport supportType="HEALTHMATE" />,
   service_user_support:   <SystemSupport supportType="SERVICE_USER" />,
   system_support: <SystemSupport supportType="SYSTEM" />,
+  lewis_support: <SystemSupport supportType="LEWIS" />,
   support_dashboard: <SupportDashboard />,
   promotions: <div className="p-8 text-center text-text-muted">Promotions functionality coming soon.</div>,
   healthmate_sop: <HealthmateSOP />,
