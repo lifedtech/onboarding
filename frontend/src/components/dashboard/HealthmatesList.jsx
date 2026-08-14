@@ -177,7 +177,7 @@ export default function HealthmatesList() {
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/30 text-text-muted text-[10px] font-extrabold uppercase tracking-wider">
+                <tr className="bg-slate-50/50 dark:bg-slate-800/90 text-slate-500 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 text-[10px] font-extrabold uppercase tracking-wider">
                   <th className="px-6 py-4">Healthmate Profile</th>
                   <th className="px-6 py-4">Contact Details</th>
                   <th className="px-6 py-4">Pipeline Phase</th>

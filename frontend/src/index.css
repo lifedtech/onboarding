@@ -99,22 +99,136 @@ html {
   animation-delay: 4s;
 }
 
-/* Dark Mode Global Overrides */
-.dark .bg-white {
-  background-color: #1e293b !important;
+/* Dark Mode Global Overrides & Contrast Enhancements */
+.dark {
+  --color-text-main: #f1f5f9;
+  --color-text-muted: #cbd5e1;
+  --color-border-leaf: rgba(255, 255, 255, 0.12);
+  color-scheme: dark;
 }
-.dark .bg-slate-50 {
-  background-color: #0f172a !important;
-}
-.dark .bg-slate-50\/50 {
-  background-color: rgba(15, 23, 42, 0.5) !important;
-}
-.dark .text-text-main {
+
+.dark body,
+.dark #root {
+  background-color: #0b1120 !important;
   color: #f1f5f9 !important;
 }
+
+/* Cards, Container Panels, and Modals */
+.dark .bg-white {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-50\/50,
+.dark .bg-slate-50\/30,
+.dark .bg-slate-50\/60,
+.dark .bg-slate-50\/70,
+.dark .bg-slate-50\/80 {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-slate-100,
+.dark .bg-slate-100\/50,
+.dark .bg-slate-100\/70 {
+  background-color: #334155 !important;
+}
+
+.dark .bg-slate-200,
+.dark .bg-slate-200\/70 {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-slate-300 {
+  background-color: #475569 !important;
+}
+
+/* Table Headers & Table Cell High-Contrast Styling */
+.dark table {
+  color: #f1f5f9 !important;
+}
+
+.dark table thead,
+.dark table thead tr {
+  background-color: #0f172a !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+.dark table thead th {
+  color: #e2e8f0 !important; /* High contrast slate-200 for table headers */
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.dark table tbody tr {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark table tbody tr:hover {
+  background-color: rgba(51, 65, 85, 0.5) !important;
+}
+
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Text Legibility & High Contrast Overrides */
+.dark .text-text-main {
+  color: #f8fafc !important;
+}
+
 .dark .text-text-muted {
+  color: #cbd5e1 !important; /* Elevated contrast for muted labels */
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-400 {
   color: #94a3b8 !important;
 }
+
+.dark .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+/* Form Controls, Inputs, Textareas, & Select Dropdowns */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark select option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Hover States for Dark Mode */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-200:hover,
+.dark .hover\:bg-slate-50\/50:hover {
+  background-color: rgba(51, 65, 85, 0.5) !important;
+}
+
+/* Border Overrides */
 .dark .border-border-leaf {
   border-color: #334155 !important;
 }
@@ -130,28 +244,10 @@ html {
 .dark .border-border-leaf\/80 {
   border-color: rgba(51, 65, 85, 0.8) !important;
 }
+.dark .border-slate-100,
 .dark .border-slate-200 {
-  border-color: #334155 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 .dark .border-slate-300 {
   border-color: #475569 !important;
-}
-.dark .text-slate-500,
-.dark .text-slate-600,
-.dark .text-slate-700,
-.dark .text-slate-800,
-.dark .text-slate-900 {
-  color: #cbd5e1 !important;
-}
-.dark .bg-slate-100 {
-  background-color: #334155 !important;
-}
-.dark .bg-slate-200 {
-  background-color: #475569 !important;
-}
-.dark .hover\:bg-slate-50:hover {
-  background-color: #0f172a !important;
-}
-.dark .hover\:bg-slate-100:hover {
-  background-color: #334155 !important;
 }

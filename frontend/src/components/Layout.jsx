@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {  
   Activity, LayoutDashboard, GitBranch, CheckSquare, LogOut, Menu, X, Users, LifeBuoy, Wrench, Calendar, Target,
   MessageSquare, FileSpreadsheet, HeartHandshake, ChevronDown, ChevronRight, Search, Bell, Megaphone, ShieldCheck,
-  RefreshCw, BookOpen, Sun, Moon, Sparkles
+  RefreshCw, BookOpen, Sun, Moon, Sparkles, Send, PhoneCall, Link2, Camera, Mail, Clock
   } from 'lucide-react';
 import useOpsStore from '../store/useOpsStore';
 import useNotesStore from '../store/useNotesStore';
@@ -71,7 +71,8 @@ export default function Layout({ children, activePage, onNavigate }) {
     ops: false,
     admin: false,
     sales_marketing: false,
-    support: false
+    support: false,
+    communication_tracking: true
   });
 
   const toggleGroup = (group) => {
@@ -142,6 +143,16 @@ export default function Layout({ children, activePage, onNavigate }) {
       ]
     });
   }
+
+  // Dedicated Communication & Tracking Group
+  GROUPS.push({
+    id: 'communication_tracking',
+    label: 'Communication & Tracking',
+    items: [
+      { label: 'Message & Media Assets', icon: MessageSquare, href: 'communication_assets' },
+      { label: 'Sent Message Tracker', icon: Clock, href: 'comm_sent_tracker' },
+    ]
+  });
 
   const supportItems = [];
   if (showHealthmates) {

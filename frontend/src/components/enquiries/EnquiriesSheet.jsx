@@ -424,7 +424,7 @@ export default function EnquiriesSheet({ enquiryType }) {
             <table className="w-full text-left border-collapse table-fixed">
               {/* Table Headers */}
               <thead>
-                <tr className="bg-slate-100/70 border-b border-slate-200 text-[10px] font-extrabold uppercase tracking-wider text-text-muted">
+                <tr className="bg-slate-100/70 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-200">
                   <th className="py-3 px-4 w-[12%]">Name</th>
                   <th className="py-3 px-4 w-[14%]">Contact Info</th>
                   <th className="py-3 px-4 w-[12%]">Location</th>

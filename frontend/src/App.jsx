@@ -25,6 +25,7 @@ import BookingOperations from './components/dashboard/BookingOperations';
 import ProgramPerformance from './components/dashboard/ProgramPerformance';
 import SalesMarketingDashboard from './components/dashboard/SalesMarketingDashboard';
 import HealthmateSOP from './components/dashboard/HealthmateSOP';
+import CommunicationAssets from './components/dashboard/CommunicationAssets';
 import KeepNotes from './components/dashboard/KeepNotes';
 import Diary from './components/dashboard/Diary';
 import { initAudio, playNotificationSound } from './lib/audio';
@@ -55,6 +56,13 @@ const PAGES = {
   support_dashboard: <SupportDashboard />,
   promotions: <div className="p-8 text-center text-text-muted">Promotions functionality coming soon.</div>,
   healthmate_sop: <HealthmateSOP />,
+  communication_assets: <CommunicationAssets initialTab="all" />,
+  comm_whatsapp: <CommunicationAssets initialTab="WhatsApp" />,
+  comm_email: <CommunicationAssets initialTab="Email" />,
+  comm_instagram: <CommunicationAssets initialTab="Instagram" />,
+  comm_call_scripts: <CommunicationAssets initialTab="CallScripts" />,
+  comm_media_assets: <CommunicationAssets initialTab="MediaAssets" />,
+  comm_sent_tracker: <CommunicationAssets initialTab="tracker" />,
   diary: <Diary />,
 };
 
