@@ -244,7 +244,14 @@ export default function HealthmatesList() {
 
                       {/* Action */}
                       <td className="px-6 py-4">
-                        <button className="p-1 rounded hover:bg-slate-100 text-slate-400 group-hover:text-brand-teal transition-colors flex items-center gap-1 text-xs font-bold">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setViewingHealthmate(hm);
+                          }}
+                          className="p-1 rounded hover:bg-slate-100 text-slate-400 group-hover:text-brand-teal transition-colors flex items-center gap-1 text-xs font-bold"
+                        >
                           View Details <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </td>

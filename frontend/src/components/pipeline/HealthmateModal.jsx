@@ -179,10 +179,21 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
+  const hm = viewOnlyHealthmate || selectedHealthmate;
+  const isViewOnly = !!viewOnlyHealthmate;
+
+  const handleCloseModal = () => {
+    if (isViewOnly && onCloseViewOnly) {
+      onCloseViewOnly();
+    } else {
+      setSelectedHealthmate(null);
+    }
+  };
+
   // Sync notes and edit states when modal opens or healthmate changes
   useEffect(() => {
-    if (selectedHealthmate) {
-      setNotes(selectedHealthmate.notes ?? '');
+    if (hm) {
+      setNotes(hm.notes ?? '');
       setNotesSaved(false);
       setSending({ EMAIL: false, WHATSAPP: false });
       setIsEditing(false);
@@ -192,25 +203,25 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
       setShowRevertConfirm(false);
       setRevertingPhase(false);
 
-      setEditName(selectedHealthmate.name);
-      setEditType(selectedHealthmate.type);
-      setEditCategory(selectedHealthmate.category);
-      setEditContactName(selectedHealthmate.contactName ?? '');
-      setEditContactEmail(selectedHealthmate.contactEmail ?? '');
-      setEditContactPhone(selectedHealthmate.contactPhone || '');
-      setEditAlternatePhone(selectedHealthmate.alternatePhone || '');
-      setEditCity(selectedHealthmate.city || '');
-      setEditState(selectedHealthmate.state || '');
-      setEditCountry(selectedHealthmate.country || '');
-      setEditSubcategory(selectedHealthmate.subcategory || '');
-      setEditPlatformFound(selectedHealthmate.platformFound || '');
-      setEditProgramPossibility(selectedHealthmate.programPossibility || '');
-      setEditFormat(selectedHealthmate.format || '');
-      setEditPriceRange(selectedHealthmate.priceRange || '');
-      setEditCapacity(selectedHealthmate.capacity || '');
+      setEditName(hm.name || '');
+      setEditType(hm.type || 'PRACTITIONER');
+      setEditCategory(hm.category || '');
+      setEditContactName(hm.contactName ?? '');
+      setEditContactEmail(hm.contactEmail ?? '');
+      setEditContactPhone(hm.contactPhone || '');
+      setEditAlternatePhone(hm.alternatePhone || '');
+      setEditCity(hm.city || '');
+      setEditState(hm.state || '');
+      setEditCountry(hm.country || '');
+      setEditSubcategory(hm.subcategory || '');
+      setEditPlatformFound(hm.platformFound || '');
+      setEditProgramPossibility(hm.programPossibility || '');
+      setEditFormat(hm.format || '');
+      setEditPriceRange(hm.priceRange || '');
+      setEditCapacity(hm.capacity || '');
 
-      if (selectedHealthmate.qualification) {
-        setQScores(selectedHealthmate.qualification);
+      if (hm.qualification) {
+        setQScores(hm.qualification);
       } else {
         setQScores({
           scoreRelevance: 0, scoreSafety: 0, scoreExperience: 0, scoreCredibility: 0,
@@ -220,44 +231,63 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
       }
       setQSaved(false);
 
-      setScreeningRemarks(selectedHealthmate.screeningRemarks ?? '');
+      setScreeningRemarks(hm.screeningRemarks ?? '');
       setScreeningRemarksSaved(false);
-      setScreeningQueries(selectedHealthmate.screeningQueries ?? '');
+      setScreeningQueries(hm.screeningQueries ?? '');
       setScreeningQueriesSaved(false);
 
-      if (selectedHealthmate.recallReminder) {
-        const d = new Date(selectedHealthmate.recallReminder);
-        const tzoffset = d.getTimezoneOffset() * 60000;
-        const localISOTime = (new Date(d.getTime() - tzoffset)).toISOString().slice(0, 16);
-        setRecallReminder(localISOTime);
+      if (hm.recallReminder) {
+        try {
+          const d = new Date(hm.recallReminder);
+          if (!isNaN(d.getTime())) {
+            const tzoffset = d.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(d.getTime() - tzoffset)).toISOString().slice(0, 16);
+            setRecallReminder(localISOTime);
+          } else {
+            setRecallReminder('');
+          }
+        } catch (e) {
+          setRecallReminder('');
+        }
       } else {
         setRecallReminder('');
       }
 
-      setProgramTitle(selectedHealthmate.programTitle ?? '');
-      setProgramStartDate(selectedHealthmate.programStartDate ? new Date(selectedHealthmate.programStartDate).toISOString().split('T')[0] : '');
-      setProgramEndDate(selectedHealthmate.programEndDate ? new Date(selectedHealthmate.programEndDate).toISOString().split('T')[0] : '');
+      setProgramTitle(hm.programTitle ?? '');
 
-      setRegStatus(selectedHealthmate.registrationStatus ?? 'PENDING');
-      setRegRemark(selectedHealthmate.registrationRemark ?? '');
-      setProgStatus(selectedHealthmate.programStatus ?? 'PENDING');
-      setProgMsg(selectedHealthmate.programApprovedMsg ?? '');
+      try {
+        const startObj = hm.programStartDate ? new Date(hm.programStartDate) : null;
+        setProgramStartDate(startObj && !isNaN(startObj.getTime()) ? startObj.toISOString().split('T')[0] : '');
+      } catch (e) {
+        setProgramStartDate('');
+      }
 
-      setActiveTab(selectedHealthmate.phase === 'PRE_QUALIFY' ? 'screening' : 'details');
+      try {
+        const endObj = hm.programEndDate ? new Date(hm.programEndDate) : null;
+        setProgramEndDate(endObj && !isNaN(endObj.getTime()) ? endObj.toISOString().split('T')[0] : '');
+      } catch (e) {
+        setProgramEndDate('');
+      }
+
+      setRegStatus(hm.registrationStatus ?? 'PENDING');
+      setRegRemark(hm.registrationRemark ?? '');
+      setProgStatus(hm.programStatus ?? 'PENDING');
+      setProgMsg(hm.programApprovedMsg ?? '');
+
+      setActiveTab(hm.phase === 'PRE_QUALIFY' ? 'screening' : 'details');
     }
-  }, [selectedHealthmate?.id]);
+  }, [hm?.id]);
 
   // Close on Escape
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') setSelectedHealthmate(null); };
+    const handler = (e) => { 
+      if (e.key === 'Escape') {
+        handleCloseModal();
+      }
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [setSelectedHealthmate]);
-
-
-
-  const hm = viewOnlyHealthmate || selectedHealthmate;
-  const isViewOnly = !!viewOnlyHealthmate;
+  }, [isViewOnly, onCloseViewOnly, setSelectedHealthmate]);
 
   useEffect(() => {
     if (hm) {
@@ -596,7 +626,7 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-40 bg-[#2C3E50]/60 backdrop-blur-md"
-        onClick={() => setSelectedHealthmate(null)}
+        onClick={handleCloseModal}
       />
 
       {/* Modal panel */}
