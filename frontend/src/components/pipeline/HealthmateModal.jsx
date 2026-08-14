@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {  
   X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
   Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User,
@@ -295,33 +295,31 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
     }
   }, [hm?.id, fetchPendingTakeovers]);
 
-  if (!hm) return null;
-
   const isAdmin      = user?.role?.toUpperCase() === 'ADMIN';
   const canModify    = !isViewOnly && (isAdmin || (hm.opsUserId === user?.id));
   const scopes       = user?.accessScopes || [];
   const hasFullAccess = isAdmin || scopes.includes('FULL_ACCESS');
   const isMarketingOnly = !hasFullAccess && !scopes.includes('HEALTHMATES') && scopes.includes('SALES_MARKETING');
-  const isPending    = pendingOutboundTakeovers.some((req) => req.healthmateId === hm.id && req.status === 'PENDING');
+  const isPending    = (pendingOutboundTakeovers || []).some((req) => req?.healthmateId === hm.id && req?.status === 'PENDING');
   const currentIndex = PHASES.indexOf(hm.phase);
   const nextPhase    = PHASES[currentIndex + 1] ?? null;
   const prevPhase    = PHASES[currentIndex - 1] ?? null;
-  const tasks        = hm.tasks ?? [];
-  const doneTasks    = tasks.filter((t) => t.completed).length;
+  const tasks        = Array.isArray(hm.tasks) ? hm.tasks : [];
+  const doneTasks    = tasks.filter((t) => t?.completed).length;
 
   // Group tasks by phase
   const groupedTasks = PHASES.reduce((acc, phase) => {
-    acc[phase] = tasks.filter((t) => t.phase === phase);
+    acc[phase] = tasks.filter((t) => t?.phase === phase);
     return acc;
   }, {});
 
   const currentPhaseTasks = DEFAULT_TASKS[hm.phase] || [];
   const missingPredefined = currentPhaseTasks.filter(
-    (title) => !tasks.some((t) => t.title.toLowerCase() === title.toLowerCase())
+    (title) => !tasks.some((t) => t?.title && title && t.title.toLowerCase() === title.toLowerCase())
   );
 
   const currentPhaseTasksItems = groupedTasks[hm.phase] || [];
-  const allCurrentTasksCompleted = currentPhaseTasksItems.every((t) => t.completed);
+  const allCurrentTasksCompleted = currentPhaseTasksItems.length > 0 && currentPhaseTasksItems.every((t) => t?.completed);
   const canAdvancePhase = canModify && missingPredefined.length === 0 && allCurrentTasksCompleted;
 
   const getPhaseHeaderClass = (phase, isCurrent, isPast) => {
@@ -1616,7 +1614,7 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                                   </button>
 
                                   {/* Document Upload / View for Register Phase Task */}
-                                  {task.title.toLowerCase().includes("business registration registry copy") && (
+                                  {Boolean(task?.title && task.title.toLowerCase().includes("business registration registry copy")) && (
                                     <div className="pl-7 pb-2 pt-0.5 flex flex-wrap items-center gap-2">
                                       {hm.regDocUrl ? (
                                         <>
@@ -1972,5 +1970,57 @@ function InfoRow({ icon, label, value, muted }) {
         {value}
       </span>
     </div>
+  );
+}
+
+class ModalErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("HealthmateModal rendering error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Partner Details Unavailable</h3>
+            <p className="text-xs text-slate-500">
+              An unexpected error occurred while loading this partner profile.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({ hasError: false });
+                if (this.props.onCloseViewOnly) this.props.onCloseViewOnly();
+              }}
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+            >
+              Close Window
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export function SafeHealthmateModal(props) {
+  return (
+    <ModalErrorBoundary onCloseViewOnly={props.onCloseViewOnly}>
+      <HealthmateModal {...props} />
+    </ModalErrorBoundary>
   );
 }

@@ -353,7 +353,7 @@ export default function ServiceUsersList() {
         {/* Card 1: Active Users */}
         <div 
           onClick={() => setActiveTile(activeTile === 'ACTIVE_USERS' ? null : 'ACTIVE_USERS')}
-          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'ACTIVE_USERS' ? 'bg-emerald-50/50 border-emerald-400 ring-2 ring-emerald-400/20' : 'bg-white hover:border-emerald-200'}`}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'ACTIVE_USERS' ? 'bg-emerald-50/50 border-emerald-400 ring-2 ring-emerald-400/20' : 'bg-white border-slate-200 hover:border-emerald-300'}`}
         >
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
             <User className="w-5 h-5" />
@@ -368,7 +368,7 @@ export default function ServiceUsersList() {
         {/* Card 2: Today's Bookings */}
         <div 
           onClick={() => setActiveTile(activeTile === 'UPCOMING_BOOKINGS' ? null : 'UPCOMING_BOOKINGS')}
-          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'UPCOMING_BOOKINGS' ? 'bg-teal-50/50 border-brand-teal ring-2 ring-brand-teal/20' : 'bg-white hover:border-brand-teal/50'}`}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'UPCOMING_BOOKINGS' ? 'bg-teal-50/50 border-brand-teal ring-2 ring-brand-teal/20' : 'bg-white border-slate-200 hover:border-brand-teal/50'}`}
         >
           <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-brand-teal">
             <Calendar className="w-5 h-5" />
@@ -384,7 +384,7 @@ export default function ServiceUsersList() {
         {isAdmin && (
           <div 
             onClick={() => setActiveTile(activeTile === 'REVENUE_COLLECTED' ? null : 'REVENUE_COLLECTED')}
-            className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'REVENUE_COLLECTED' ? 'bg-amber-50/50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-white hover:border-amber-200'}`}
+            className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'REVENUE_COLLECTED' ? 'bg-amber-50/50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-white border-slate-200 hover:border-amber-300'}`}
           >
             <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
               <IndianRupee className="w-5 h-5" />
@@ -400,7 +400,7 @@ export default function ServiceUsersList() {
         {/* Card 4: Open Tickets */}
         <div 
           onClick={() => setActiveTile(activeTile === 'OPEN_TICKETS' ? null : 'OPEN_TICKETS')}
-          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'OPEN_TICKETS' ? 'bg-rose-50/50 border-rose-400 ring-2 ring-rose-400/20' : 'bg-white hover:border-rose-200'}`}
+          className={`cursor-pointer p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-all border ${activeTile === 'OPEN_TICKETS' ? 'bg-rose-50/50 border-rose-400 ring-2 ring-rose-400/20' : 'bg-white border-slate-200 hover:border-rose-300'}`}
         >
           <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600">
             <LifeBuoy className="w-5 h-5" />
