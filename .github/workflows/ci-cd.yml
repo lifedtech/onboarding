@@ -57,6 +57,9 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Verify Docker Compose Build
+        env:
+          POSTGRES_PASSWORD: postgres_dev_password
+          JWT_SECRET: dev_jwt_secret_key_change_in_production
         run: docker compose build
 
       # ========================================================================
