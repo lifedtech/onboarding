@@ -64,7 +64,18 @@ export default function Layout({ children, activePage, onNavigate }) {
   }, [isLightMode]);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [desktopMinimized, setDesktopMinimized] = useState(false);
+  const [desktopMinimized, setDesktopMinimized] = useState(() => {
+    const saved = localStorage.getItem('sidebar_minimized');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const toggleDesktopMinimized = () => {
+    setDesktopMinimized(prev => {
+      const next = !prev;
+      localStorage.setItem('sidebar_minimized', JSON.stringify(next));
+      return next;
+    });
+  };
   const [expanded, setExpanded] = useState({
     healthmates: false,
     serviceUsers: false,
@@ -362,7 +373,7 @@ export default function Layout({ children, activePage, onNavigate }) {
             <Menu className="w-5 h-5" />
           </button>
           <button
-            onClick={() => setDesktopMinimized(!desktopMinimized)}
+            onClick={toggleDesktopMinimized}
             className={`hidden md:block transition-colors ${isLightMode ? 'text-slate-500 hover:text-black' : 'text-slate-400 hover:text-white'}`}
           >
             <Menu className="w-5 h-5" />
@@ -650,12 +661,23 @@ export default function Layout({ children, activePage, onNavigate }) {
             )}
           </div>
 
-          <div className={`hidden sm:flex items-center gap-2 pl-3 border-l ${isLightMode ? 'border-slate-200' : 'border-slate-700'}`}>
+          <button
+            onClick={() => handleNav('profile')}
+            className={`hidden sm:flex items-center gap-2 pl-3 border-l transition-opacity hover:opacity-80 text-left cursor-pointer border-0 bg-transparent ${isLightMode ? 'border-slate-200' : 'border-slate-700'}`}
+          >
             <span className={`text-[12px] font-semibold ${isLightMode ? 'text-slate-700' : 'text-slate-300'}`}>{user?.name}</span>
-            <div className={`w-6 h-6 rounded-[12px] text-white flex items-center justify-center text-[10px] font-extrabold ${isLightMode ? 'bg-[var(--color-brand-teal)]' : 'bg-[var(--color-brand-teal)]'}`}>
-              {initials}
-            </div>
-          </div>
+            {user?.avatar ? (
+              <img
+                src={UPLOADS_BASE + user.avatar + '?token=' + token}
+                alt="avatar"
+                className="w-6 h-6 rounded-full object-cover border border-slate-300 dark:border-slate-600 shadow-sm"
+              />
+            ) : (
+              <div className={`w-6 h-6 rounded-[12px] text-white flex items-center justify-center text-[10px] font-extrabold ${isLightMode ? 'bg-[var(--color-brand-teal)]' : 'bg-[var(--color-brand-teal)]'}`}>
+                {initials}
+              </div>
+            )}
+          </button>
         </div>
       </header>
 
