@@ -1,34 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import api from './lib/axios';
 import Login from './components/Login';
 import Layout from './components/Layout';
-import PipelineBoard from './components/pipeline/PipelineBoard';
-import HealthmateDashboard from './components/dashboard/HealthmateDashboard';
-import HealthmatesList from './components/dashboard/HealthmatesList';
-import ServiceUserDashboard from './components/dashboard/ServiceUserDashboard';
-import HealthmateModal from './components/pipeline/HealthmateModal';
-import TeamManagement from './components/dashboard/TeamManagement';
-import MyTasks from './components/dashboard/MyTasks';
-import SystemSupport from './components/SystemSupport';
-import SupportDashboard from './components/dashboard/SupportDashboard';
 import useOpsStore from './store/useOpsStore';
-import CalendarView from './components/dashboard/CalendarView';
-import ChatBoxTab from './components/dashboard/ChatBoxTab';
-import ProfilePage from './components/profile/ProfilePage';
-import StressBuster from './components/dashboard/StressBuster';
-import EnquiriesSheet from './components/enquiries/EnquiriesSheet';
-import AddEnquiryModal from './components/enquiries/AddEnquiryModal';
-import ServiceUsersList from './components/dashboard/ServiceUsersList';
-import AdminDashboard from './components/dashboard/AdminDashboard';
-import BookingOperations from './components/dashboard/BookingOperations';
-import ProgramPerformance from './components/dashboard/ProgramPerformance';
-import SalesMarketingDashboard from './components/dashboard/SalesMarketingDashboard';
-import HealthmateSOP from './components/dashboard/HealthmateSOP';
-import CommunicationAssets from './components/dashboard/CommunicationAssets';
 import KeepNotes from './components/dashboard/KeepNotes';
-import Diary from './components/dashboard/Diary';
 import { initAudio, playNotificationSound } from './lib/audio';
+
+// Route-level code splitting: each dashboard/page is its own chunk, fetched
+// only when the user navigates to it, instead of one ~9.6MB bundle upfront.
+const PipelineBoard = lazy(() => import('./components/pipeline/PipelineBoard'));
+const HealthmateDashboard = lazy(() => import('./components/dashboard/HealthmateDashboard'));
+const HealthmatesList = lazy(() => import('./components/dashboard/HealthmatesList'));
+const ServiceUserDashboard = lazy(() => import('./components/dashboard/ServiceUserDashboard'));
+const HealthmateModal = lazy(() => import('./components/pipeline/HealthmateModal'));
+const TeamManagement = lazy(() => import('./components/dashboard/TeamManagement'));
+const MyTasks = lazy(() => import('./components/dashboard/MyTasks'));
+const SystemSupport = lazy(() => import('./components/SystemSupport'));
+const SupportDashboard = lazy(() => import('./components/dashboard/SupportDashboard'));
+const CalendarView = lazy(() => import('./components/dashboard/CalendarView'));
+const ChatBoxTab = lazy(() => import('./components/dashboard/ChatBoxTab'));
+const ProfilePage = lazy(() => import('./components/profile/ProfilePage'));
+const StressBuster = lazy(() => import('./components/dashboard/StressBuster'));
+const EnquiriesSheet = lazy(() => import('./components/enquiries/EnquiriesSheet'));
+const AddEnquiryModal = lazy(() => import('./components/enquiries/AddEnquiryModal'));
+const ServiceUsersList = lazy(() => import('./components/dashboard/ServiceUsersList'));
+const AdminDashboard = lazy(() => import('./components/dashboard/AdminDashboard'));
+const BookingOperations = lazy(() => import('./components/dashboard/BookingOperations'));
+const ProgramPerformance = lazy(() => import('./components/dashboard/ProgramPerformance'));
+const SalesMarketingDashboard = lazy(() => import('./components/dashboard/SalesMarketingDashboard'));
+const HealthmateSOP = lazy(() => import('./components/dashboard/HealthmateSOP'));
+const CommunicationAssets = lazy(() => import('./components/dashboard/CommunicationAssets'));
+const Diary = lazy(() => import('./components/dashboard/Diary'));
 
 
 // ─── Page registry ────────────────────────────────────────────────────────────
@@ -275,15 +278,17 @@ function Workspace() {
     <>
       <Layout activePage={activePage} onNavigate={setActivePage}>
         {activePage !== 'team_chat' && <ChatNotifier />}
-        {currentPage}
-        {selectedHealthmate && <HealthmateModal />}
-        {enquiryPrefill && (
-          <AddEnquiryModal
-            isOpen
-            initialData={enquiryPrefill}
-            onClose={() => setEnquiryPrefill(null)}
-          />
-        )}
+        <Suspense fallback={<div className="p-8 text-center text-text-muted">Loading…</div>}>
+          {currentPage}
+          {selectedHealthmate && <HealthmateModal />}
+          {enquiryPrefill && (
+            <AddEnquiryModal
+              isOpen
+              initialData={enquiryPrefill}
+              onClose={() => setEnquiryPrefill(null)}
+            />
+          )}
+        </Suspense>
       </Layout>
       <KeepNotes />
     </>

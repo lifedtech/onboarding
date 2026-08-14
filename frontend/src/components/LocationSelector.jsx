@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { Country, State, City } from 'country-state-city';
 import CustomSelect from './CustomSelect';
 
+// ponytail: country-state-city's city.json is ~8MB (every city on Earth) and
+// lands in its own chunk wherever this loads. It's already lazy-loaded (only
+// fetched when a modal using it opens), not on initial page load. If it still
+// causes load failures, swap for a scoped list (e.g. just India) or an API-backed
+// lookup instead of the full world dataset.
+
 export default function LocationSelector({ 
   city, setCity, 
   state, setState, 
