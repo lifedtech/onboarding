@@ -29,9 +29,13 @@ const PHASE_COLORS = {
 };
 
 const TYPE_LABELS = {
-  PRACTITIONER: 'Practitioner',
-  CENTRE:       'Centre',
-  ORGANIZER:    'Organizer',
+  PRACTITIONER:      'Practitioner',
+  CENTRE:            'Centre',
+  ORGANIZER:         'Organizer',
+  COMMUNITY_GROUP:   'Community Group',
+  PROGRAM_ORGANIZER: 'Program Organizer',
+  RETREAT_CENTRE:    'Retreat Centre',
+  WELLNESS_CENTRE:   'Wellness Centre',
 };
 
 export default function HealthmateDashboard() {

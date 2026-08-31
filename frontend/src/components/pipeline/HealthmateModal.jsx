@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import {  
   X, Mail, Phone, Tag, GitBranch, CheckSquare, Square,
   Save, MessageCircle, Send, ChevronRight, Loader2, Clock, Edit3, Trash2, User,
-  Calendar, Layers, BookOpen, CheckCircle2, FileText, AlertTriangle
-  } from 'lucide-react';
+  Calendar, Layers, BookOpen, CheckCircle2, FileText, AlertTriangle, Globe, Plane, Sparkles, MapPin, Plus
+} from 'lucide-react';
 import useOpsStore from '../../store/useOpsStore';
 import toast from 'react-hot-toast';
 import CategorySelector from './CategorySelector';
@@ -33,9 +33,13 @@ const PHASE_COLORS = {
 };
 
 const TYPE_LABELS = {
-  PRACTITIONER: 'Practitioner',
-  CENTRE:       'Centre',
-  ORGANIZER:    'Organizer',
+  PRACTITIONER:      'Practitioner',
+  CENTRE:            'Centre',
+  ORGANIZER:         'Organizer',
+  COMMUNITY_GROUP:   'Community Group',
+  PROGRAM_ORGANIZER: 'Program Organizer',
+  RETREAT_CENTRE:    'Retreat Centre',
+  WELLNESS_CENTRE:   'Wellness Centre',
 };
 
 const DEFAULT_TASKS = {
@@ -134,15 +138,14 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
   const [editContactEmail, setEditContactEmail] = useState('');
   const [editContactPhone, setEditContactPhone] = useState('');
   const [editAlternatePhone, setEditAlternatePhone] = useState('');
+  const [editLinks, setEditLinks] = useState(['']);
+  const [editAddress, setEditAddress] = useState('');
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
   const [editCountry, setEditCountry] = useState('');
-  const [editSubcategory, setEditSubcategory] = useState('');
-  const [editPlatformFound, setEditPlatformFound] = useState('');
-  const [editProgramPossibility, setEditProgramPossibility] = useState('');
-  const [editFormat, setEditFormat] = useState('');
-  const [editPriceRange, setEditPriceRange] = useState('');
-  const [editCapacity, setEditCapacity] = useState('');
+  const [editNearestAirport, setEditNearestAirport] = useState('');
+  const [editYearsOfExperience, setEditYearsOfExperience] = useState('');
+  const [editProfessionalBio, setEditProfessionalBio] = useState('');
 
   // Qualification states
   const [qScores, setQScores] = useState({
@@ -210,15 +213,15 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
       setEditContactEmail(hm.contactEmail ?? '');
       setEditContactPhone(hm.contactPhone || '');
       setEditAlternatePhone(hm.alternatePhone || '');
+      const parsedLinks = hm.website ? hm.website.split(',').map((s) => s.trim()).filter(Boolean) : [''];
+      setEditLinks(parsedLinks.length > 0 ? parsedLinks : ['']);
+      setEditAddress(hm.address || '');
       setEditCity(hm.city || '');
       setEditState(hm.state || '');
       setEditCountry(hm.country || '');
-      setEditSubcategory(hm.subcategory || '');
-      setEditPlatformFound(hm.platformFound || '');
-      setEditProgramPossibility(hm.programPossibility || '');
-      setEditFormat(hm.format || '');
-      setEditPriceRange(hm.priceRange || '');
-      setEditCapacity(hm.capacity || '');
+      setEditNearestAirport(hm.nearestAirport || '');
+      setEditYearsOfExperience(hm.yearsOfExperience || '');
+      setEditProfessionalBio(hm.professionalBio || '');
 
       if (hm.qualification) {
         setQScores(hm.qualification);
@@ -485,6 +488,7 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
     if (!editName.trim() || !editCategory.trim()) {
       return;
     }
+    const formattedLinks = editLinks.map((l) => l.trim()).filter(Boolean).join(', ');
     const result = await editHealthmateDetails(hm.id, {
       name: editName.trim(),
       type: editType,
@@ -493,15 +497,14 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
       contactEmail: editContactEmail.trim() || null,
       contactPhone: editContactPhone.trim() || null,
       alternatePhone: editAlternatePhone.trim() || null,
+      website: formattedLinks || null,
+      address: editAddress.trim() || null,
       city: editCity.trim() || null,
       state: editState.trim() || null,
       country: editCountry.trim() || null,
-      subcategory: editSubcategory.trim() || null,
-      platformFound: editPlatformFound.trim() || null,
-      programPossibility: editProgramPossibility.trim() || null,
-      format: editFormat.trim() || null,
-      priceRange: editPriceRange.trim() || null,
-      capacity: editCapacity.trim() || null,
+      nearestAirport: editNearestAirport.trim() || null,
+      yearsOfExperience: editYearsOfExperience.trim() || null,
+      professionalBio: editProfessionalBio.trim() || null,
       notes: notes.trim() || null,
     });
     if (result && result.success) {
@@ -842,9 +845,13 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                               onChange={(e) => setEditType(e.target.value)}
                               className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
                             >
+                              <option value="COMMUNITY_GROUP">Community Group</option>
                               <option value="PRACTITIONER">Practitioner</option>
-                              <option value="CENTRE">Centre</option>
-                              <option value="ORGANIZER">Organizer</option>
+                              <option value="PROGRAM_ORGANIZER">Program Organizer</option>
+                              <option value="RETREAT_CENTRE">Retreat Centre</option>
+                              <option value="WELLNESS_CENTRE">Wellness Centre</option>
+                              <option value="CENTRE">Centre (Legacy)</option>
+                              <option value="ORGANIZER">Organizer (Legacy)</option>
                             </select>
                           </div>
                           <div>
@@ -887,6 +894,59 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                               placeholder="e.g. +91 9876543210"
                             />
                           </div>
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="block text-text-muted text-[10px] font-extrabold uppercase">Links</label>
+                              <button
+                                type="button"
+                                onClick={() => setEditLinks([...editLinks, ''])}
+                                className="inline-flex items-center gap-0.5 text-[10px] font-extrabold text-brand-teal hover:underline cursor-pointer"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>Add Link</span>
+                              </button>
+                            </div>
+                            <div className="space-y-1.5">
+                              {editLinks.map((link, idx) => (
+                                <div key={idx} className="flex items-center gap-1.5">
+                                  <div className="relative flex-1">
+                                    <Globe className="w-3.5 h-3.5 text-brand-teal absolute left-2.5 top-1/2 -translate-y-1/2" />
+                                    <input
+                                      type="url"
+                                      value={link}
+                                      onChange={(e) => {
+                                        const updated = [...editLinks];
+                                        updated[idx] = e.target.value;
+                                        setEditLinks(updated);
+                                      }}
+                                      placeholder="https://yourwebsite.com"
+                                      className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl pl-8 pr-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                                    />
+                                  </div>
+                                  {editLinks.length > 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditLinks(editLinks.filter((_, i) => i !== idx))}
+                                      className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all cursor-pointer shrink-0"
+                                      title="Remove link"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Address</label>
+                            <textarea
+                              rows={2}
+                              value={editAddress}
+                              onChange={(e) => setEditAddress(e.target.value)}
+                              placeholder="Complete address"
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal resize-y"
+                            />
+                          </div>
                           <LocationSelector
                             city={editCity}
                             setCity={setEditCity}
@@ -897,61 +957,37 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                             layout="fragment"
                           />
                           <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Subcategory</label>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Nearest Airport</label>
                             <input
                               type="text"
-                              value={editSubcategory}
-                              onChange={(e) => setEditSubcategory(e.target.value)}
+                              value={editNearestAirport}
+                              onChange={(e) => setEditNearestAirport(e.target.value)}
+                              placeholder="e.g. Indira Gandhi International Airport (DEL)"
                               className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
                             />
                           </div>
                           <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Platform Found</label>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Years of Experience</label>
                             <input
                               type="text"
-                              value={editPlatformFound}
-                              onChange={(e) => setEditPlatformFound(e.target.value)}
+                              value={editYearsOfExperience}
+                              onChange={(e) => setEditYearsOfExperience(e.target.value)}
+                              placeholder="e.g. 5"
                               className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
                             />
                           </div>
                           <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Program Possibility</label>
-                            <input
-                              type="text"
-                              value={editProgramPossibility}
-                              onChange={(e) => setEditProgramPossibility(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Professional Bio</label>
+                            <textarea
+                              rows={3}
+                              value={editProfessionalBio}
+                              onChange={(e) => setEditProfessionalBio(e.target.value)}
+                              placeholder="Background, approach, and experience..."
+                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal resize-y"
                             />
                           </div>
                           <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Format</label>
-                            <input
-                              type="text"
-                              value={editFormat}
-                              onChange={(e) => setEditFormat(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Price Range</label>
-                            <input
-                              type="text"
-                              value={editPriceRange}
-                              onChange={(e) => setEditPriceRange(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Capacity</label>
-                            <input
-                              type="text"
-                              value={editCapacity}
-                              onChange={(e) => setEditCapacity(e.target.value)}
-                              className="w-full bg-white border border-border-leaf/80 text-text-main rounded-xl px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Category</label>
+                            <label className="block text-text-muted text-[10px] font-extrabold uppercase mb-1">Expertise Categories</label>
                             <CategorySelector
                               value={editCategory}
                               onChange={setEditCategory}
@@ -999,23 +1035,35 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                               value={isMarketingOnly ? '+** **** ****' : hm.alternatePhone}
                             />
                           )}
-                          {hm.subcategory && (
-                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Subcategory" value={hm.subcategory} />
+                          {hm.website && (
+                            <InfoRow
+                              icon={<Globe className="w-4 h-4 text-brand-teal" />}
+                              label="Links"
+                              value={
+                                <div className="flex flex-col gap-1">
+                                  {hm.website.split(',').map((link, idx) => {
+                                    const trimmed = link.trim();
+                                    if (!trimmed) return null;
+                                    const href = trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
+                                    return (
+                                      <a
+                                        key={idx}
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-brand-teal hover:underline break-all text-xs font-semibold"
+                                      >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-brand-teal shrink-0" />
+                                        <span>{trimmed}</span>
+                                      </a>
+                                    );
+                                  })}
+                                </div>
+                              }
+                            />
                           )}
-                          {hm.platformFound && (
-                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Platform Found" value={hm.platformFound} />
-                          )}
-                          {hm.programPossibility && (
-                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Program Possibility" value={hm.programPossibility} />
-                          )}
-                          {hm.format && (
-                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Format" value={hm.format} />
-                          )}
-                          {hm.priceRange && (
-                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Price Range" value={hm.priceRange} />
-                          )}
-                          {hm.capacity && (
-                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Capacity" value={hm.capacity} />
+                          {hm.address && (
+                            <InfoRow icon={<MapPin className="w-4 h-4 text-brand-teal" />} label="Address" value={hm.address} />
                           )}
                           {(hm.city || hm.state || hm.country) && (
                             <InfoRow 
@@ -1023,6 +1071,30 @@ export default function HealthmateModal({ viewOnlyHealthmate = null, onCloseView
                               label="Location" 
                               value={[hm.city, hm.state, hm.country].filter(Boolean).join(', ')} 
                             />
+                          )}
+                          {hm.nearestAirport && (
+                            <InfoRow icon={<Plane className="w-4 h-4 text-brand-teal" />} label="Nearest Airport" value={hm.nearestAirport} />
+                          )}
+                          {hm.category && (
+                            <InfoRow 
+                              icon={<Tag className="w-4 h-4 text-brand-teal" />} 
+                              label="Expertise" 
+                              value={
+                                <div className="flex flex-wrap gap-1">
+                                  {hm.category.split(',').map((c, i) => (
+                                    <span key={i} className="inline-flex items-center text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200/80 px-2 py-0.5 rounded-md">
+                                      {c.trim()}
+                                    </span>
+                                  ))}
+                                </div>
+                              } 
+                            />
+                          )}
+                          {hm.yearsOfExperience && (
+                            <InfoRow icon={<Tag className="w-4 h-4 text-brand-teal" />} label="Experience" value={`${hm.yearsOfExperience} years`} />
+                          )}
+                          {hm.professionalBio && (
+                            <InfoRow icon={<Sparkles className="w-4 h-4 text-brand-teal" />} label="Professional Bio" value={hm.professionalBio} />
                           )}
                           <InfoRow icon={<GitBranch className="w-4 h-4 text-brand-teal" />} label="Category" value={hm.category} />
                           <InfoRow

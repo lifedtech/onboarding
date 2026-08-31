@@ -2,7 +2,15 @@ const { z } = require('zod');
 const { requiredString, optionalString, optionalEmail, optionalIsoDate, boundedInt } = require('./common.schema');
 
 const CLIENT_TYPES = ['SERVICE_USER', 'HEALTH_PARTNER'];
-const HEALTHMATE_TYPES = ['PRACTITIONER', 'CENTRE', 'ORGANIZER'];
+const HEALTHMATE_TYPES = [
+  'PRACTITIONER',
+  'CENTRE',
+  'ORGANIZER',
+  'COMMUNITY_GROUP',
+  'PROGRAM_ORGANIZER',
+  'RETREAT_CENTRE',
+  'WELLNESS_CENTRE',
+];
 
 const score = () => boundedInt(0, 5).optional();
 

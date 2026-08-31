@@ -65,14 +65,27 @@ const getAllHealthmates = async (req, res) => {
  * Creates a new healthmate and assigns it to the authenticated OpsUser.
  */
 const createHealthmate = async (req, res) => {
-  const { name, type, category, contactName, contactEmail, contactPhone, alternatePhone, city, state, country, subcategory, platformFound, programPossibility, format, priceRange, capacity } = req.body;
+  const {
+    name, type, category, contactName, contactEmail, contactPhone, alternatePhone,
+    website, address, city, state, country, nearestAirport,
+    yearsOfExperience, professionalBio,
+    subcategory, platformFound, programPossibility, format, priceRange, capacity
+  } = req.body;
 
   if (!name || !type || !category) {
     return res.status(400).json({ message: 'name, type, and category are required.' });
   }
 
   // Validate the enum value at the API layer before hitting the DB
-  const validTypes = ['PRACTITIONER', 'CENTRE', 'ORGANIZER'];
+  const validTypes = [
+    'PRACTITIONER',
+    'CENTRE',
+    'ORGANIZER',
+    'COMMUNITY_GROUP',
+    'PROGRAM_ORGANIZER',
+    'RETREAT_CENTRE',
+    'WELLNESS_CENTRE',
+  ];
   if (!validTypes.includes(type)) {
     return res.status(400).json({
       message: `type must be one of: ${validTypes.join(', ')}.`,
@@ -89,9 +102,14 @@ const createHealthmate = async (req, res) => {
         contactEmail: contactEmail || null,
         contactPhone: contactPhone || null,
         alternatePhone: alternatePhone || null,
+        website: website || null,
+        address: address || null,
         city: city || null,
         state: state || null,
         country: country || null,
+        nearestAirport: nearestAirport || null,
+        yearsOfExperience: yearsOfExperience || null,
+        professionalBio: professionalBio || null,
         subcategory: subcategory || null,
         platformFound: platformFound || null,
         programPossibility: programPossibility || null,
@@ -214,14 +232,16 @@ const updateHealthmatePhase = async (req, res) => {
  * Phase changes should go through the dedicated /phase endpoint.
  */
 const updateHealthmate = async (req, res) => {
-  const { id } = req.params;
   const {
-    name, category, contactName, contactEmail, contactPhone, alternatePhone, city, state: partnerState, country, opsUserId,
+    name, category, contactName, contactEmail, contactPhone, alternatePhone,
+    website, address, city, state: partnerState, country, nearestAirport,
+    yearsOfExperience, professionalBio, opsUserId,
     screeningRemarks, screeningQueries, recallReminder,
     programTitle, programStartDate, programEndDate, programStatus, programApprovedMsg,
     registrationStatus, registrationRemark
   } = req.body;
   const isAdmin = req.user.role?.toLowerCase() === 'admin';
+  const { id } = req.params;
 
   try {
     const existing = await prisma.healthmate.findUnique({
@@ -247,9 +267,14 @@ const updateHealthmate = async (req, res) => {
         ...(contactEmail !== undefined && { contactEmail }),
         ...(contactPhone !== undefined && { contactPhone }),
         ...(alternatePhone !== undefined && { alternatePhone }),
+        ...(website !== undefined && { website }),
+        ...(address !== undefined && { address }),
         ...(city !== undefined && { city }),
         ...(partnerState !== undefined && { state: partnerState }),
         ...(country !== undefined && { country }),
+        ...(nearestAirport !== undefined && { nearestAirport }),
+        ...(yearsOfExperience !== undefined && { yearsOfExperience }),
+        ...(professionalBio !== undefined && { professionalBio }),
         ...(opsUserId !== undefined && isAdmin && { opsUserId }),
         ...(screeningRemarks !== undefined && { screeningRemarks }),
         ...(screeningQueries !== undefined && { screeningQueries }),
@@ -371,7 +396,8 @@ const updateHealthmateDetails = async (req, res) => {
   const { id } = req.params;
   const { 
     name, type, category, contactName, contactEmail, contactPhone, alternatePhone,
-    city, state: partnerState, country, notes,
+    website, address, city, state: partnerState, country, nearestAirport,
+    yearsOfExperience, professionalBio, notes,
     subcategory, platformFound, programPossibility, format, priceRange, capacity
   } = req.body;
 
@@ -379,7 +405,15 @@ const updateHealthmateDetails = async (req, res) => {
     return res.status(400).json({ message: 'name, type, and category are required.' });
   }
 
-  const validTypes = ['PRACTITIONER', 'CENTRE', 'ORGANIZER'];
+  const validTypes = [
+    'PRACTITIONER',
+    'CENTRE',
+    'ORGANIZER',
+    'COMMUNITY_GROUP',
+    'PROGRAM_ORGANIZER',
+    'RETREAT_CENTRE',
+    'WELLNESS_CENTRE',
+  ];
   if (!validTypes.includes(type)) {
     return res.status(400).json({
       message: `type must be one of: ${validTypes.join(', ')}.`,
@@ -412,9 +446,14 @@ const updateHealthmateDetails = async (req, res) => {
         contactEmail: contactEmail !== undefined ? contactEmail : null,
         contactPhone: contactPhone !== undefined ? contactPhone : null,
         alternatePhone: alternatePhone !== undefined ? alternatePhone : null,
+        website: website !== undefined ? website : null,
+        address: address !== undefined ? address : null,
         city: city !== undefined ? city : null,
         state: partnerState !== undefined ? partnerState : null,
         country: country !== undefined ? country : null,
+        nearestAirport: nearestAirport !== undefined ? nearestAirport : null,
+        yearsOfExperience: yearsOfExperience !== undefined ? yearsOfExperience : null,
+        professionalBio: professionalBio !== undefined ? professionalBio : null,
         subcategory: subcategory !== undefined ? subcategory : null,
         platformFound: platformFound !== undefined ? platformFound : null,
         programPossibility: programPossibility !== undefined ? programPossibility : null,

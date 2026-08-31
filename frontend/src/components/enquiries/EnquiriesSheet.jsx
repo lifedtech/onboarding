@@ -59,27 +59,8 @@ export default function EnquiriesSheet({ enquiryType }) {
   // Selected enquiry for details view
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
 
-
-  // Inline editing state
-  const [editingId, setEditingId] = useState(null);
-  const [editName, setEditName] = useState('');
-  const [editContact, setEditContact] = useState('');
-  const [editEmail, setEditEmail] = useState('');
-  const [editAlternateContact, setEditAlternateContact] = useState('');
-  const [editCity, setEditCity] = useState('');
-  const [editState, setEditState] = useState('');
-  const [editCountry, setEditCountry] = useState('');
-  const [editRemarks, setEditRemarks] = useState('');
-  const [editClientType, setEditClientType] = useState('');
-  const [editCallbackLater, setEditCallbackLater] = useState(false);
-  const [editReminderDate, setEditReminderDate] = useState('');
-
-  const [editSubcategory, setEditSubcategory] = useState('');
-  const [editPlatformFound, setEditPlatformFound] = useState('');
-  const [editProgramPossibility, setEditProgramPossibility] = useState('');
-  const [editFormat, setEditFormat] = useState('');
-  const [editPriceRange, setEditPriceRange] = useState('');
-  const [editCapacity, setEditCapacity] = useState('');
+  // Selected enquiry for pop-up edit modal
+  const [editingEnquiry, setEditingEnquiry] = useState(null);
 
   useEffect(() => {
     fetchEnquiries();
@@ -178,78 +159,7 @@ export default function EnquiriesSheet({ enquiryType }) {
 
 
 
-  // Inline editing actions
-  const startEditing = (enq) => {
-    setEditingId(enq.id);
-    setEditName(enq.name);
-    setEditContact(enq.contact);
-    setEditEmail(enq.email || '');
-    setEditAlternateContact(enq.alternateContact || '');
-    setEditCity(enq.city || '');
-    setEditState(enq.state || '');
-    setEditCountry(enq.country || '');
-    setEditRemarks(enq.remarks || '');
-    setEditClientType(enq.clientType);
-    setEditCallbackLater(enq.callbackLater);
-    setEditSubcategory(enq.subcategory || '');
-    setEditPlatformFound(enq.platformFound || '');
-    setEditProgramPossibility(enq.programPossibility || '');
-    setEditFormat(enq.format || '');
-    setEditPriceRange(enq.priceRange || '');
-    setEditCapacity(enq.capacity || '');
-    if (enq.reminderDate) {
-      // Input datetime-local format requires YYYY-MM-DDTHH:MM
-      const date = new Date(enq.reminderDate);
-      const tzOffset = date.getTimezoneOffset() * 60000;
-      const localISO = new Date(date.getTime() - tzOffset).toISOString();
-      setEditReminderDate(localISO.slice(0, 16));
-    } else {
-      setEditReminderDate('');
-    }
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-  };
-
-  const saveEditing = async (id) => {
-    if (!editName.trim() || !editContact.trim()) {
-      toast.error('Name and Contact are required.');
-      return;
-    }
-
-    const toastId = toast.loading('Saving changes...');
-    const payload = {
-      name: editName,
-      contact: editContact,
-      email: editEmail.trim() || null,
-      alternateContact: editAlternateContact.trim() || null,
-      city: editCity.trim() || null,
-      state: editState.trim() || null,
-      country: editCountry.trim() || null,
-      remarks: editRemarks.trim() || null,
-      clientType: editClientType,
-      subcategory: editSubcategory.trim() || null,
-      platformFound: editPlatformFound.trim() || null,
-      programPossibility: editProgramPossibility.trim() || null,
-      format: editFormat.trim() || null,
-      priceRange: editPriceRange.trim() || null,
-      capacity: editCapacity.trim() || null,
-      callbackLater: editClientType === 'HEALTH_PARTNER' ? editCallbackLater : false,
-      reminderDate: (editClientType === 'HEALTH_PARTNER' && editCallbackLater && editReminderDate)
-        ? new Date(editReminderDate).toISOString()
-        : null
-    };
-
-    const result = await updateEnquiry(id, payload);
-    toast.dismiss(toastId);
-
-    if (result && result.success) {
-      setEditingId(null);
-    } else {
-      toast.error(result.message || 'Failed to save changes.');
-    }
-  };
+  // Handlers for promote, onboard, delete are configured above
 
   return (
     <div className="flex flex-col h-full bg-bg-base overflow-hidden">
@@ -441,104 +351,42 @@ export default function EnquiriesSheet({ enquiryType }) {
               {/* Table Body */}
               <tbody className="divide-y divide-slate-100 text-xs text-text-main font-bold">
                 {filteredEnquiries.map((enq) => {
-                  const isEditing = editingId === enq.id;
                   const callbackToday = enq.callbackLater && enq.reminderDate && isToday(enq.reminderDate);
 
                   return (
                     <tr
                       key={enq.id}
-                      onClick={!isEditing ? () => setSelectedEnquiry(enq) : undefined}
-                      className={`hover:bg-slate-50/50 transition-colors ${!isEditing ? 'cursor-pointer' : ''} ${
+                      onClick={() => setSelectedEnquiry(enq)}
+                      className={`hover:bg-slate-50/70 transition-colors cursor-pointer ${
                         callbackToday && !enq.contacted ? 'bg-amber-50/30' : ''
                       }`}
                     >
                       {/* Name */}
                       <td className="py-3 px-4 font-extrabold">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                          />
-                        ) : (
-                          <div className="truncate">{enq.name}</div>
-                        )}
+                        <div className="truncate text-text-main hover:text-brand-teal transition-colors">
+                          {enq.name}
+                        </div>
                       </td>
 
                       {/* Contact Info */}
                       <td className="py-3 px-4 truncate">
-                        {isEditing ? (
-                          <div className="flex flex-col gap-1">
-                            <input
-                              type="text"
-                              value={editContact}
-                              onChange={(e) => setEditContact(e.target.value)}
-                              placeholder="Phone Number"
-                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                            />
-                            <input
-                              type="email"
-                              value={editEmail}
-                              onChange={(e) => setEditEmail(e.target.value)}
-                              placeholder="Email Address"
-                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                            />
-                            <input
-                              type="text"
-                              value={editAlternateContact}
-                              onChange={(e) => setEditAlternateContact(e.target.value)}
-                              placeholder="Alternate Phone"
-                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-semibold text-text-main">{enq.contact}</span>
-                            {enq.email && (
-                              <span className="text-[10px] text-slate-500">{enq.email}</span>
-                            )}
-                            {enq.alternateContact && (
-                              <span className="text-[10px] text-slate-500">{enq.alternateContact} (Alt)</span>
-                            )}
-                          </div>
-                        )}
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-semibold text-text-main">{enq.contact}</span>
+                          {enq.email && (
+                            <span className="text-[10px] text-slate-500 truncate">{enq.email}</span>
+                          )}
+                          {enq.alternateContact && (
+                            <span className="text-[10px] text-slate-400 truncate">{enq.alternateContact} (Alt)</span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Location */}
                       <td className="py-3 px-4">
-                        {isEditing ? (
-                          <div className="flex flex-col gap-1">
-                            <input
-                              type="text"
-                              value={editCity}
-                              onChange={(e) => setEditCity(e.target.value)}
-                              placeholder="City"
-                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                            />
-                            <input
-                              type="text"
-                              value={editState}
-                              onChange={(e) => setEditState(e.target.value)}
-                              placeholder="State"
-                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                            />
-                            <input
-                              type="text"
-                              value={editCountry}
-                              onChange={(e) => setEditCountry(e.target.value)}
-                              placeholder="Country"
-                              className="w-full bg-white border border-slate-300 rounded-md px-2 py-1 text-[11px] focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                            />
-                          </div>
-                        ) : (
-                          <span className={(!enq.city && !enq.state && !enq.country) ? "text-slate-400 font-semibold" : "truncate block max-w-[150px]"}>
-                            {[enq.city, enq.state, enq.country].filter(Boolean).join(', ') || '—'}
-                          </span>
-                        )}
+                        <span className={(!enq.city && !enq.state && !enq.country) ? "text-slate-400 font-semibold" : "truncate block max-w-[150px]"}>
+                          {[enq.city, enq.state, enq.country].filter(Boolean).join(', ') || '—'}
+                        </span>
                       </td>
-
-
 
                       {/* Score */}
                       <td className="py-3 px-4 text-center">
@@ -553,34 +401,22 @@ export default function EnquiriesSheet({ enquiryType }) {
 
                       {/* Client Type */}
                       <td className="py-3 px-4">
-                        {isEditing ? (
-                          <select
-                            value={editClientType}
-                            onChange={(e) => setEditClientType(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none cursor-pointer"
-                          >
-                            <option value="HEALTH_PARTNER">Health Partner</option>
-                            <option value="SERVICE_USER">Service User</option>
-                          </select>
-                        ) : (
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
-                              enq.clientType === 'HEALTH_PARTNER'
-                                ? 'bg-brand-teal/10 text-brand-teal border border-brand-teal/20'
-                                : 'bg-[#2C3E50]/10 text-[#2C3E50] border border-[#2C3E50]/15'
-                            }`}
-                          >
-                            {enq.clientType === 'HEALTH_PARTNER' ? 'Partner' : 'Service User'}
-                          </span>
-                        )}
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                            enq.clientType === 'HEALTH_PARTNER'
+                              ? 'bg-brand-teal/10 text-brand-teal border border-brand-teal/20'
+                              : 'bg-[#2C3E50]/10 text-[#2C3E50] border border-[#2C3E50]/15'
+                          }`}
+                        >
+                          {enq.clientType === 'HEALTH_PARTNER' ? 'Partner' : 'Service User'}
+                        </span>
                       </td>
 
                       {/* Contacted Status checkbox */}
                       <td className="py-3 px-4 text-center">
                         <button
-                          onClick={(e) => { e.stopPropagation(); if (!isEditing) handleToggleContacted(enq.id, enq.contacted); }}
-                          disabled={isEditing}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-extrabold uppercase tracking-wider transition-all disabled:opacity-50 mx-auto ${
+                          onClick={(e) => { e.stopPropagation(); handleToggleContacted(enq.id, enq.contacted); }}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-extrabold uppercase tracking-wider transition-all disabled:opacity-50 mx-auto cursor-pointer ${
                             enq.contacted
                               ? 'bg-brand-green/10 text-brand-green border-brand-green/20 hover:bg-brand-green/20'
                               : 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100'
@@ -602,45 +438,14 @@ export default function EnquiriesSheet({ enquiryType }) {
 
                       {/* Remarks */}
                       <td className="py-3 px-4 italic font-medium text-slate-500">
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editRemarks}
-                            onChange={(e) => setEditRemarks(e.target.value)}
-                            className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs focus:ring-1 focus:ring-brand-teal focus:outline-none"
-                          />
-                        ) : (
-                          <div className="truncate">{enq.remarks || '—'}</div>
-                        )}
+                        <div className="truncate max-w-[200px]" title={enq.remarks || ''}>
+                          {enq.remarks || '—'}
+                        </div>
                       </td>
 
                       {/* Reminder Callback */}
                       <td className="py-3 px-4">
-                        {isEditing ? (
-                          editClientType === 'HEALTH_PARTNER' ? (
-                            <div className="flex flex-col gap-1.5">
-                              <label className="flex items-center gap-1.5 text-[10px] text-slate-400 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={editCallbackLater}
-                                  onChange={(e) => setEditCallbackLater(e.target.checked)}
-                                  className="w-3.5 h-3.5 text-brand-teal rounded border-slate-300 focus:ring-brand-teal cursor-pointer"
-                                />
-                                Callback later
-                              </label>
-                              {editCallbackLater && (
-                                <input
-                                  type="datetime-local"
-                                  value={editReminderDate}
-                                  onChange={(e) => setEditReminderDate(e.target.value)}
-                                  className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-[11px] focus:outline-none"
-                                />
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-[10px] text-slate-400 italic">Not applicable</span>
-                          )
-                        ) : enq.callbackLater && enq.reminderDate ? (
+                        {enq.callbackLater && enq.reminderDate ? (
                           <div className="flex items-center gap-1.5">
                             {callbackToday && !enq.contacted ? (
                               <span className="relative flex h-2 w-2">
@@ -678,76 +483,55 @@ export default function EnquiriesSheet({ enquiryType }) {
                       {/* Actions */}
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center gap-1.5">
-                          {isEditing ? (
-                            <>
+                          {enq.clientType === 'HEALTH_PARTNER' && (
+                            enq.movedToPipeline ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100 whitespace-nowrap">
+                                <Check className="w-3 h-3 text-indigo-600" />
+                                In Pipeline
+                              </span>
+                            ) : (
                               <button
-                                onClick={(e) => { e.stopPropagation(); saveEditing(enq.id); }}
-                                className="p-1 text-brand-green hover:bg-brand-green/5 rounded-lg transition-colors cursor-pointer"
-                                title="Save changes"
+                                onClick={(e) => { e.stopPropagation(); handlePromote(enq.id, enq.name); }}
+                                className="p-1.5 text-brand-teal hover:bg-brand-teal/5 border border-brand-teal/10 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
+                                title="Promote to pipeline partner"
                               >
-                                <Check className="w-3.5 h-3.5" />
+                                <ArrowRight className="w-3.5 h-3.5" />
+                                Promote
                               </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); cancelEditing(); }}
-                                className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                title="Cancel editing"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              {enq.clientType === 'HEALTH_PARTNER' && (
-                                enq.movedToPipeline ? (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100 whitespace-nowrap">
-                                      <Check className="w-3 h-3 text-indigo-600" />
-                                      In Pipeline
-                                    </span>
-                                ) : (
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); handlePromote(enq.id, enq.name); }}
-                                    className="p-1.5 text-brand-teal hover:bg-brand-teal/5 border border-brand-teal/10 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
-                                    title="Promote to pipeline partner"
-                                  >
-                                    <ArrowRight className="w-3.5 h-3.5" />
-                                    Promote
-                                  </button>
-                                )
-                              )}
-                              {enq.clientType === 'SERVICE_USER' && (
-                                enq.movedToPipeline ? (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100 whitespace-nowrap">
-                                    <Check className="w-3 h-3 text-indigo-600" />
-                                    Onboarded User
-                                  </span>
-                                ) : (
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); handleOnboardUser(enq.id, enq.name); }}
-                                    className="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
-                                    title="Onboard as Service User"
-                                  >
-                                    <ArrowRight className="w-3.5 h-3.5" />
-                                    Onboard
-                                  </button>
-                                )
-                              )}
-
-                              <button
-                                onClick={(e) => { e.stopPropagation(); startEditing(enq); }}
-                                className="p-1 text-slate-400 hover:text-text-main hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                                title="Edit enquiry row"
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleDelete(enq.id, enq.name); }}
-                                className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                title="Delete enquiry"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </>
+                            )
                           )}
+                          {enq.clientType === 'SERVICE_USER' && (
+                            enq.movedToPipeline ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-indigo-600 py-1.5 px-2 bg-indigo-50 rounded-lg border border-indigo-100 whitespace-nowrap">
+                                <Check className="w-3 h-3 text-indigo-600" />
+                                Onboarded User
+                              </span>
+                            ) : (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleOnboardUser(enq.id, enq.name); }}
+                                className="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-100 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1 text-[10px]"
+                                title="Onboard as Service User"
+                              >
+                                <ArrowRight className="w-3.5 h-3.5" />
+                                Onboard
+                              </button>
+                            )
+                          )}
+
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEditingEnquiry(enq); }}
+                            className="p-1.5 text-slate-400 hover:text-brand-teal hover:bg-brand-teal/5 rounded-lg transition-colors cursor-pointer"
+                            title="Edit enquiry details in pop-up modal"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDelete(enq.id, enq.name); }}
+                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                            title="Delete enquiry"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -759,8 +543,16 @@ export default function EnquiriesSheet({ enquiryType }) {
         )}
       </div>
 
-      {/* Add Enquiry Modal */}
-      <AddEnquiryModal isOpen={isOpenAdd} onClose={() => setIsOpenAdd(false)} defaultType={enquiryType} />
+      {/* Add / Edit Enquiry Modal Pop-up */}
+      <AddEnquiryModal
+        isOpen={isOpenAdd || Boolean(editingEnquiry)}
+        enquiry={editingEnquiry}
+        onClose={() => {
+          setIsOpenAdd(false);
+          setEditingEnquiry(null);
+        }}
+        defaultType={enquiryType}
+      />
 
       {/* Promote Partner Modal */}
       <PromotePartnerModal
@@ -788,9 +580,10 @@ export default function EnquiriesSheet({ enquiryType }) {
 
       {/* Details Modal */}
       <EnquiryDetailsModal
-        isOpen={!!selectedEnquiry}
+        isOpen={Boolean(selectedEnquiry)}
         onClose={() => setSelectedEnquiry(null)}
         enquiry={selectedEnquiry}
+        onEdit={(enq) => setEditingEnquiry(enq)}
       />
     </div>
 

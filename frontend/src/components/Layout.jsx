@@ -83,7 +83,7 @@ export default function Layout({ children, activePage, onNavigate }) {
     admin: false,
     sales_marketing: false,
     support: false,
-    communication_tracking: true
+    communication_tracking: false
   });
 
   const toggleGroup = (group) => {

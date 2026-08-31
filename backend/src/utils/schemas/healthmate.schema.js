@@ -1,7 +1,15 @@
 const { z } = require('zod');
 const { requiredString, optionalString, optionalEmail, optionalPhone, optionalIsoDate, boundedInt } = require('./common.schema');
 
-const HEALTHMATE_TYPES = ['PRACTITIONER', 'CENTRE', 'ORGANIZER'];
+const HEALTHMATE_TYPES = [
+  'PRACTITIONER',
+  'CENTRE',
+  'ORGANIZER',
+  'COMMUNITY_GROUP',
+  'PROGRAM_ORGANIZER',
+  'RETREAT_CENTRE',
+  'WELLNESS_CENTRE',
+];
 const PHASES = ['PRE_QUALIFY', 'PREPARE', 'REGISTER', 'REVIEW', 'LIVE'];
 const PROGRAM_STATUSES = ['PENDING', 'APPROVED', 'CORRECTION_REQUIRED'];
 const REGISTRATION_STATUSES = ['PENDING', 'VERIFIED', 'ESCALATED'];
@@ -16,9 +24,14 @@ const createHealthmateSchema = z.object({
   contactEmail: optionalEmail(),
   contactPhone: optionalPhone(),
   alternatePhone: optionalPhone(),
+  website: optionalString(300),
+  address: optionalString(2000),
   city: optionalString(100),
   state: optionalString(100),
   country: optionalString(100),
+  nearestAirport: optionalString(200),
+  yearsOfExperience: optionalString(50),
+  professionalBio: optionalString(5000),
   subcategory: optionalString(100),
   platformFound: optionalString(200),
   programPossibility: optionalString(200),
@@ -39,9 +52,14 @@ const updateHealthmateSchema = z.object({
   contactEmail: optionalEmail(),
   contactPhone: optionalPhone(),
   alternatePhone: optionalPhone(),
+  website: optionalString(300),
+  address: optionalString(2000),
   city: optionalString(100),
   state: optionalString(100),
   country: optionalString(100),
+  nearestAirport: optionalString(200),
+  yearsOfExperience: optionalString(50),
+  professionalBio: optionalString(5000),
   opsUserId: z.string().trim().uuid().optional(),
   screeningRemarks: optionalString(5000),
   screeningQueries: optionalString(5000),

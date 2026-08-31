@@ -23,6 +23,10 @@ enum HealthmateType {
   PRACTITIONER
   CENTRE
   ORGANIZER
+  COMMUNITY_GROUP
+  PROGRAM_ORGANIZER
+  RETREAT_CENTRE
+  WELLNESS_CENTRE
 }
 
 enum RegistrationStatus {
@@ -121,9 +125,16 @@ model Healthmate {
   contactEmail String?
   contactPhone   String?
   alternatePhone String?
+  website        String?
+  address        String?        @db.Text
   city           String?
   state          String?
   country        String?
+  nearestAirport String?
+
+  // Practice & Expertise
+  yearsOfExperience String?
+  professionalBio   String?    @db.Text
 
   subcategory        String?
   platformFound      String?

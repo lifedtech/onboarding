@@ -1,6 +1,6 @@
-import {   X, Calendar, MapPin, PhoneCall, FileText, User   } from 'lucide-react';
+import { X, Calendar, MapPin, PhoneCall, FileText, User, Edit3 } from 'lucide-react';
 
-export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
+export default function EnquiryDetailsModal({ isOpen, onClose, enquiry, onEdit }) {
   if (!isOpen || !enquiry) return null;
 
   const formatIST = (dateString) => {
@@ -13,6 +13,11 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
       minute: '2-digit',
       timeZone: 'Asia/Kolkata',
     });
+  };
+
+  const handleEditClick = () => {
+    onClose();
+    if (onEdit) onEdit(enquiry);
   };
 
   return (
@@ -35,12 +40,24 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-text-muted hover:text-text-main hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <button
+                onClick={handleEditClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-teal/10 text-brand-teal hover:bg-brand-teal/20 text-xs font-extrabold rounded-xl transition-colors cursor-pointer"
+                title="Edit this enquiry"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                Edit
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 text-text-muted hover:text-text-main hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -159,13 +176,22 @@ export default function EnquiryDetailsModal({ isOpen, onClose, enquiry }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-white border border-slate-200 text-text-main text-xs font-extrabold rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
+            className="px-5 py-2.5 bg-white border border-slate-200 text-text-main text-xs font-extrabold rounded-xl hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
           >
             Close
           </button>
+          {onEdit && (
+            <button
+              onClick={handleEditClick}
+              className="px-5 py-2.5 bg-brand-teal text-white text-xs font-extrabold rounded-xl hover:bg-brand-teal-hover transition-colors shadow-md shadow-brand-teal/10 flex items-center gap-1.5 cursor-pointer"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              Edit Enquiry
+            </button>
+          )}
         </div>
       </div>
     </div>
